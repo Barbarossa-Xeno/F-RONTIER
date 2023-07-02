@@ -1,0 +1,287 @@
+﻿{
+    "time": 1.42,
+    "name": "MIST SONG_[EXPERT]",
+    "maxBlock": 6,
+    "BPM": 116,
+    "offset": 0,
+    "notes": [
+        {
+            "LPB": 4,
+            "num": 16,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 18,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 20,
+            "block": 3,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 23,
+            "block": 4,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 23,
+            "block": 1,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 39,
+            "block": 1,
+            "type": 2,
+            "notes": [
+                {
+                    "LPB": 4,
+                    "num": 43,
+                    "block": 1,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 47,
+                    "block": 2,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 51,
+                    "block": 2,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 55,
+                    "block": 2,
+                    "type": 2,
+                    "notes": []
+                }
+            ]
+        },
+        {
+            "LPB": 4,
+            "num": 39,
+            "block": 4,
+            "type": 2,
+            "notes": [
+                {
+                    "LPB": 4,
+                    "num": 43,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 47,
+                    "block": 3,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 51,
+                    "block": 3,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 55,
+                    "block": 3,
+                    "type": 2,
+                    "notes": []
+                }
+            ]
+        },
+        {
+            "LPB": 4,
+            "num": 57,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 59,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 63,
+            "block": 4,
+            "type": 2,
+            "notes": [
+                {
+                    "LPB": 4,
+                    "num": 67,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 71,
+                    "block": 3,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 75,
+                    "block": 3,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 79,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 83,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 87,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 91,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                },
+                {
+                    "LPB": 4,
+                    "num": 95,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                }
+            ]
+        },
+        {
+            "LPB": 4,
+            "num": 63,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 67,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 71,
+            "block": 1,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 75,
+            "block": 1,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 79,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 83,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 95,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 97,
+            "block": 3,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 99,
+            "block": 2,
+            "type": 1,
+            "notes": []
+        },
+        {
+            "LPB": 4,
+            "num": 101,
+            "block": 1,
+            "type": 2,
+            "notes": [
+                {
+                    "LPB": 4,
+                    "num": 108,
+                    "block": 1,
+                    "type": 2,
+                    "notes": []
+                }
+            ]
+        },
+        {
+            "LPB": 4,
+            "num": 101,
+            "block": 4,
+            "type": 2,
+            "notes": [
+                {
+                    "LPB": 4,
+                    "num": 108,
+                    "block": 4,
+                    "type": 2,
+                    "notes": []
+                }
+            ]
+        }
+    ]
+}

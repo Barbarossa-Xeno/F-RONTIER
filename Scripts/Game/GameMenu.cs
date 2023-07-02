@@ -127,7 +127,7 @@ public class GameMenu : MonoBehaviour
             isPaused = false;
             Time.timeScale = 1;
             audioSource.Play();
-            if (GameManager.instance.MV) { videoSource.Play(); }
+            if (GameManager.instance.mv) { videoSource.Play(); }
             GameManager.instance.gamePlayState = GameManager.GamePlayState.Playing;
             yield break;
         }

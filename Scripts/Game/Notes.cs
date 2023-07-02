@@ -29,7 +29,7 @@ public class Notes : MonoBehaviour
     void Start()
     {
         if (type == SettingUtility.NoteType.Normal) { longNote = new LongNote(); }
-        speed = GameManager.instance.NoteSpeed;
+        speed = GameManager.instance.noteSpeed;
     }
 
     void Update()

@@ -1,0 +1,581 @@
+**.meta
+Animations/Anime.controller
+Animations/Anime.controller.meta
+Animations/CellAnimation.meta
+Animations/CheckWindow.meta
+Animations/Float.anim
+Animations/Float.anim.meta
+Animations/GameScene.meta
+Animations/Invisible.anim
+Animations/Invisible.anim.meta
+Animations/Judge_Status.anim
+Animations/Judge_Status.anim.meta
+Animations/ModalWindow.meta
+Animations/NoiseMove.anim
+Animations/NoiseMove.anim.meta
+Animations/ResultWindow.meta
+Animations/TitleLogoFade.anim
+Animations/TitleLogoFade.anim.meta
+Animations/CellAnimation/CellTransform.controller
+Animations/CellAnimation/CellTransform.controller.meta
+Animations/CellAnimation/CellTransformIn.anim
+Animations/CellAnimation/CellTransformIn.anim.meta
+Animations/CellAnimation/CellTransformOut.anim
+Animations/CellAnimation/CellTransformOut.anim.meta
+Animations/CheckWindow/CheckWindowAnime.controller
+Animations/CheckWindow/CheckWindowAnime.controller.meta
+Animations/CheckWindow/CheckWindowAppear.anim
+Animations/CheckWindow/CheckWindowAppear.anim.meta
+Animations/CheckWindow/CheckWindowDisappear.anim
+Animations/CheckWindow/CheckWindowDisappear.anim.meta
+Animations/GameScene/Banner.anim
+Animations/GameScene/Banner.anim.meta
+Animations/GameScene/BannerController.controller
+Animations/GameScene/BannerController.controller.meta
+Animations/GameScene/CountDown.anim
+Animations/GameScene/CountDown.anim.meta
+Animations/GameScene/CountDownController.controller
+Animations/GameScene/CountDownController.controller.meta
+Animations/ModalWindow/ModalWindowAnime.controller
+Animations/ModalWindow/ModalWindowAnime.controller.meta
+Animations/ModalWindow/WindowFadeIn_New.anim
+Animations/ModalWindow/WindowFadeIn_New.anim.meta
+Animations/ModalWindow/WindowFadeOut_New.anim
+Animations/ModalWindow/WindowFadeOut_New.anim.meta
+Animations/ResultWindow/GetAchive.anim
+Animations/ResultWindow/GetAchive.anim.meta
+Animations/ResultWindow/ResultClip.anim
+Animations/ResultWindow/ResultClip.anim.meta
+Animations/ResultWindow/ResultWindowAnimation.controller
+Animations/ResultWindow/ResultWindowAnimation.controller.meta
+TextMesh Pro/Documentation.meta
+TextMesh Pro/Fonts.meta
+TextMesh Pro/Resources.meta
+TextMesh Pro/Shaders.meta
+TextMesh Pro/Sprites.meta
+TextMesh Pro/Documentation/TextMesh Pro User Guide 2016.pdf
+TextMesh Pro/Documentation/TextMesh Pro User Guide 2016.pdf.meta
+TextMesh Pro/Fonts/BarlowCondensed-Light.ttf
+TextMesh Pro/Fonts/BarlowCondensed-Light.ttf.meta
+TextMesh Pro/Fonts/CASCADIACODE.TTF
+TextMesh Pro/Fonts/CASCADIACODE.TTF.meta
+TextMesh Pro/Fonts/Century Gothic Bold.TTF
+TextMesh Pro/Fonts/Century Gothic Bold.TTF.meta
+TextMesh Pro/Fonts/Century Gothic.TTF
+TextMesh Pro/Fonts/Century Gothic.TTF.meta
+TextMesh Pro/Fonts/Corporate-Logo-Bold-ver2.ttf
+TextMesh Pro/Fonts/Corporate-Logo-Bold-ver2.ttf.meta
+TextMesh Pro/Fonts/Corporate-Logo-Medium-ver2.ttf
+TextMesh Pro/Fonts/Corporate-Logo-Medium-ver2.ttf.meta
+TextMesh Pro/Fonts/LiberationSans - OFL.txt
+TextMesh Pro/Fonts/LiberationSans - OFL.txt.meta
+TextMesh Pro/Fonts/LiberationSans.ttf
+TextMesh Pro/Fonts/LiberationSans.ttf.meta
+TextMesh Pro/Fonts/Roboto-Medium.ttf
+TextMesh Pro/Fonts/Roboto-Medium.ttf.meta
+TextMesh Pro/Fonts/RUSSOONE-REGULAR.TTF
+TextMesh Pro/Fonts/RUSSOONE-REGULAR.TTF.meta
+TextMesh Pro/Resources/Fonts & Materials.meta
+TextMesh Pro/Resources/LineBreaking Following Characters.txt
+TextMesh Pro/Resources/LineBreaking Following Characters.txt.meta
+TextMesh Pro/Resources/LineBreaking Leading Characters.txt
+TextMesh Pro/Resources/LineBreaking Leading Characters.txt.meta
+TextMesh Pro/Resources/Sprite Assets.meta
+TextMesh Pro/Resources/Style Sheets.meta
+TextMesh Pro/Resources/TMP Settings.asset
+TextMesh Pro/Resources/TMP Settings.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/BarlowCondensed-Light SDF.asset
+TextMesh Pro/Resources/Fonts & Materials/BarlowCondensed-Light SDF.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/BarlowCondensed-Light SDF.mat
+TextMesh Pro/Resources/Fonts & Materials/BarlowCondensed-Light SDF.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/CASCADIACODE SDF.asset
+TextMesh Pro/Resources/Fonts & Materials/CASCADIACODE SDF.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/Century Gothic Bold SDF.asset
+TextMesh Pro/Resources/Fonts & Materials/Century Gothic Bold SDF.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/Century Gothic SDF.asset
+TextMesh Pro/Resources/Fonts & Materials/Century Gothic SDF.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/Corporate-Logo-Bold-ver2 SDF_CodeFull.asset
+TextMesh Pro/Resources/Fonts & Materials/Corporate-Logo-Bold-ver2 SDF_CodeFull.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/Corporate-Logo-Bold-ver2 SDF.mat
+TextMesh Pro/Resources/Fonts & Materials/Corporate-Logo-Bold-ver2 SDF.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/Corporate-Logo-Medium-ver2 SDF_CodeFull.asset
+TextMesh Pro/Resources/Fonts & Materials/Corporate-Logo-Medium-ver2 SDF_CodeFull.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Drop Shadow.mat
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Drop Shadow.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Outline.mat
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Outline.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF 1.mat
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF 1.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF 2.mat
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF 2.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF.asset
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF.asset.meta
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF.mat
+TextMesh Pro/Resources/Fonts & Materials/RUSSOONE-REGULAR SDF.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/Status-bad.mat
+TextMesh Pro/Resources/Fonts & Materials/Status-bad.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/Status-good.mat
+TextMesh Pro/Resources/Fonts & Materials/Status-good.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/Status-great.mat
+TextMesh Pro/Resources/Fonts & Materials/Status-great.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/Status-miss.mat
+TextMesh Pro/Resources/Fonts & Materials/Status-miss.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/Status-perfect.mat
+TextMesh Pro/Resources/Fonts & Materials/Status-perfect.mat.meta
+TextMesh Pro/Resources/Fonts & Materials/UI-basic.mat
+TextMesh Pro/Resources/Fonts & Materials/UI-basic.mat.meta
+TextMesh Pro/Resources/Sprite Assets/EmojiOne.asset
+TextMesh Pro/Resources/Sprite Assets/EmojiOne.asset.meta
+TextMesh Pro/Resources/Style Sheets/Default Style Sheet.asset
+TextMesh Pro/Resources/Style Sheets/Default Style Sheet.asset.meta
+TextMesh Pro/Shaders/TMP_Bitmap-Custom-Atlas.shader
+TextMesh Pro/Shaders/TMP_Bitmap-Custom-Atlas.shader.meta
+TextMesh Pro/Shaders/TMP_Bitmap-Mobile.shader
+TextMesh Pro/Shaders/TMP_Bitmap-Mobile.shader.meta
+TextMesh Pro/Shaders/TMP_Bitmap.shader
+TextMesh Pro/Shaders/TMP_Bitmap.shader.meta
+TextMesh Pro/Shaders/TMP_SDF Overlay.shader
+TextMesh Pro/Shaders/TMP_SDF Overlay.shader.meta
+TextMesh Pro/Shaders/TMP_SDF SSD.shader
+TextMesh Pro/Shaders/TMP_SDF SSD.shader.meta
+TextMesh Pro/Shaders/TMP_SDF-Mobile Masking.shader
+TextMesh Pro/Shaders/TMP_SDF-Mobile Masking.shader.meta
+TextMesh Pro/Shaders/TMP_SDF-Mobile Overlay.shader
+TextMesh Pro/Shaders/TMP_SDF-Mobile Overlay.shader.meta
+TextMesh Pro/Shaders/TMP_SDF-Mobile SSD.shader
+TextMesh Pro/Shaders/TMP_SDF-Mobile SSD.shader.meta
+TextMesh Pro/Shaders/TMP_SDF-Mobile.shader
+TextMesh Pro/Shaders/TMP_SDF-Mobile.shader.meta
+TextMesh Pro/Shaders/TMP_SDF-Surface-Mobile.shader
+TextMesh Pro/Shaders/TMP_SDF-Surface-Mobile.shader.meta
+TextMesh Pro/Shaders/TMP_SDF-Surface.shader
+TextMesh Pro/Shaders/TMP_SDF-Surface.shader.meta
+TextMesh Pro/Shaders/TMP_SDF.shader
+TextMesh Pro/Shaders/TMP_SDF.shader.meta
+TextMesh Pro/Shaders/TMP_Sprite.shader
+TextMesh Pro/Shaders/TMP_Sprite.shader.meta
+TextMesh Pro/Shaders/TMPro_Mobile.cginc
+TextMesh Pro/Shaders/TMPro_Mobile.cginc.meta
+TextMesh Pro/Shaders/TMPro_Properties.cginc
+TextMesh Pro/Shaders/TMPro_Properties.cginc.meta
+TextMesh Pro/Shaders/TMPro_Surface.cginc
+TextMesh Pro/Shaders/TMPro_Surface.cginc.meta
+TextMesh Pro/Shaders/TMPro.cginc
+TextMesh Pro/Shaders/TMPro.cginc.meta
+TextMesh Pro/Sprites/EmojiOne Attribution.txt
+TextMesh Pro/Sprites/EmojiOne Attribution.txt.meta
+TextMesh Pro/Sprites/EmojiOne.json
+TextMesh Pro/Sprites/EmojiOne.json.meta
+TextMesh Pro/Sprites/EmojiOne.png
+TextMesh Pro/Sprites/EmojiOne.png.meta
+Resources/Data.meta
+Resources/dialog.json
+Resources/dialog.json.meta
+Resources/Images.meta
+Resources/Musics.meta
+Resources/Notification.json
+Resources/Notification.json.meta
+Resources/SE.meta
+Resources/Setting.json
+Resources/Setting.json.meta
+Resources/SongList.json
+Resources/SongList.json.meta
+Resources/Videos.meta
+Resources/Data/0.meta
+Resources/Data/1.meta
+Resources/Data/2.meta
+Resources/Data/3.meta
+Resources/Data/4.meta
+Resources/Data/5.meta
+Resources/Data/6.meta
+Resources/Data/7.meta
+Resources/Data/8.meta
+Resources/Data/9.meta
+Resources/Data/10.meta
+Resources/Data/11.meta
+Resources/Data/old.meta
+Resources/Data/0/cover.jpg
+Resources/Data/0/cover.jpg.meta
+Resources/Data/0/expert.json
+Resources/Data/0/expert.json.meta
+Resources/Data/0/highlight.wav
+Resources/Data/0/highlight.wav.meta
+Resources/Data/0/mv.mp4
+Resources/Data/0/mv.mp4.meta
+Resources/Data/0/normal.json
+Resources/Data/0/normal.json.meta
+Resources/Data/0/song.wav
+Resources/Data/0/song.wav.meta
+Resources/Data/1/cover.jpg
+Resources/Data/1/cover.jpg.meta
+Resources/Data/1/expert.json
+Resources/Data/1/expert.json.meta
+Resources/Data/1/highlight.mp3
+Resources/Data/1/highlight.mp3.meta
+Resources/Data/1/mv.mp4
+Resources/Data/1/mv.mp4.meta
+Resources/Data/1/song.mp3
+Resources/Data/1/song.mp3.meta
+Resources/Data/2/cover.jpg
+Resources/Data/2/cover.jpg.meta
+Resources/Data/2/expert.json
+Resources/Data/2/expert.json.meta
+Resources/Data/2/highlight.mp3
+Resources/Data/2/highlight.mp3.meta
+Resources/Data/2/mv.mp4
+Resources/Data/2/mv.mp4.meta
+Resources/Data/2/normal.json
+Resources/Data/2/normal.json.meta
+Resources/Data/2/song.mp3
+Resources/Data/2/song.mp3.meta
+Resources/Data/3/cover.jpg
+Resources/Data/3/cover.jpg.meta
+Resources/Data/3/EXPERT.json
+Resources/Data/3/EXPERT.json.meta
+Resources/Data/3/highlight.wav
+Resources/Data/3/highlight.wav.meta
+Resources/Data/3/mv.mp4
+Resources/Data/3/mv.mp4.meta
+Resources/Data/3/NORMAL.json
+Resources/Data/3/NORMAL.json.meta
+Resources/Data/3/song.wav
+Resources/Data/3/song.wav.meta
+Resources/Data/4/cover.jpg
+Resources/Data/4/cover.jpg.meta
+Resources/Data/4/highlight.wav
+Resources/Data/4/highlight.wav.meta
+Resources/Data/5/cover.jpg
+Resources/Data/5/cover.jpg.meta
+Resources/Data/5/highlight.wav
+Resources/Data/5/highlight.wav.meta
+Resources/Data/6/chara.meta
+Resources/Data/6/cover.jpeg
+Resources/Data/6/cover.jpeg.meta
+Resources/Data/6/expert.json
+Resources/Data/6/expert.json.meta
+Resources/Data/6/highlight.wav
+Resources/Data/6/highlight.wav.meta
+Resources/Data/6/mv.mp4
+Resources/Data/6/mv.mp4.meta
+Resources/Data/6/song.wav
+Resources/Data/6/song.wav.meta
+Resources/Data/6/chara/0.meta
+Resources/Data/6/chara/1.meta
+Resources/Data/6/chara/2.meta
+Resources/Data/6/chara/3.meta
+Resources/Data/6/chara/0/a.png
+Resources/Data/6/chara/0/a.png.meta
+Resources/Data/6/chara/0/b.png
+Resources/Data/6/chara/0/b.png.meta
+Resources/Data/6/chara/1/a.png
+Resources/Data/6/chara/1/a.png.meta
+Resources/Data/6/chara/1/b.png
+Resources/Data/6/chara/1/b.png.meta
+Resources/Data/6/chara/2/a.png
+Resources/Data/6/chara/2/a.png.meta
+Resources/Data/6/chara/2/b.png
+Resources/Data/6/chara/2/b.png.meta
+Resources/Data/6/chara/3/a.png
+Resources/Data/6/chara/3/a.png.meta
+Resources/Data/6/chara/3/b.png
+Resources/Data/6/chara/3/b.png.meta
+Resources/Data/7/cover.jpg
+Resources/Data/7/cover.jpg.meta
+Resources/Data/7/highlight.mp3
+Resources/Data/7/highlight.mp3.meta
+Resources/Data/7/normal.json
+Resources/Data/7/normal.json.meta
+Resources/Data/7/song.mp3
+Resources/Data/7/song.mp3.meta
+Resources/Data/8/cover.jpg
+Resources/Data/8/cover.jpg.meta
+Resources/Data/8/expert.json
+Resources/Data/8/expert.json.meta
+Resources/Data/8/highlight.mp3
+Resources/Data/8/highlight.mp3.meta
+Resources/Data/8/song.mp3
+Resources/Data/8/song.mp3.meta
+Resources/Data/9/cover.jpg
+Resources/Data/9/cover.jpg.meta
+Resources/Data/9/highlight.mp3
+Resources/Data/9/highlight.mp3.meta
+Resources/Data/9/normal.json
+Resources/Data/9/normal.json.meta
+Resources/Data/9/song.mp3
+Resources/Data/9/song.mp3.meta
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[EXPERT].json.meta
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/MIST SONG_[NORMAL].json.meta
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json.meta
+Resources/Images/Result.meta
+Resources/Images/Result/achive_a.png
+Resources/Images/Result/achive_a.png.meta
+Resources/Images/Result/achive_a+.png
+Resources/Images/Result/achive_a+.png.meta
+Resources/Images/Result/achive_ap.png
+Resources/Images/Result/achive_ap.png.meta
+Resources/Images/Result/achive_b.png
+Resources/Images/Result/achive_b.png.meta
+Resources/Images/Result/achive_b+.png
+Resources/Images/Result/achive_b+.png.meta
+Resources/Images/Result/achive_c.png
+Resources/Images/Result/achive_c.png.meta
+Resources/Images/Result/achive_c+.png
+Resources/Images/Result/achive_c+.png.meta
+Resources/Images/Result/achive_fc.png
+Resources/Images/Result/achive_fc.png.meta
+Resources/Images/Result/achive_s.png
+Resources/Images/Result/achive_s.png.meta
+Resources/Images/Result/achive_s+.png
+Resources/Images/Result/achive_s+.png.meta
+Resources/Images/Result/rank_a.png
+Resources/Images/Result/rank_a.png.meta
+Resources/Images/Result/rank_a+.png
+Resources/Images/Result/rank_a+.png.meta
+Resources/Images/Result/rank_b.png
+Resources/Images/Result/rank_b.png.meta
+Resources/Images/Result/rank_b+.png
+Resources/Images/Result/rank_b+.png.meta
+Resources/Images/Result/rank_c.png
+Resources/Images/Result/rank_c.png.meta
+Resources/Images/Result/rank_c+.png
+Resources/Images/Result/rank_c+.png.meta
+Resources/Images/Result/rank_s.png
+Resources/Images/Result/rank_s.png.meta
+Resources/Images/Result/rank_s+.png
+Resources/Images/Result/rank_s+.png.meta
+Resources/Musics/test2.wav
+Resources/Musics/test2.wav.meta
+Resources/SE/bpm_116_wb.wav
+Resources/SE/bpm_116_wb.wav.meta
+Resources/SE/bpm_157_wb.wav
+Resources/SE/bpm_157_wb.wav.meta
+Resources/SE/bpm_174_wb.mp3
+Resources/SE/bpm_174_wb.mp3.meta
+Resources/SE/bpm_180_wb.mp3
+Resources/SE/bpm_180_wb.mp3.meta
+Resources/SE/bpm_193_wb.wav
+Resources/SE/bpm_193_wb.wav.meta
+Resources/SE/heel_1.mp3
+Resources/SE/heel_1.mp3.meta
+Resources/SE/heel_2.mp3
+Resources/SE/heel_2.mp3.meta
+Resources/SE/tap.mp3
+Resources/SE/tap.mp3.meta
+Resources/SE/wb1.mp3
+Resources/SE/wb1.mp3.meta
+Resources/SE/wb2.mp3
+Resources/SE/wb2.mp3.meta
+Prefabs/Cell.prefab
+Prefabs/Cell.prefab.meta
+Prefabs/Level_minus.prefab
+Prefabs/Level_minus.prefab.meta
+Prefabs/Level_plus.prefab
+Prefabs/Level_plus.prefab.meta
+Prefabs/News.prefab
+Prefabs/News.prefab.meta
+Prefabs/notes.meta
+Prefabs/text.meta
+Prefabs/notes/Note.prefab
+Prefabs/notes/Note.prefab.meta
+Prefabs/notes/NoteLongAny.prefab
+Prefabs/notes/NoteLongAny.prefab.meta
+Prefabs/notes/NoteLongOnly.prefab
+Prefabs/notes/NoteLongOnly.prefab.meta
+Prefabs/text/bad.prefab
+Prefabs/text/bad.prefab.meta
+Prefabs/text/good.prefab
+Prefabs/text/good.prefab.meta
+Prefabs/text/great.prefab
+Prefabs/text/great.prefab.meta
+Prefabs/text/miss.prefab
+Prefabs/text/miss.prefab.meta
+Prefabs/text/perfect.prefab
+Prefabs/text/perfect.prefab.meta
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[EXPERT].json.meta
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/MIST SONG_[NORMAL].json.meta
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json.meta
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[EXPERT].json.meta
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/MIST SONG_[NORMAL].json.meta
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json.meta
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[EXPERT].json.meta
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/MIST SONG_[NORMAL].json.meta
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json.meta
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[EXPERT].json.meta
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/MIST SONG_[NORMAL].json.meta
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json.meta
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json.meta
+Plugins/Android.meta
+Plugins/Android/AndroidManifest.xml
+Plugins/Android/AndroidManifest.xml.meta
+Plugins/Android/baseProjectTemplate.gradle
+Plugins/Android/baseProjectTemplate.gradle.meta
+Plugins/Android/gradleTemplate.properties
+Plugins/Android/gradleTemplate.properties.meta
+Plugins/Android/launcherTemplate.gradle
+Plugins/Android/launcherTemplate.gradle.meta
+Materials/Chromatic aberration.mat
+Materials/Chromatic aberration.mat.meta
+Materials/Judging.mat
+Materials/Judging.mat.meta
+Materials/Light.mat
+Materials/Light.mat.meta
+Materials/LongNoteAnyLine.mat
+Materials/LongNoteAnyLine.mat.meta
+Materials/LongNoteAnyMesh.mat
+Materials/LongNoteAnyMesh.mat.meta
+Materials/LongNoteOnlyMesh.mat
+Materials/LongNoteOnlyMesh.mat.meta
+Materials/Note_Long_1.mat
+Materials/Note_Long_1.mat.meta
+Materials/Note_Long_Mesh_1.mat
+Materials/Note_Long_Mesh_1.mat.meta
+Materials/Note_Long_Mesh_2.mat
+Materials/Note_Long_Mesh_2.mat.meta
+Materials/Note_Long_Mesh.mat
+Materials/Note_Long_Mesh.mat.meta
+Materials/Note_Long.mat
+Materials/Note_Long.mat.meta
+Materials/Note_Normal.mat
+Materials/Note_Normal.mat.meta
+Materials/ResultBG.mat
+Materials/ResultBG.mat.meta
+Materials/Road.mat
+Materials/Road.mat.meta
+Materials/RoadLine.mat
+Materials/RoadLine.mat.meta
+Materials/Stage.mat
+Materials/Stage.mat.meta
+Materials/Tap_area.mat
+Materials/Tap_area.mat.meta
+Materials/TitleLogo.mat
+Materials/TitleLogo.mat.meta
+Materials/VideoScreen.mat
+Materials/VideoScreen.mat.meta
+Images/line.png
+Images/line.png.meta
+Images/longnote_gradation1.png
+Images/longnote_gradation1.png.meta
+Images/longnote_gradation2.png
+Images/longnote_gradation2.png.meta
+Images/note_long_1.png
+Images/note_long_1.png.meta
+Images/note_long.png
+Images/note_long.png.meta
+Images/note_normal.png
+Images/note_normal.png.meta
+Images/Source.meta
+Images/Source/banner_top.png
+Images/Source/banner_top.png.meta
+Images/Source/banner_under.png
+Images/Source/banner_under.png.meta
+Images/Source/bg_paturn1.jpg
+Images/Source/bg_paturn1.jpg.meta
+Images/Source/f-rontier.png
+Images/Source/f-rontier.png.meta
+Images/Source/gauge_bg.png
+Images/Source/gauge_bg.png.meta
+Images/Source/gauge_volume.png
+Images/Source/gauge_volume.png.meta
+Images/Source/gauge.png
+Images/Source/gauge.png.meta
+Images/Source/hukidashi.png
+Images/Source/hukidashi.png.meta
+Images/Source/logo_x.png
+Images/Source/logo_x.png.meta
+Images/Source/logo.png
+Images/Source/logo.png.meta
+Images/Source/notification.png
+Images/Source/notification.png.meta
+Images/Source/paturn1.png
+Images/Source/paturn1.png.meta
+Images/Source/paturn2.png
+Images/Source/paturn2.png.meta
+Images/Source/pause.png
+Images/Source/pause.png.meta
+Images/Source/setting.png
+Images/Source/setting.png.meta
+Images/Source/triangle.png
+Images/Source/triangle.png.meta
+Scenes/Game.unity
+Scenes/Menu.unity
+Scenes/Result.unity
+Scenes/Title.unity
+Scenes/Game/LightingData.asset
+Scenes/Game/Lightmap-0_comp_dir.png
+Scenes/Game/Lightmap-0_comp_light.exr
+Scenes/Game/Lightmap-1_comp_dir.png
+Scenes/Game/Lightmap-1_comp_light.exr
+Scenes/Game/Lightmap-2_comp_dir.png
+Scenes/Game/Lightmap-2_comp_light.exr
+Scenes/Game/Lightmap-3_comp_dir.png
+Scenes/Game/Lightmap-3_comp_light.exr
+Scenes/Game/Lightmap-4_comp_dir.png
+Scenes/Game/Lightmap-4_comp_light.exr
+Scenes/Game/Lightmap-5_comp_dir.png
+Scenes/Game/Lightmap-5_comp_light.exr
+Scenes/Game/ReflectionProbe-0.exr
+Scenes/Result/LightingData.asset
+Scenes/Result/ReflectionProbe-0.exr
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json
+Resources/Data/old/MIST SONG_[EXPERT].json
+Resources/Data/old/MIST SONG_[NORMAL].json
+Resources/Data/old/ギターと孤独と蒼い惑星_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[EXPERT].json
+Resources/Data/old/非実在系女子達はどうすりゃいいですか？_[NORMAL].json

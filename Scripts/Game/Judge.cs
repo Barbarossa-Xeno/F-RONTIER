@@ -73,7 +73,7 @@ public class Judge : UtilityBase
 
     void Update()
     {
-        if (GameManager.instance.start && !GameManager.instance.AutoPlay)
+        if (GameManager.instance.start && !GameManager.instance.autoPlay)
         {   //ゲームが始まったら
             /*try
             {*/
@@ -87,7 +87,7 @@ public class Judge : UtilityBase
             }
             catch (System.ArgumentOutOfRangeException) { }*/
         }
-        if (GameManager.instance.start && GameManager.instance.AutoPlay)
+        if (GameManager.instance.start && GameManager.instance.autoPlay)
         {   //オートプレイが選択されている場合
             try { AutoPlay(); }
             catch (System.ArgumentOutOfRangeException) { }
@@ -208,7 +208,7 @@ public class Judge : UtilityBase
         {   //直近で押しておかなければならなかったノーツがZ:4.6を下回った時。
             if (notesManager.notesObjects[notesObjectsCount - 1].transform.position.z < 3.5f && notesManager.notesObjects[notesObjectsCount - 1].transform.position.x == SwitchNoteLane(index) && notesManager.notesObjects[notesObjectsCount - 1].activeSelf)
             {
-                Message(SettingUtility.JudgementStatus.miss);
+                ScoreMessage(SettingUtility.JudgementStatus.miss);
                 GameManager.instance.scoreManager.combo = 0;
                 DeleteNote(notesTimeCount - 1, mode: 2);
             }
@@ -284,7 +284,7 @@ public class Judge : UtilityBase
                     if (isPressed)
                     {
                         GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                        Message(SettingUtility.JudgementStatus.perfect);
+                        ScoreMessage(SettingUtility.JudgementStatus.perfect);
                         GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
                         GameManager.instance.scoreManager.scoreCount["perfect"]++;
                         GameManager.instance.scoreManager.combo++;
@@ -305,7 +305,7 @@ public class Judge : UtilityBase
                     //押されていなければ。
                     else
                     {
-                        Message(SettingUtility.JudgementStatus.miss);
+                        ScoreMessage(SettingUtility.JudgementStatus.miss);
                         GameManager.instance.scoreManager.scoreCount["miss"]++;
                         GameManager.instance.scoreManager.combo = 0;
                         ComboText.SetText("{0}", GameManager.instance.scoreManager.combo);
@@ -337,7 +337,7 @@ public class Judge : UtilityBase
                     if (isPressed)
                     {
                         GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                        Message(SettingUtility.JudgementStatus.perfect);
+                        ScoreMessage(SettingUtility.JudgementStatus.perfect);
                         GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
                         GameManager.instance.scoreManager.scoreCount["perfect"]++;
                         GameManager.instance.scoreManager.combo++;
@@ -356,7 +356,7 @@ public class Judge : UtilityBase
                     //押されていなければ。
                     else
                     {
-                        Message(SettingUtility.JudgementStatus.miss);
+                        ScoreMessage(SettingUtility.JudgementStatus.miss);
                         GameManager.instance.scoreManager.scoreCount["miss"]++;
                         GameManager.instance.scoreManager.combo = 0;
                         ComboText.SetText("{0}", GameManager.instance.scoreManager.combo);
@@ -386,7 +386,7 @@ public class Judge : UtilityBase
             if (timeLag <= JudgementTiming["perfect"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                Message(SettingUtility.JudgementStatus.perfect);
+                ScoreMessage(SettingUtility.JudgementStatus.perfect);
                 GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
                 GameManager.instance.scoreManager.scoreCount["perfect"]++;
                 GameManager.instance.scoreManager.combo++;
@@ -395,7 +395,7 @@ public class Judge : UtilityBase
             else if (timeLag <= JudgementTiming["great"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                Message(SettingUtility.JudgementStatus.great);
+                ScoreMessage(SettingUtility.JudgementStatus.great);
                 GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.great;
                 GameManager.instance.scoreManager.scoreCount["great"]++;
                 GameManager.instance.scoreManager.combo++;
@@ -404,7 +404,7 @@ public class Judge : UtilityBase
             else if (timeLag <= JudgementTiming["good"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[1]);
-                Message(SettingUtility.JudgementStatus.good);
+                ScoreMessage(SettingUtility.JudgementStatus.good);
                 GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.good;
                 GameManager.instance.scoreManager.scoreCount["good"]++;
                 GameManager.instance.scoreManager.combo++;
@@ -414,7 +414,7 @@ public class Judge : UtilityBase
             else if (timeLag <= JudgementTiming["bad"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[1]);
-                Message(SettingUtility.JudgementStatus.bad);
+                ScoreMessage(SettingUtility.JudgementStatus.bad);
                 GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.bad;
                 GameManager.instance.scoreManager.scoreCount["bad"]++;
                 GameManager.instance.scoreManager.combo = 0;
@@ -427,7 +427,7 @@ public class Judge : UtilityBase
     private void Judgement(int noteNumber)
     {
         GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-        Message(SettingUtility.JudgementStatus.perfect);
+        ScoreMessage(SettingUtility.JudgementStatus.perfect);
         GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
         GameManager.instance.scoreManager.scoreCount["perfect"]++;
         GameManager.instance.scoreManager.combo++;
@@ -479,7 +479,7 @@ public class Judge : UtilityBase
 
     ///<summary>判定ステータスを画面上に表示する。</summary>
     ///<remarks>オブジェクトプール(<see cref = "ScoreObjectPool"/>)を利用する。</remarks>
-    private void Message(SettingUtility.JudgementStatus status)
+    private void ScoreMessage(SettingUtility.JudgementStatus status)
     {
         switch (status)
         {
@@ -499,9 +499,9 @@ public class Judge : UtilityBase
                 scoreObject = scoreObjectPool.miss.Get();
                 break;
         }
-        scoreObject.transform.position = new Vector3(0, 0f, 9f);
-        scoreObject.transform.rotation = Quaternion.Euler(50, 0, 0);
         scoreObject.transform.SetParent(scoreObjectParent.transform);
+        scoreObject.transform.position = new Vector3(0, 0, 0);
+        scoreObject.transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
     ///<summary>オートプレイ時の自動判定。</summary>

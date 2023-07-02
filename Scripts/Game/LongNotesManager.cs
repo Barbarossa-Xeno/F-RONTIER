@@ -332,7 +332,7 @@ public class LongNotesManager : UtilityBase
             for (int j = 0; j < laneNum[i].Count; j++)
             {
                 positionX = SwitchNoteLane(laneNum[i][j]);
-                positionZ = notesTime[i][j] * GameManager.instance.NoteSpeed + SettingUtility.origin.z;
+                positionZ = notesTime[i][j] * GameManager.instance.noteSpeed + SettingUtility.origin.z;
                 _positionX[i, j] = positionX;
                 _positionZ[i, j] = positionZ;
                 //直線型で中間点のないノーツ。
@@ -341,7 +341,7 @@ public class LongNotesManager : UtilityBase
                     note = Instantiate(notesManager.noteObject.longOnly, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
-                    if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
+                    if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
                     if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
                     {
                         inners.Add(note);
@@ -366,7 +366,7 @@ public class LongNotesManager : UtilityBase
                     note = Instantiate(notesManager.noteObject.longOnly, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
-                    if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
+                    if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
                     if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
                     {
                         inners.Add(note);
@@ -391,7 +391,7 @@ public class LongNotesManager : UtilityBase
                     note = Instantiate(notesManager.noteObject.longAny, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
-                    if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
+                    if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
                     if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
                     {
                         inners.Add(note);
@@ -416,7 +416,7 @@ public class LongNotesManager : UtilityBase
                     note = Instantiate(notesManager.noteObject.longAny, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
-                    if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
+                    if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
                     if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
                     {
                         inners.Add(note);

@@ -68,7 +68,7 @@ public class LongNotes : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     ///<param name = "flag">押下の有無のフラグ。</param>
     private void Pressing(bool flag)
     {
-        if (!GameManager.instance.AutoPlay)
+        if (!GameManager.instance.autoPlay)
         {
             isPressed = flag;
             if (flag) { LongNoteOn(); }

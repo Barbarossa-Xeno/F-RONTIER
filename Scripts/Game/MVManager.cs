@@ -24,7 +24,7 @@ public class MVManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!isCalledOnce && GameManager.instance.musicManager.musicPlayed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing && GameManager.instance.MV){
+        if(!isCalledOnce && GameManager.instance.musicManager.musicPlayed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing && GameManager.instance.mv){
             videoPlayer.Play();
             isCalledOnce = true;
         }

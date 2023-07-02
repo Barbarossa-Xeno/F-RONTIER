@@ -19,7 +19,7 @@ public class NotesManager : UtilityBase
     public List<float> notesTime = new List<float>();
     ///<summary>Instantiateしたそれぞれのノーツのオブジェクトを格納するリスト。</summary>
     public List<GameObject> notesObjects = new List<GameObject>();
-    ///<summary>ノーツスピード。<see cref = "GameManager.NoteSpeed"/>から参照させます。</summary>
+    ///<summary>ノーツスピード。<see cref = "GameManager.noteSpeed"/>から参照させます。</summary>
     private float noteSpeed;
     [System.Serializable]
     public struct NoteObject
@@ -45,7 +45,7 @@ public class NotesManager : UtilityBase
     private void Awake()
     {
         numberOfNotes = 0;
-        noteSpeed = GameManager.instance.NoteSpeed;
+        noteSpeed = GameManager.instance.noteSpeed;
         songID = GameManager.instance.songID;
         longNotesManager = this.GetComponent<LongNotesManager>();
         if (GameManager.instance.DebugModeForSongs)
@@ -115,7 +115,7 @@ public class NotesManager : UtilityBase
                     float __minDistance = __secPerBeat / (float)inputJson.notes[i].notes[j].LPB;
                     float __noteTime = (float)inputJson.notes[i].notes[j].num * __minDistance + noteStartingLag;
 
-                    if (GameManager.instance.AutoPlay)
+                    if (GameManager.instance.autoPlay)
                     {
                         notesTime.Add(__noteTime);
                         laneNum.Add(inputJson.notes[i].notes[j].block);
