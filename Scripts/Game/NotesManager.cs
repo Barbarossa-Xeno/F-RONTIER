@@ -8,7 +8,7 @@ public class NotesManager : UtilityBase
     ///<summary>楽曲に含まれる総ノーツ数。</summary>
     public int numberOfNotes;
     ///<summary>楽曲の固有ID。実行時<see cref ="GameManager.songID"></see>から参照させます。</summary>
-    private int songID;
+    private int songID { get {return GameManager.instance.songID; } }
     ///<summary>楽曲の名前。</summary><remarks>注：デバッグ時のみの使用に限る。</remarks>
     private string songName;
     ///<summary>それぞれのノーツが流れるレーン番号を格納するリスト。ノーツのX座標の振り分けに使われます。</summary>
@@ -46,7 +46,6 @@ public class NotesManager : UtilityBase
     {
         numberOfNotes = 0;
         noteSpeed = GameManager.instance.noteSpeed;
-        songID = GameManager.instance.songID;
         longNotesManager = this.GetComponent<LongNotesManager>();
         if (GameManager.instance.DebugModeForSongs)
         {

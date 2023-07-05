@@ -8,11 +8,14 @@ using FadeTransition;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
+    /// <summary>読み込む楽曲のID。</summary>
     public int songID;
+    /// <summary>読み込む楽曲の名前。</summary>
     public string songName;
+    /// <summary>楽曲の難易度。</summary>
     public string difficulty;
+    /// <summary>難易度の番号。</summary>
     public int difficultyNumber;
-    [HideInInspector] public int bpm;
     [SerializeField] public float noteSpeed;
     [SerializeField] public float judgdeTimingLag;
     [SerializeField] public bool autoPlay;
@@ -77,7 +80,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     {
         base.Init();
         DontDestroyOnLoad(gameObject);
-        ListenerInitialize();
+        AudioListenerInitialize();
     }
 
     void Update()
@@ -106,7 +109,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 instance.songID = MenuInfo.menuInfo.selectedSongID;
                 instance.difficulty = MenuInfo.menuInfo.selectedDifficulty;
                 instance.difficultyNumber = MenuInfo.menuInfo.selectedDifficultyNumber;
-                instance.noteSpeed = Game.Save.Setting.setting.Save[0].noteSpeed + 5f;
+                instance.noteSpeed = Game.Save.Setting.setting.Save[0].noteSpeed * SettingUtility.NOTE_SPEED_FACTOR;
                 instance.judgdeTimingLag = Game.Save.Setting.setting.Save[0].timing;
                 instance.autoPlay = MenuInfo.menuInfo.autoPlay;
                 instance.mv = MenuInfo.menuInfo.mv;
@@ -121,12 +124,15 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     }
 
-    private void ListenerInitialize()
+    /// <summary>
+    /// MusicManagerとSEManagerをシングルトンにします。
+    /// </summary>
+    private void AudioListenerInitialize()
     {
-        if(musicSource == null)
+        if (musicSource == null)
         {
             GameObject ml = instance.transform.Find("MusicManager").gameObject;
-            if(ml == null)
+            if (ml == null)
             {
                 ml = new GameObject("MusicManager");
                 ml.transform.SetParent(instance.gameObject.transform);
@@ -135,10 +141,10 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
             musicSource = ml.GetComponent<AudioSource>();
             musicManager = ml.AddComponent<MusicManager>();
         }
-        if(seSource == null)
+        if (seSource == null)
         {
             GameObject sl = instance.transform.Find("SEManager").gameObject;
-            if(sl == null)
+            if (sl == null)
             {
                 sl = new GameObject("SEManager");
                 sl.transform.SetParent(instance.gameObject.transform);

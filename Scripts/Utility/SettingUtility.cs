@@ -65,12 +65,13 @@ namespace Game.Utility
         {
             Title, Menu, Game, Result
         }
+        /// <summary> 使用するリソースのパス。 </summary>
         public struct ResourcesPath
         {
             public const string TAP_SE_PATH = "SE/tap";
             public const string NOTE_SINGLE_GREAT_SE_PATH = "SE/heel_1";
             public const string NOTE_SINGLE_GOOD_SE_PATH = "SE/heel_2";
-
         }
+        public const float NOTE_SPEED_FACTOR = 2.5f;
     }
 }

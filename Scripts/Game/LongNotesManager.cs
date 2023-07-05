@@ -5,7 +5,7 @@ using UnityEngine;
 //自作名前空間
 using Game.Utility;
 
-///<summary>ロングノーツ生成を行うクラスです。</summary>
+///<summary>ロングノーツ生成を行うクラス。</summary>
 public class LongNotesManager : UtilityBase
 {
     /* フィールド */
@@ -30,8 +30,9 @@ public class LongNotesManager : UtilityBase
     ///<summary>ロングノーツの高さ。</summary>
     private const float LANE_HEIGHT = 0.001f;
     ///<summary>ロングノーツを生成するときに頂点の生成位置をレーンに合わせるための差分。</summary>
-    private const float LANEGAP = -3f;
+    private const float LANE_GAP = -3f;
     private const int SPLIT_SIZE = 10;
+    private const float COLLIDER_SCALE_FACTOR = 0.5f;
     ///<summary><see cref = "NotesManager"/>.</summary>
     [SerializeField] private NotesManager notesManager;
     ///<summary>生成するロングノーツ線のゲームオブジェクト。</summary>
@@ -66,12 +67,25 @@ public class LongNotesManager : UtilityBase
         ///<summary>テクスチャのUV座標。</summary>
         public Vector2[] uvs;
     }
+    private struct MeshColliderParameters
+    {
+        ///<summary>メッシュの頂点座標。</summary>
+        public Vector3[] vertices;
+        ///<summary>三角ポリゴンの頂点の数。</summary>
+        public int[] triangles;
+    }
+    /// <summary>ロングノーツの種類。</summary>
     private enum LongNoteType
     {
-        NoInnerLinear, AnyInnerLinear, NoInnerCurve, AnyInnerCurve
+        ///<summary>中間点なし直線型</summary>
+        NoInnerLinear, 
+        ///<summary>中間点あり直線型</summary>
+        AnyInnerLinear, 
+        ///<summary>中間点なし曲線型</summary>
+        NoInnerCurve, 
+        ///<summary>中間点あり曲線型</summary>
+        AnyInnerCurve
     }
-
-    //void Start() => CombineLongNoteTransform();
 
     ///<summary>ロングノーツ線のメッシュを生成します。</summary>
     ///<param name = "startPosition">ロングノーツの始点座標。</param>
@@ -90,6 +104,10 @@ public class LongNotesManager : UtilityBase
         meshParameters.vertices = new Vector3[4 * 6];
         meshParameters.triangles = new int[6 * 6];
         meshParameters.uvs = new Vector2[4 * 6];
+        MeshColliderParameters meshColliderParameters = new MeshColliderParameters();
+        meshColliderParameters.vertices = new Vector3[4 * 6];
+        meshColliderParameters.triangles = new int[6 * 6];
+        
 
         //面①（ワールド原点からZ座標を正の方向に見たときの、上底 => Y方向）
         meshParameters.vertices[0] = startPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);     //始点の左端 = 左下
@@ -106,6 +124,10 @@ public class LongNotesManager : UtilityBase
         meshParameters.uvs[1] = new Vector2(1, 0);
         meshParameters.uvs[2] = new Vector2(0, 1);
         meshParameters.uvs[3] = new Vector2(1, 1);
+        meshColliderParameters.vertices[0] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[0];
+        meshColliderParameters.vertices[1] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[1];
+        meshColliderParameters.vertices[2] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[2];
+        meshColliderParameters.vertices[3] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[3];
         //面②（前側面 => -Z方向）
         meshParameters.vertices[4] = startPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //左下
         meshParameters.vertices[5] = startPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);     //右下
@@ -121,6 +143,10 @@ public class LongNotesManager : UtilityBase
         meshParameters.uvs[5] = new Vector2(1, 0);
         meshParameters.uvs[6] = new Vector2(0, 1);
         meshParameters.uvs[7] = new Vector2(1, 1);
+        meshColliderParameters.vertices[4] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[4];
+        meshColliderParameters.vertices[5] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[5];
+        meshColliderParameters.vertices[6] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[6];
+        meshColliderParameters.vertices[7] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[7];
         //面③（左側面 => -X方向）
         meshParameters.vertices[8] = endPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //左下
         meshParameters.vertices[9] = startPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //右下
@@ -136,6 +162,10 @@ public class LongNotesManager : UtilityBase
         meshParameters.uvs[9] = new Vector2(1, 0);
         meshParameters.uvs[10] = new Vector2(0, 1);
         meshParameters.uvs[11] = new Vector2(1, 1);
+        meshColliderParameters.vertices[8] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[8];
+        meshColliderParameters.vertices[9] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[9];
+        meshColliderParameters.vertices[10] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[10];
+        meshColliderParameters.vertices[11] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[11];
         //面④（右側面 => X方向）
         meshParameters.vertices[12] = startPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //左下
         meshParameters.vertices[13] = endPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //右下
@@ -151,6 +181,10 @@ public class LongNotesManager : UtilityBase
         meshParameters.uvs[13] = new Vector2(1, 0);
         meshParameters.uvs[14] = new Vector2(0, 1);
         meshParameters.uvs[15] = new Vector2(1, 1);
+        meshColliderParameters.vertices[12] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[12];
+        meshColliderParameters.vertices[13] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[13];
+        meshColliderParameters.vertices[14] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[14];
+        meshColliderParameters.vertices[15] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[15];
         //面⑤（後側面 => Z方向）
         meshParameters.vertices[16] = endPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);     //左下
         meshParameters.vertices[17] = endPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //右下
@@ -166,6 +200,10 @@ public class LongNotesManager : UtilityBase
         meshParameters.uvs[17] = new Vector2(1, 0);
         meshParameters.uvs[18] = new Vector2(0, 1);
         meshParameters.uvs[19] = new Vector2(1, 1);
+        meshColliderParameters.vertices[16] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[16];
+        meshColliderParameters.vertices[17] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[17];
+        meshColliderParameters.vertices[18] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[18];
+        meshColliderParameters.vertices[19] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[19];
         //面⑥（下底 => -Y方向）
         meshParameters.vertices[20] = startPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);   //始点の左端
         meshParameters.vertices[21] = startPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //始点の右端
@@ -181,6 +219,12 @@ public class LongNotesManager : UtilityBase
         meshParameters.uvs[21] = new Vector2(1, 0);
         meshParameters.uvs[22] = new Vector2(0, 1);
         meshParameters.uvs[23] = new Vector2(1, 1);
+        meshColliderParameters.vertices[20] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[20];
+        meshColliderParameters.vertices[21] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[21];
+        meshColliderParameters.vertices[22] = new Vector3(-COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[22];
+        meshColliderParameters.vertices[23] = new Vector3(COLLIDER_SCALE_FACTOR, 0, 0) + meshParameters.vertices[23];
+
+        meshColliderParameters.triangles = meshParameters.triangles;
 
         //頂点、三角ポリゴンのインデックス、UVを指定。
         mesh.vertices = meshParameters.vertices;
@@ -190,9 +234,9 @@ public class LongNotesManager : UtilityBase
         mesh.RecalculateNormals();
         //各コンポーネントにメッシュを渡す。
         noteLine.GetComponent<MeshFilter>().mesh = mesh;
-        noteLine.GetComponent<MeshCollider>().sharedMesh = mesh;
+        noteLine.GetComponent<MeshCollider>().sharedMesh = RescaleLongNoteCollider(meshColliderParameters.vertices, meshColliderParameters.triangles);
         //コライダーを覆う。
-        noteLine.GetComponent<MeshCollider>().convex = true;
+        //noteLine.GetComponent<MeshCollider>().convex = true;
         //種類によって処理を分ける。
         switch (type)
         {
@@ -265,15 +309,15 @@ public class LongNotesManager : UtilityBase
         longNote.GetComponent<Notes>().longNote.isInner = SwitchLongNoteInnerType(type);
         longNoteMeshList.Add(longNote);
         //レーン番号からX座標を求め、パラメーターを元にノーツの始点、終点、曲線型では制御点を計算。
-        Vector3 startPositon = new Vector3(LANEGAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, startZ);
-        Vector3 endPosition = new Vector3(LANEGAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, endZ);
+        Vector3 startPositon = new Vector3(LANE_GAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, startZ);
+        Vector3 endPosition = new Vector3(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, endZ);
         Vector3 controlPositon;
 
         //曲線型であった場合。
         if (type == (int)LongNoteType.NoInnerCurve || type == (int)LongNoteType.AnyInnerCurve)
         {
             //制御点の計算。
-            controlPositon = new Vector3(LANEGAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, (startZ + endZ) / 2);
+            controlPositon = new Vector3(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, (startZ + endZ) / 2);
             //int variableSplit = SPLIT_SIZE * 3;
             //ベジェ曲線から曲線上の点を計算する。
             Vector3[] curvePoints = SetBezierCurves(startPositon, controlPositon, endPosition, splitSize: SPLIT_SIZE);
@@ -572,33 +616,35 @@ public class LongNotesManager : UtilityBase
     public void CombineLongNoteTransform()
     {
         if (longNoteMeshList.Count == 0) { return; }
-        //各ロングノーツに設定された順番を入れるリスト。
+        //各ロングノーツに設定された、流れてくる順番を入れるリストをつくり、各Ｌノーツから参照する。
         List<int> meshIndexList = new List<int>();
-        foreach (GameObject elem in longNoteMeshList)
+        foreach (GameObject meshParts in longNoteMeshList)
         {
-            meshIndexList.Add(elem.GetComponent<Notes>().longNote.index);
+            meshIndexList.Add(meshParts.GetComponent<Notes>().longNote.index);
         }
-        //ロングノーツのまとまりの個数を取得する。(インデックス番号なので実際はこれに+1した個数)
-        int maxIndex = meshIndexList.Max();
+        //ロングノーツのまとまりの個数を取得するために、Ｌノーツの最後のインデックスを取得する。(これは0から始まるインデックス番号なので実際はこれに+1した個数)
+        int maxNumberOfLongNotes = meshIndexList.Max();
 
         //リストの中から重複しているインデックスとその重複数を抽出する。
-        Dictionary<int, int> duplicates = meshIndexList.GroupBy(x => x).Where(x => x.Count() > 1).ToDictionary(x => x.Key, y => y.Count());
+        //　1次元目：重複しているインデックス　2次元目：その重複数
+        Dictionary<int, int> duplicatesIndex = meshIndexList.GroupBy(x => x).Where(x => x.Count() > 1).ToDictionary(x => x.Key, y => y.Count());
         //リストの中から1つしかないインデックスと実際に格納されたリストのなかでのインデックス番号を抽出する。
-        Dictionary<int, int> uniques = meshIndexList.GroupBy(x => x).Where(x => x.Count() == 1).ToDictionary(x => x.Key, y => meshIndexList.IndexOf(y.Key));
+        //　1次元目：1つしかないインデックス　2次元目：meshIndexList中でのそのインデックス番号
+        Dictionary<int, int> uniquesIndex = meshIndexList.GroupBy(x => x).Where(x => x.Count() == 1).ToDictionary(x => x.Key, y => meshIndexList.IndexOf(y.Key));
 
-        //新たにつくる親オブジェクトをひとまとめにするLノーツ分だけ確保する。
-        GameObject[] parents = new GameObject[duplicates.Count];
-        //カウンタ。
+        //新たにつくる親オブジェクトをひとまとめにするLノーツ(インデックスの重複があるＬノーツ)分だけ確保する。
+        GameObject[] parents = new GameObject[duplicatesIndex.Count];
+        //カウンタ変数をローカル変数として宣言。
         int i = 0;
-        foreach (var item in duplicates)
+        foreach (var item in duplicatesIndex)
         {
             //親オブジェクトにはインデックスの名前を入れて生成。
-            parents[i] = new GameObject($"LongNoteMesh_{item.Key}");
+            parents[i] = new GameObject($"LongNoteMesh-{item.Key}");
             i++;
         }
-        //複数あるLノーツのインデックスの配列
-        int[] duplicateKeys = duplicates.Keys.ToArray();
-        //重複した中間点有りLノーツインデックスの欠片を入れ子構造にして順番ごとにひとまとまりのオブジェクトができるよう調整。
+        //複数あるLノーツのインデックスを記録した配列
+        int[] duplicateKeys = duplicatesIndex.Keys.ToArray();
+        //インデックスが重複した中間点有りLノーツの欠片を入れ子構造にして、インデックスごとにひとまとまりのオブジェクトができるよう調整。
         for (int j = 0; j < duplicateKeys.Length; j++)
         {
             //親にはコンポーネントを新しく設定する。
@@ -622,12 +668,12 @@ public class LongNotesManager : UtilityBase
         }
 
         //新しいリストは順番で代入できるように一旦配列で作成。
-        GameObject[] newMeshArray = new GameObject[maxIndex + 1];
+        GameObject[] newMeshArray = new GameObject[maxNumberOfLongNotes + 1];
         //1つしかないLノーツインデックスをもつメッシュの配列たち。
         //元のリストの順番におけるインデックス番号。
-        int[] uniqueValues = uniques.Values.ToArray();
+        int[] uniqueValues = uniquesIndex.Values.ToArray();
         //実際のLノーツインデックス。
-        int[] uniqueKeys = uniques.Keys.ToArray();
+        int[] uniqueKeys = uniquesIndex.Keys.ToArray();
 
         //新しいリスト（配列）に、Lノーツインデックス順にメッシュを追加。
         for (int l = 0, n = 0, m = 0; l < longNoteMeshList.Count; l++)
@@ -664,6 +710,15 @@ public class LongNotesManager : UtilityBase
         innerNotesList = innerNotes.Values.ToList();
         innerNotesList.Reverse();
         foreach(var l in innerNotesList) { l.Reverse(); }
+    }
+
+    private Mesh RescaleLongNoteCollider(Vector3[] vertices, int[] triangles)
+    {
+        Mesh newMesh = new Mesh();
+        newMesh.vertices = vertices;
+        newMesh.triangles = triangles;
+        newMesh.RecalculateNormals();
+        return newMesh;
     }
 
     ///<summary>リストの最初と最後の要素を抽出します。</summary>

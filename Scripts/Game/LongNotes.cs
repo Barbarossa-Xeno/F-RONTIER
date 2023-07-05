@@ -20,7 +20,7 @@ public class LongNotes : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     /* メソッド */
     void Start()
     {
-        //このオブジェクトに関連付けされた子オブジェクトの数を長さとする配列を作成する。
+        //このオブジェクトに関連付けされた子オブジェクト(Lノーツの断片)の数を長さとする配列を作成する。
         children = new GameObject[this.transform.childCount];
         //もし子オブジェクトがない ＝ 中間点がないLノーツの場合、自分のレンダラーからマテリアルを取得する。
         if (children.Length == 0) { meshMaterial = this.GetComponent<Renderer>().material; }
@@ -40,6 +40,11 @@ public class LongNotes : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                         children[i].GetComponent<LineRenderer>().material.SetFloat("_isPressed", 1);
                     }
                     catch (System.NullReferenceException) { Game.Development.EditorCustom.Log("ラインレンダラーが取得できませんでした"); }
+                    catch (MissingComponentException) 
+                    { 
+                        Game.Development.EditorCustom.Log("空のロングノーツが生成されました。"); 
+                        Destroy(this.gameObject);
+                    }
                 }
             }
             //中間点がない
@@ -74,11 +79,12 @@ public class LongNotes : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             if (flag) { LongNoteOn(); }
             else { LongNoteOff(); }
         }
-        else { isPressed = true; }
     }
 
     public void OnPointerDown(PointerEventData pointerDownEvent) => Pressing(true);
     public void OnPointerEnter(PointerEventData pointerEnterEvent) => Pressing(true);
     public void OnPointerUp(PointerEventData pointerUpEvent) => Pressing(false);
     public void OnPointerExit(PointerEventData pointerExitEvent) => Pressing(false);
+
+    void Update() { if(GameManager.instance.autoPlay) { LongNoteOn(); } }
 }

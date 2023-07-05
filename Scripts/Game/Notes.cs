@@ -33,5 +33,7 @@ public class Notes : MonoBehaviour
     }
 
     void Update()
-    { if (GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing) { this.transform.position -= new Vector3(0, 0, speed) * Time.deltaTime; } }
+    {
+        if (GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing) { this.transform.position -= new Vector3(0, 0, speed) * Time.deltaTime; }
+    }
 }
