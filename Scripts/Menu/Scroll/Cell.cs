@@ -25,11 +25,14 @@ namespace FancyScrollView.SongSelect
         [SerializeField] Image CoverImage = default;
         [SerializeField] Button button = default;
         [SerializeField] PressCellActions pressCellActions;
+        [SerializeField] CanvasGroup canvasGroup = default;
         [SerializeField] private Animator cellParent;
         [SerializeField] CLScroll title_clscroll;
         [SerializeField] CLScroll artist_clscroll;
         [SerializeField] CLScroll works_clscroll;
         private Sprite coverSrc;
+
+        private bool cellVisible { get { return canvasGroup.alpha < 0.8 ? false : true; } }
 
         static class AnimatorHash
         {
@@ -52,8 +55,8 @@ namespace FancyScrollView.SongSelect
             var selected = Context.SelectedIndex == Index;
             image.color = selected
                 ? new Color(image.color.r, image.color.g, image.color.b, 1f)
-                : new Color(image.color.r, image.color.g, image.color.b, 0.6f);
-            if(selected){
+                : new Color(image.color.r, image.color.g, image.color.b, 0.9f);
+            if(selected || cellVisible){
                 this.GetComponent<CLScrollTextInitialize>().UpdateTextCondition();
             }
             else{

@@ -33,7 +33,7 @@ namespace FancyScrollView.SongSelect
             }
             //prevCellButton.onClick.AddListener(scrollView.SelectPrevCell);
             //nextCellButton.onClick.AddListener(scrollView.SelectNextCell);
-            scrollView.OnSelectionChanged(OnSelectionChanged);
+            scrollView.OnSelectionChanged(OnSelectionChangedAction);
             items = Enumerable.Range(0, AmountOfElementsRange)
                 .Select(i => new ItemData(songList, i, difficulty))
                 .ToArray();
@@ -50,12 +50,13 @@ namespace FancyScrollView.SongSelect
                 .ToArray();
 
             scrollView.UpdateData(items);
+            Game.Development.EditorCustom.Log(_index);
             MenuInfo.menuInfo.selectedSongLevel = items[_index].Level;
         }
 
         ///<summary>現在選択されているセルに基づいて処理を行うメソッドです。</summary>
-        ///<remarks>※<see cref = "FancyScrollView.SongSelect.ScrollView"/>組み込みメソッドのコールバック</remarks>
-        void OnSelectionChanged(int index)
+        ///<remarks>※<see cref = "FancyScrollView.SongSelect.ScrollView"/>組み込みメソッド<see cref = "FancyScrollView.Scroller.OnSelectionChanged(System.Action{int})"/>のコールバックに指定する。</remarks>
+        void OnSelectionChangedAction(int index)
         {
             //selectedItemInfo.text = $"Selected item info: index {index}";
             _index = index;

@@ -44,10 +44,10 @@ public class Judge : UtilityBase
     };
     ///<summary>ノーツが譜面上に残っているか。</summary>
     ///<remarks>ノーツリストのカウントを参照している。</remarks>
-    private bool existNotes { get { return (notesManager.notesObjects.Count > 0 ? true : false); } }
+    private bool isNotes { get { return (notesManager.notesObjects.Count > 0 ? true : false); } }
     ///<summary>ロングノーツが譜面上に存在するか。</summary>
     ///<remarks>ノーツリストのカウントを参照している。</remarks>
-    private bool existLongNotes { get { return (longNotesManager.longNotesList.Count > 0 ? true : false); } }
+    private bool isLongNotes { get { return (longNotesManager.longNotesList.Count > 0 ? true : false); } }
     ///<summary><see cref = "NotesManager.laneNum"/>のカウント</summary>
     private int laneNumCount { get { return notesManager.laneNum.Count; } }
     ///<summary><see cref = "NotesManager.notesType"/>のカウント</summary>
@@ -58,7 +58,7 @@ public class Judge : UtilityBase
     private int notesObjectsCount { get { return notesManager.notesObjects.Count; } }
     ///<summary><see cref = "LongNotesManager.longNotesList"/>のカウント</summary>
     private int longNotesCount { get { return longNotesManager.longNotesList.Count; } }
-    ///<summary><see cref = "LongNotesManager.innerNotesListList"/>のカウント</summary>
+    ///<summary><see cref = "LongNotesManager.innerNotesList"/>のカウント</summary>
     private int innerNotesListCount { get { return longNotesManager.innerNotesList.Count; } }
 
     /* メソッド */
@@ -95,11 +95,11 @@ public class Judge : UtilityBase
     }
 
     ///<summary>ノーツが叩かれたかどうかを取得し、判定する基本のメソッド。</summary>
-    ///<param name = "index">レーンのインデックス。</param>
-    private void ManualPlay(int index)
+    ///<param name = "laneIndex">レーンのインデックス。</param>
+    private void ManualPlay(int laneIndex)
     {
         //ロングノーツが存在するとき。
-        if (existLongNotes)
+        if (isLongNotes)
         {
             if (longNotesCount > 0 && innerNotesListCount > 0)
             {
@@ -117,48 +117,48 @@ public class Judge : UtilityBase
             }
         }
         //ノーツが存在しなくなったらやめる。
-        if (!existNotes) { return; }
+        if (!isNotes) { return; }
         //レーンが押下されていて、現在のタップ時間が過去のタップ時間と等しくなければ。
-        if (tapManager.tapFlag[index] && tapTime[index] != tapManager.tapTime[index])
+        if (tapManager.tapFlag[laneIndex] && tapTime[laneIndex] != tapManager.tapTime[laneIndex])
         {
             //タップされた時間を保存する。
-            tapTime[index] = tapManager.tapTime[index];
+            tapTime[laneIndex] = tapManager.tapTime[laneIndex];
             //押されたレーンを流れる、判定線に最も近いノーツを取得する。
-            GetTargetNotes(index);
+            GetTargetNotes(laneIndex);
             //ターゲットノーツが取得できていないときは処理を終わる。
             if (targetNote == null) { return; }
 
             //ターゲットノーツのZ座標と判定線との距離の差が5より小さいときに判定の対象とする。
-            if (Mathf.Abs(targetNote.transform.position.z - 7.3f) < 5f)
+            if (Mathf.Abs(targetNote.transform.position.z - SettingUtility.origin.z) < 5f)
             {
                 //ターゲットが通常ノーツのとき。
                 if (targetNoteProperty.type == SettingUtility.NoteType.Normal)
                 {
                     //ノーツ時間の降順リストの最後尾に登録されたインデックスと、取得したインデックスが同じ且つ、ターゲットノーツのX座標とインデックスに紐づくX座標が同じならば
-                    if (notesManager.laneNum[laneNumCount - 1] == index)
+                    if (notesManager.laneNum[laneNumCount - 1] == laneIndex)
                     {
-                        EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[index]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, 0, {targetNote.name}");
-                        Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
+                        EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, 0, {targetNote.name}");
+                        Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
                         return;
                     }
                     try
                     {   //同時押しなどの融通を効かせるために、最後尾より前のノーツ時間も参照するようにする。
-                        if (notesManager.laneNum[laneNumCount - 2] == index)
+                        if (notesManager.laneNum[laneNumCount - 2] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[index]}, notetime:{notesManager.notesTime[notesTimeCount - 2]}, 1, {targetNote.name}");
-                            Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
+                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 2]}, 1, {targetNote.name}");
+                            Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
                             return;
                         }
-                        if (notesManager.laneNum[laneNumCount - 3] == index)
+                        if (notesManager.laneNum[laneNumCount - 3] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[index]}, 2");
-                            Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
+                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 2");
+                            Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
                             return;
                         }
-                        if (notesManager.laneNum[laneNumCount - 4] == index)
+                        if (notesManager.laneNum[laneNumCount - 4] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[index]}, 3");
-                            Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
+                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 3");
+                            Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
                             return;
                         }
                     }
@@ -171,30 +171,30 @@ public class Judge : UtilityBase
                     if (targetNoteProperty.longNote.status == SettingUtility.LongNoteStatus.Start)
                     {
                         //ノーツ時間の降順リストの最後尾に登録されたインデックスと、取得したインデックスが同じ且つ、ターゲットノーツのX座標とインデックスに紐づくX座標が同じならば
-                        if (notesManager.laneNum[laneNumCount - 1] == index)
+                        if (notesManager.laneNum[laneNumCount - 1] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[index]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, start:{GameManager.instance.startTime}");
-                            Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
+                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, start:{GameManager.instance.startTime}");
+                            Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
                             return;
                         }
                         try
                         {   //同時押しなどの融通を効かせるために、最後尾より前のノーツ時間も参照するようにする。
-                            if (notesManager.laneNum[laneNumCount - 2] == index)
+                            if (notesManager.laneNum[laneNumCount - 2] == laneIndex)
                             {
-                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, {tapManager.tapTime[index]}");
-                                Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
+                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
                                 return;
                             }
-                            if (notesManager.laneNum[laneNumCount - 3] == index)
+                            if (notesManager.laneNum[laneNumCount - 3] == laneIndex)
                             {
-                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[index]}");
-                                Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
+                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
                                 return;
                             }
-                            if (notesManager.laneNum[laneNumCount - 4] == index)
+                            if (notesManager.laneNum[laneNumCount - 4] == laneIndex)
                             {
-                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[index]}");
-                                Judgement(Mathf.Abs(tapManager.tapTime[index] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
+                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
                                 return;
                             }
                         }
@@ -206,7 +206,7 @@ public class Judge : UtilityBase
         //レーンが押下されなかった時。
         else
         {   //直近で押しておかなければならなかったノーツがZ:4.6を下回った時。
-            if (notesManager.notesObjects[notesObjectsCount - 1].transform.position.z < 3.5f && notesManager.notesObjects[notesObjectsCount - 1].transform.position.x == SwitchNoteLane(index) && notesManager.notesObjects[notesObjectsCount - 1].activeSelf)
+            if (notesManager.notesObjects[notesObjectsCount - 1].transform.position.z < 3.5f && notesManager.notesObjects[notesObjectsCount - 1].transform.position.x == SwitchNoteLane(laneIndex) && notesManager.notesObjects[notesObjectsCount - 1].activeSelf)
             {
                 ScoreMessage(SettingUtility.JudgementStatus.miss);
                 GameManager.instance.scoreManager.combo = 0;
@@ -259,16 +259,16 @@ public class Judge : UtilityBase
     }
 
     ///<summary>押されるロングノーツを特定する。</summary>
-    ///<param name = "listIndex">判定するLノーツのリストのインデックス。</param>
+    ///<param name = "longNoteListIndex">判定するLノーツのリストのインデックス。</param>
     ///<param name = "isPressed">ロングノーツが押されているか。</param>
-    private void GetTargetLongNotes(int listindex, bool isPressed)
+    private void GetTargetLongNotes(int longNoteListIndex, bool isPressed)
     {
         int key = 0;
-        if (listindex == longNotesCount - 1) { key = innerNotesListCount - 1; }
-        else if (listindex == longNotesCount - 2) { key = innerNotesListCount - 2; }
-        else if (listindex == longNotesCount - 3) { key = innerNotesListCount - 3; }
+        if (longNoteListIndex == longNotesCount - 1) { key = innerNotesListCount - 1; }
+        else if (longNoteListIndex == longNotesCount - 2) { key = innerNotesListCount - 2; }
+        else if (longNoteListIndex == longNotesCount - 3) { key = innerNotesListCount - 3; }
         //押されるノーツの情報を取得する。
-        Notes noteInfo = longNotesManager.longNoteMeshList[listindex].GetComponent<Notes>();
+        Notes noteInfo = longNotesManager.longNoteMeshList[longNoteListIndex].GetComponent<Notes>();
         //次に押されるロングノーツの中間点の有無と、Ｌノーツのリストが空でないことを確認する。
         if (noteInfo.longNote.isInner && innerNotesListCount > 0 && longNotesManager.innerNotesList[key].Count > 0)
         {
@@ -296,9 +296,9 @@ public class Judge : UtilityBase
                         longNotesManager.innerNotesList[key].RemoveAt(longNotesManager.innerNotesList[key].Count - 1);                        
                         if (innerNoteInfo.longNote.status == SettingUtility.LongNoteStatus.End)
                         {
-                            longNotesManager.longNoteMeshList[listindex].SetActive(false);
-                            longNotesManager.longNotesList.RemoveAt(listindex);
-                            longNotesManager.longNoteMeshList.RemoveAt(listindex);
+                            longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
+                            longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
+                            longNotesManager.longNoteMeshList.RemoveAt(longNoteListIndex);
                             longNotesManager.innerNotesList.RemoveAt(key);
                         }
                     }
@@ -314,9 +314,9 @@ public class Judge : UtilityBase
                         longNotesManager.innerNotesList[key].RemoveAt(longNotesManager.innerNotesList[key].Count - 1);
                         if (innerNoteInfo.longNote.status == SettingUtility.LongNoteStatus.End)
                         {
-                            longNotesManager.longNoteMeshList[listindex].SetActive(false);
-                            longNotesManager.longNotesList.RemoveAt(listindex);
-                            longNotesManager.longNoteMeshList.RemoveAt(listindex);
+                            longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
+                            longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
+                            longNotesManager.longNoteMeshList.RemoveAt(longNoteListIndex);
                             longNotesManager.innerNotesList.RemoveAt(key);
                         }
                     }
@@ -348,9 +348,9 @@ public class Judge : UtilityBase
                         longNotesManager.innerNotesList[key][0].SetActive(false);
                         longNotesManager.innerNotesList[key].RemoveAt(0);
                         EditorCustom.Log(endNote.longNote.status);
-                        longNotesManager.longNoteMeshList[listindex].SetActive(false);
-                        longNotesManager.longNotesList.RemoveAt(listindex);
-                        longNotesManager.longNoteMeshList.RemoveAt(listindex);
+                        longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
+                        longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
+                        longNotesManager.longNoteMeshList.RemoveAt(longNoteListIndex);
                         longNotesManager.innerNotesList.RemoveAt(key);
                     }
                     //押されていなければ。
@@ -363,9 +363,9 @@ public class Judge : UtilityBase
                         endNote = longNotesManager.innerNotesList[key][0].GetComponent<Notes>();
                         longNotesManager.innerNotesList[key][0].SetActive(false);
                         longNotesManager.innerNotesList[key].RemoveAt(0);
-                        longNotesManager.longNoteMeshList[listindex].SetActive(false);
-                        longNotesManager.longNotesList.RemoveAt(listindex);
-                        longNotesManager.longNoteMeshList.RemoveAt(listindex);
+                        longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
+                        longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
+                        longNotesManager.longNoteMeshList.RemoveAt(longNoteListIndex);
                         longNotesManager.innerNotesList.RemoveAt(key);
                     }
                 }

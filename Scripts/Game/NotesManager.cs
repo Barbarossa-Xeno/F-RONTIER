@@ -8,7 +8,7 @@ public class NotesManager : UtilityBase
     ///<summary>楽曲に含まれる総ノーツ数。</summary>
     public int numberOfNotes;
     ///<summary>楽曲の固有ID。実行時<see cref ="GameManager.songID"></see>から参照させます。</summary>
-    private int songID { get {return GameManager.instance.songID; } }
+    private int songID { get { return GameManager.instance.songID; } }
     ///<summary>楽曲の名前。</summary><remarks>注：デバッグ時のみの使用に限る。</remarks>
     private string songName;
     ///<summary>それぞれのノーツが流れるレーン番号を格納するリスト。ノーツのX座標の振り分けに使われます。</summary>
@@ -47,20 +47,8 @@ public class NotesManager : UtilityBase
         numberOfNotes = 0;
         noteSpeed = GameManager.instance.noteSpeed;
         longNotesManager = this.GetComponent<LongNotesManager>();
-        if (GameManager.instance.DebugModeForSongs)
-        {
-            LoadJSON(songName);
-        }
-        else if (GameManager.instance.SelectSongByName)
-        {
-            songName = GameManager.instance.songName;
-            LoadJSON("Data/" + songName + "_[" + Difficulty[DifficultyNumber] + "]");
-        }
-        else
-        {
-            Game.Development.EditorCustom.Log(GameManager.instance.difficulty);
-            LoadJSON($"Data/{songID}/{GameManager.instance.difficulty}");
-        }
+        Game.Development.EditorCustom.Log(GameManager.instance.difficulty);
+        LoadJSON($"Data/{songID}/{GameManager.instance.difficulty}");
     }
 
     /* メソッド */

@@ -15,6 +15,12 @@ namespace FancyScrollView.SongSelect
     {
         [SerializeField] Scroller scroller = default;
         [SerializeField] GameObject cellPrefab = default;
+        /// <summary>
+        /// スクロールビュー全体のスケール。
+        /// </summary>
+        [SerializeField] Vector3 cellContainerScale = new Vector3();
+        
+        private Vector3 viewScale { set { base.cellContainer.localScale = value; } }
 
         Action<int> onSelectionChanged;
 
@@ -74,5 +80,7 @@ namespace FancyScrollView.SongSelect
             UpdateSelection(index);
             scroller.ScrollTo(index, 0.35f, Ease.OutCubic);
         }
+
+        void Update() { viewScale = cellContainerScale; }
     }
 }

@@ -6,30 +6,70 @@ using Game.Utility;
 using Game.Development;
 using FadeTransition;
 
+/// <summary>
+/// ゲームを総括するクラス。
+/// </summary>
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    /// <summary>読み込む楽曲のID。</summary>
+    /// <summary>
+    /// 読み込む楽曲のID。
+    /// </summary>
     public int songID;
-    /// <summary>読み込む楽曲の名前。</summary>
+    /// <summary>
+    /// 読み込む楽曲の名前。
+    /// </summary>
     public string songName;
-    /// <summary>楽曲の難易度。</summary>
+    /// <summary>
+    /// 楽曲の難易度。
+    /// </summary>
     public string difficulty;
-    /// <summary>難易度の番号。</summary>
+    /// <summary>
+    /// 難易度の番号。
+    /// </summary>
     public int difficultyNumber;
+    /// <summary>
+    /// ノーツの速度。
+    /// </summary>
     [SerializeField] public float noteSpeed;
-    [SerializeField] public float judgdeTimingLag;
+    /// <summary>
+    /// 判定ずらしの秒数。
+    /// </summary>
+    [SerializeField] public float judgingTiming;
+    /// <summary>
+    /// オートプレイが選択されたか。
+    /// </summary>
     [SerializeField] public bool autoPlay;
+    /// <summary>
+    /// MVを再生するか。
+    /// </summary>
     [SerializeField] public bool mv;
+    /// <summary>
+    /// 音楽を再生するオーディオソース。
+    /// </summary>
     [SerializeField] public AudioSource musicSource = null;
+    /// <summary>
+    /// 効果音を再生するオーディオソース。
+    /// </summary>
     [SerializeField] public AudioSource seSource = null;
+    /// <summary>
+    /// <see cref = "MusicManager"/>
+    /// </summary>
     [SerializeField] public MusicManager musicManager;
+    /// <summary>
+    /// <see cref = "SEManager"/>
+    /// </summary>
     [SerializeField] public SEManager seManager;
-    public bool DebugMode;
-    public bool DebugModeForSongs;
-    public bool SelectSongByName;
+    /// <summary>
+    /// 音楽の再生が開始したか。
+    /// </summary>
     public bool start = false;
+    /// <summary>
+    /// 音楽の再生が開始した時間を記録する。判定時間の算出に用いる。
+    /// </summary>
     public float startTime;
-    [HideInInspector]
+    /// <summary>
+    /// スコア情報を保存するクラス。
+    /// </summary>
     public class ScoreManager
     {
         public int combo;
@@ -110,7 +150,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 instance.difficulty = MenuInfo.menuInfo.selectedDifficulty;
                 instance.difficultyNumber = MenuInfo.menuInfo.selectedDifficultyNumber;
                 instance.noteSpeed = Game.Save.Setting.setting.Save[0].noteSpeed * SettingUtility.NOTE_SPEED_FACTOR;
-                instance.judgdeTimingLag = Game.Save.Setting.setting.Save[0].timing;
+                instance.judgingTiming = Game.Save.Setting.setting.Save[0].timing;
                 instance.autoPlay = MenuInfo.menuInfo.autoPlay;
                 instance.mv = MenuInfo.menuInfo.mv;
                 instance.scoreManager = new ScoreManager();
