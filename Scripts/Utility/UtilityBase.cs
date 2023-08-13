@@ -49,19 +49,53 @@ namespace Game.Utility
         }
 
         /// <summary>
-        /// 一定時間毎に関数処理を繰り返す。
+        /// 一定時間毎に処理を繰り返したい関数を指定する。
         /// </summary>
-        /// <remarks>Startメソッドに<see cref="MonoBehaviour.StartCoroutine(IEnumerator)"/>とセットで処理を書く。</remarks>
         /// <param name="callback">処理を繰り返したい関数。Action型デリゲートを使うか、ラムダ式を使って指定する。</param>
         /// <param name="time">繰り返す秒間隔。</param>
-        /// <returns><see cref="MonoBehaviour.StartCoroutine(IEnumerator)"/>に登録できる戻り値をもつ。</returns>
-        protected IEnumerator SetInterval(Action callback, float time)
+        protected IEnumerator SetFunction(Action callback, float time)
         {
             while (true)
             {
                 yield return new WaitForSeconds(time);
                 callback();
             }
+        }
+
+        protected IEnumerator Wait(float time)
+        {
+            yield return new WaitForSeconds(time);
+        }
+
+        /// <summary>
+        /// 一定時間毎に関数処理を繰り返すコルーチンを実行する。
+        /// </summary>
+        /// <remarks>Startメソッドに処理を書く。</remarks>
+        /// <param name="callback">処理を繰り返したい関数。Action型デリゲートを使うか、ラムダ式を使って指定する。</param>
+        /// <param name="time">繰り返す秒間隔。</param>
+        /// <returns>このコルーチンのインスタンス</returns>
+        protected Coroutine SetInterval(Action callback, float time)
+        {
+            return StartCoroutine(SetFunction(callback, time));
+        }
+
+        /// <summary>
+        /// 1フレーム毎に関数処理を繰り返すコルーチンを実行する。
+        /// </summary>
+        /// <remarks>Startメソッドに処理を書く。</remarks>
+        /// <param name="callback">処理を繰り返したい関数。Action型デリゲートを使うか、ラムダ式を使って指定する。</param>
+        /// <returns>このコルーチンのインスタンス</returns>
+        protected Coroutine SetInterval(Action callback)
+        {
+            IEnumerator SetFunction()
+            {
+                while (true)
+                {
+                    yield return null;
+                    callback();
+                }
+            }
+            return StartCoroutine(SetFunction());
         }
     }
 }
