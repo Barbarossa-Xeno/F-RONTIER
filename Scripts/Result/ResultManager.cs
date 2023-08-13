@@ -103,7 +103,7 @@ public class ResultManager : MonoBehaviour
         //リザルトの値を受け取る。
         songID = GameManager.instance.songID;
         score = GameManager.instance.scoreManager.score;
-        EditorCustom.Log($"{score}, {GameManager.instance.scoreManager.score}");
+        DevelopmentExtentionMethods.Log($"{score}, {GameManager.instance.scoreManager.score}");
         detailValueCount = GameManager.instance.scoreManager.scoreCount;
         //アクティブの設定。
         scoreElements.fullCombo.gameObject.SetActive(scoreElements.fullCombo.gameObject.activeSelf ? false : false);
@@ -157,9 +157,9 @@ public class ResultManager : MonoBehaviour
             string loadData = streamReader.ReadToEnd();
             streamReader.Close();
             data = JsonUtility.FromJson<SongSaveData>(loadData);
-            EditorCustom.Log("楽曲セーブデータの読込に成功しました。");
+            DevelopmentExtentionMethods.Log("楽曲セーブデータの読込に成功しました。");
         }
-        else { EditorCustom.Log("データが見つからなかったので新規データを保存します。"); }
+        else { DevelopmentExtentionMethods.Log("データが見つからなかったので新規データを保存します。"); }
 
         if(detailValueCount["bad"] == 0 && detailValueCount["miss"] == 0)
         {
@@ -212,7 +212,7 @@ public class ResultManager : MonoBehaviour
         streamWriter.Write(serialedSaveData);
         streamWriter.Flush();
         streamWriter.Close();
-        EditorCustom.Log($"{songID}.jsonを保存しました。");
+        DevelopmentExtentionMethods.Log($"{songID}.jsonを保存しました。");
     }
     ///<summary>獲得したアチーブメントに応じてゲームオブジェクトの演出をします。</summary>
     ///<param name = "gameObject">演出（アクティブ）させるオブジェクト。</param>

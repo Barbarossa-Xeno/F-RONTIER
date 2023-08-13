@@ -50,7 +50,7 @@ namespace FancyScrollView.SongSelect
                 .ToArray();
 
             scrollView.UpdateData(items);
-            Game.Development.EditorCustom.Log(_index);
+            Game.Development.DevelopmentExtentionMethods.Log(_index);
             MenuInfo.menuInfo.selectedSongLevel = items[_index].Level;
         }
 

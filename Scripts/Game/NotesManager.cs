@@ -47,7 +47,7 @@ public class NotesManager : UtilityBase
         numberOfNotes = 0;
         noteSpeed = GameManager.instance.noteSpeed;
         longNotesManager = this.GetComponent<LongNotesManager>();
-        Game.Development.EditorCustom.Log(GameManager.instance.difficulty);
+        Game.Development.DevelopmentExtentionMethods.Log(GameManager.instance.difficulty);
         LoadJSON($"Data/{songID}/{GameManager.instance.difficulty}");
     }
 

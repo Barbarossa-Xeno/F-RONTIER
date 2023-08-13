@@ -32,7 +32,7 @@ namespace FancyScrollView.SongSelect
         [SerializeField] CLScroll works_clscroll;
         private Sprite coverSrc;
 
-        private bool cellVisible { get { return canvasGroup.alpha < 0.8 ? false : true; } }
+        private bool cellVisible { get { return canvasGroup.alpha >= 0.8; } }
 
         static class AnimatorHash
         {

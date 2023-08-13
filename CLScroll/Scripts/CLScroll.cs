@@ -53,7 +53,7 @@ namespace CLSrollProject
         public ScrollState State { get; private set; } = ScrollState.None;
         public bool IsAutoUpdate { get; set; } = true;
 
-        [SerializeField] private Text textArea = null;
+        public Text textArea = null;
         [SerializeField] private RectTransform maskArea = null;
         [SerializeField] private LimitType limitType = LimitType.ParentRect;
         [SerializeField] private SpeedType speedType = SpeedType.Speed;

@@ -39,10 +39,10 @@ public class LongNotes : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                     {
                         children[i].GetComponent<LineRenderer>().material.SetFloat("_isPressed", 1);
                     }
-                    catch (System.NullReferenceException) { Game.Development.EditorCustom.Log("ラインレンダラーが取得できませんでした"); }
+                    catch (System.NullReferenceException) { Game.Development.DevelopmentExtentionMethods.Log("ラインレンダラーが取得できませんでした"); }
                     catch (MissingComponentException) 
                     { 
-                        Game.Development.EditorCustom.Log("空のロングノーツが生成されました。"); 
+                        Game.Development.DevelopmentExtentionMethods.Log("空のロングノーツが生成されました。"); 
                         Destroy(this.gameObject);
                     }
                 }

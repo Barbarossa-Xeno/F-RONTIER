@@ -137,7 +137,7 @@ public class Judge : UtilityBase
                     //ノーツ時間の降順リストの最後尾に登録されたインデックスと、取得したインデックスが同じ且つ、ターゲットノーツのX座標とインデックスに紐づくX座標が同じならば
                     if (notesManager.laneNum[laneNumCount - 1] == laneIndex)
                     {
-                        EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, 0, {targetNote.name}");
+                        DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, 0, {targetNote.name}");
                         Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
                         return;
                     }
@@ -145,19 +145,19 @@ public class Judge : UtilityBase
                     {   //同時押しなどの融通を効かせるために、最後尾より前のノーツ時間も参照するようにする。
                         if (notesManager.laneNum[laneNumCount - 2] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 2]}, 1, {targetNote.name}");
+                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 2]}, 1, {targetNote.name}");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
                             return;
                         }
                         if (notesManager.laneNum[laneNumCount - 3] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 2");
+                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 2");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
                             return;
                         }
                         if (notesManager.laneNum[laneNumCount - 4] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 3");
+                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 3");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
                             return;
                         }
@@ -173,7 +173,7 @@ public class Judge : UtilityBase
                         //ノーツ時間の降順リストの最後尾に登録されたインデックスと、取得したインデックスが同じ且つ、ターゲットノーツのX座標とインデックスに紐づくX座標が同じならば
                         if (notesManager.laneNum[laneNumCount - 1] == laneIndex)
                         {
-                            EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, start:{GameManager.instance.startTime}");
+                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, start:{GameManager.instance.startTime}");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
                             return;
                         }
@@ -181,19 +181,19 @@ public class Judge : UtilityBase
                         {   //同時押しなどの融通を効かせるために、最後尾より前のノーツ時間も参照するようにする。
                             if (notesManager.laneNum[laneNumCount - 2] == laneIndex)
                             {
-                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
                                 Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
                                 return;
                             }
                             if (notesManager.laneNum[laneNumCount - 3] == laneIndex)
                             {
-                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
                                 Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
                                 return;
                             }
                             if (notesManager.laneNum[laneNumCount - 4] == laneIndex)
                             {
-                                EditorCustom.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
                                 Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
                                 return;
                             }
@@ -347,7 +347,7 @@ public class Judge : UtilityBase
                         endNote = longNotesManager.innerNotesList[key][0].GetComponent<Notes>();
                         longNotesManager.innerNotesList[key][0].SetActive(false);
                         longNotesManager.innerNotesList[key].RemoveAt(0);
-                        EditorCustom.Log(endNote.longNote.status);
+                        DevelopmentExtentionMethods.Log(endNote.longNote.status);
                         longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
                         longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
                         longNotesManager.longNoteMeshList.RemoveAt(longNoteListIndex);

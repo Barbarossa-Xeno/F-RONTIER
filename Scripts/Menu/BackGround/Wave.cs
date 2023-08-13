@@ -97,19 +97,9 @@ public class Wave : UtilityBase
     private WaveMeshProperties waveMeshProp = new WaveMeshProperties();
 
     /// <summary>
-    /// LineRendererで描画するオーディオスペクトラム。
+    /// ラインレンダラーで描画するオーディオスペクトラム。
     /// </summary>
-    [SerializeField] private LineRenderer lineWave;
-
-    /// <summary>
-    /// <see cref="lineWave"/>の振幅。
-    /// </summary>
-    [SerializeField] private float lineWaveAmplitude;
-    
-    /// <summary>
-    /// <see cref = "lineWave"/>の周期。
-    /// </summary>
-    [SerializeField] private float lineWavePeriod;
+    [SerializeField] private LineWave lineWave;
     
     /// <summary>
     /// Ｙ座標が変化している<see cref = "waveMesh"/>の頂点のみ抽出したもの
@@ -134,17 +124,6 @@ public class Wave : UtilityBase
         waveMeshFilter.mesh = waveMesh;
         // 実際に可動する頂点の数は、メッシュの頂点の4分の1
         activeWaveVertices = new Vector3[waveMeshProp.vertices.Length / 4];
-
-        lineWave.useWorldSpace = false;
-        lineWave.startWidth = 0.01f;
-        lineWave.endWidth = 0.01f;
-        lineWave.material = default;
-        lineWave.startColor = Color.white;
-        lineWave.positionCount = waveMeshProp.vertices.Length;
-
-        // コルーチンでラインレンダラーを使ったスペクトラムの更新を一定秒間隔にすることで、処理落ちを防ぎ、波の高さの急激な変化を控えさせる
-        // 0.028s(28ms)がだいたい40fpsくらい
-        StartCoroutine(SetInterval(() => SetLineWave(lineWave, GenerateSpectrumBezierCurve(activeWaveVertices, 100)), 0.028f));
     }
 
     void Update()
@@ -232,24 +211,7 @@ public class Wave : UtilityBase
         mesh.SetVertices(vertices);
     }
 
-    /// <summary>
-    /// ベジェ曲線化したスペクトルをラインレンダラーに適用して波形のように動かす。
-    /// </summary>
-    /// <param name="line">動かしたいラインレンダラー。</param>
-    /// <param name="curveVertices">ラインレンダラーに適用させる点、曲線の点。</param>
-    public void SetLineWave(LineRenderer line, Vector3[] curveVertices)
-    {
-        // 点たちの真ん中のX座標を抽出して、それを基準にラインを中央ぞろえにする。
-        float pivotX = curveVertices[curveVertices.Length / 2 - 1].x;
-        for (int i = 0; i < curveVertices.Length; i++)
-        {
-            curveVertices[i].x -= pivotX;
-            //イージング関数を用いて、激しい動きを抑制する。
-            curveVertices[i].y = curveVertices[i].y.EaseInOutSine(lineWavePeriod);
-        }
 
-        line.SetPositionsWithCount(curveVertices);
-    }
 
     /// <summary>
     /// 周波数帯域（バンド）に対応した元のスペクトルデータ(<see cref = "FFT.spectrumData"/>)のインデックスを返す。
