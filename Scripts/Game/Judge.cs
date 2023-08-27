@@ -4,10 +4,10 @@ using UnityEngine;
 using TMPro;
 //自作名前空間
 using Game.Utility;
-using Game.Development;
+using Game.Utility.Development;
 
 ///<summary>ノーツの判定をします。</summary>
-public class Judge : UtilityBase
+public class Judge : UtilityClass
 {
     ///<summary>生成する判定ステータスのオブジェクトプール。</summary>
     [SerializeField] private ScoreObjectPool scoreObjectPool;
@@ -66,9 +66,9 @@ public class Judge : UtilityBase
     void Start()
     {
         //great以上のときのSE。
-        hitSE[0] = (AudioClip)Resources.Load(SettingUtility.ResourcesPath.NOTE_SINGLE_GREAT_SE_PATH);
+        hitSE[0] = (AudioClip)Resources.Load(Reference.ResourcesPath.NOTE_SINGLE_GREAT_SE_PATH);
         //good以下の時のSE。
-        hitSE[1] = (AudioClip)Resources.Load(SettingUtility.ResourcesPath.NOTE_SINGLE_GOOD_SE_PATH);
+        hitSE[1] = (AudioClip)Resources.Load(Reference.ResourcesPath.NOTE_SINGLE_GOOD_SE_PATH);
     }
 
     void Update()
@@ -129,15 +129,15 @@ public class Judge : UtilityBase
             if (targetNote == null) { return; }
 
             //ターゲットノーツのZ座標と判定線との距離の差が5より小さいときに判定の対象とする。
-            if (Mathf.Abs(targetNote.transform.position.z - SettingUtility.origin.z) < 5f)
+            if (Mathf.Abs(targetNote.transform.position.z - Reference.Origin.z) < 5f)
             {
                 //ターゲットが通常ノーツのとき。
-                if (targetNoteProperty.type == SettingUtility.NoteType.Normal)
+                if (targetNoteProperty.type == Reference.NoteType.Normal)
                 {
                     //ノーツ時間の降順リストの最後尾に登録されたインデックスと、取得したインデックスが同じ且つ、ターゲットノーツのX座標とインデックスに紐づくX座標が同じならば
                     if (notesManager.laneNum[laneNumCount - 1] == laneIndex)
                     {
-                        DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, 0, {targetNote.name}");
+                        DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, 0, {targetNote.name}");
                         Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
                         return;
                     }
@@ -145,19 +145,19 @@ public class Judge : UtilityBase
                     {   //同時押しなどの融通を効かせるために、最後尾より前のノーツ時間も参照するようにする。
                         if (notesManager.laneNum[laneNumCount - 2] == laneIndex)
                         {
-                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 2]}, 1, {targetNote.name}");
+                            DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 2]}, 1, {targetNote.name}");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
                             return;
                         }
                         if (notesManager.laneNum[laneNumCount - 3] == laneIndex)
                         {
-                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 2");
+                            DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 2");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
                             return;
                         }
                         if (notesManager.laneNum[laneNumCount - 4] == laneIndex)
                         {
-                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 3");
+                            DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}, 3");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
                             return;
                         }
@@ -165,15 +165,15 @@ public class Judge : UtilityBase
                     catch (System.ArgumentOutOfRangeException) { }
                 }
                 //ターゲットがロングノーツのとき。
-                if (targetNoteProperty.type == SettingUtility.NoteType.LongLinear || targetNoteProperty.type == SettingUtility.NoteType.LongCurve)
+                if (targetNoteProperty.type == Reference.NoteType.LongLinear || targetNoteProperty.type == Reference.NoteType.LongCurve)
                 {
                     //ターゲットがロングノーツの始点であれば。
-                    if (targetNoteProperty.longNote.status == SettingUtility.LongNoteStatus.Start)
+                    if (targetNoteProperty.longNote.status == Reference.LongNoteStatus.Start)
                     {
                         //ノーツ時間の降順リストの最後尾に登録されたインデックスと、取得したインデックスが同じ且つ、ターゲットノーツのX座標とインデックスに紐づくX座標が同じならば
                         if (notesManager.laneNum[laneNumCount - 1] == laneIndex)
                         {
-                            DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, start:{GameManager.instance.startTime}");
+                            DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime))}, timetime:{tapManager.tapTime[laneIndex]}, notetime:{notesManager.notesTime[notesTimeCount - 1]}, start:{GameManager.instance.startTime}");
                             Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 1] + GameManager.instance.startTime)), notesTimeCount - 1);   //ノーツ（light）を叩いた時間と、本来ノーツを叩くべき時間とスタート時間の和との差をメソッドに送る
                             return;
                         }
@@ -181,19 +181,19 @@ public class Judge : UtilityBase
                         {   //同時押しなどの融通を効かせるために、最後尾より前のノーツ時間も参照するようにする。
                             if (notesManager.laneNum[laneNumCount - 2] == laneIndex)
                             {
-                                DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
                                 Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 2] + GameManager.instance.startTime)), notesTimeCount - 2);
                                 return;
                             }
                             if (notesManager.laneNum[laneNumCount - 3] == laneIndex)
                             {
-                                DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
                                 Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 3] + GameManager.instance.startTime)), notesTimeCount - 3);
                                 return;
                             }
                             if (notesManager.laneNum[laneNumCount - 4] == laneIndex)
                             {
-                                DevelopmentExtentionMethods.Log($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
+                                DevelopmentExtentionMethods.LogEditor($"{Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime))}, {tapManager.tapTime[laneIndex]}");
                                 Judgement(Mathf.Abs(tapManager.tapTime[laneIndex] - (notesManager.notesTime[notesTimeCount - 4] + GameManager.instance.startTime)), notesTimeCount - 4);
                                 return;
                             }
@@ -208,7 +208,7 @@ public class Judge : UtilityBase
         {   //直近で押しておかなければならなかったノーツがZ:4.6を下回った時。
             if (notesManager.notesObjects[notesObjectsCount - 1].transform.position.z < 3.5f && notesManager.notesObjects[notesObjectsCount - 1].transform.position.x == SwitchNoteLane(laneIndex) && notesManager.notesObjects[notesObjectsCount - 1].activeSelf)
             {
-                ScoreMessage(SettingUtility.JudgementStatus.miss);
+                ScoreMessage(Reference.JudgementStatus.Miss);
                 GameManager.instance.scoreManager.combo = 0;
                 DeleteNote(notesTimeCount - 1, mode: 2);
             }
@@ -273,7 +273,7 @@ public class Judge : UtilityBase
         if (noteInfo.longNote.isInner && innerNotesListCount > 0 && longNotesManager.innerNotesList[key].Count > 0)
         {
             //直近のLノーツの中間点が判定線付近まで達した時。
-            if (longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].transform.position.z <= SettingUtility.origin.z + 1f)
+            if (longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].transform.position.z <= Reference.Origin.z + 1f)
             {
                 //中間点のノーツ情報も取得の準備をする。
                 Notes innerNoteInfo;
@@ -284,8 +284,8 @@ public class Judge : UtilityBase
                     if (isPressed)
                     {
                         GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                        ScoreMessage(SettingUtility.JudgementStatus.perfect);
-                        GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
+                        ScoreMessage(Reference.JudgementStatus.Perfect);
+                        GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Perfect;
                         GameManager.instance.scoreManager.scoreCount["perfect"]++;
                         GameManager.instance.scoreManager.combo++;
                         GameManager.instance.ScoreCalc();
@@ -294,7 +294,7 @@ public class Judge : UtilityBase
                         innerNoteInfo = longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].GetComponent<Notes>();
                         longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].SetActive(false);
                         longNotesManager.innerNotesList[key].RemoveAt(longNotesManager.innerNotesList[key].Count - 1);                        
-                        if (innerNoteInfo.longNote.status == SettingUtility.LongNoteStatus.End)
+                        if (innerNoteInfo.longNote.status == Reference.LongNoteStatus.End)
                         {
                             longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
                             longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
@@ -305,14 +305,14 @@ public class Judge : UtilityBase
                     //押されていなければ。
                     else
                     {
-                        ScoreMessage(SettingUtility.JudgementStatus.miss);
+                        ScoreMessage(Reference.JudgementStatus.Miss);
                         GameManager.instance.scoreManager.scoreCount["miss"]++;
                         GameManager.instance.scoreManager.combo = 0;
                         ComboText.SetText("{0}", GameManager.instance.scoreManager.combo);
                         innerNoteInfo = longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].GetComponent<Notes>();
                         longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].SetActive(false);
                         longNotesManager.innerNotesList[key].RemoveAt(longNotesManager.innerNotesList[key].Count - 1);
-                        if (innerNoteInfo.longNote.status == SettingUtility.LongNoteStatus.End)
+                        if (innerNoteInfo.longNote.status == Reference.LongNoteStatus.End)
                         {
                             longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
                             longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
@@ -327,7 +327,7 @@ public class Judge : UtilityBase
         else if (!noteInfo.longNote.isInner)
         {
             //直近のLノーツの中間点が判定線付近まで達した時。
-            if (longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].transform.position.z <= SettingUtility.origin.z + 1f)
+            if (longNotesManager.innerNotesList[key][longNotesManager.innerNotesList[key].Count - 1].transform.position.z <= Reference.Origin.z + 1f)
             {
                 Notes endNote;
                 //そのノーツの順番が参照するリストのノーツの順番に等しければ。
@@ -337,8 +337,8 @@ public class Judge : UtilityBase
                     if (isPressed)
                     {
                         GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                        ScoreMessage(SettingUtility.JudgementStatus.perfect);
-                        GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
+                        ScoreMessage(Reference.JudgementStatus.Perfect);
+                        GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Perfect;
                         GameManager.instance.scoreManager.scoreCount["perfect"]++;
                         GameManager.instance.scoreManager.combo++;
                         GameManager.instance.ScoreCalc();
@@ -347,7 +347,7 @@ public class Judge : UtilityBase
                         endNote = longNotesManager.innerNotesList[key][0].GetComponent<Notes>();
                         longNotesManager.innerNotesList[key][0].SetActive(false);
                         longNotesManager.innerNotesList[key].RemoveAt(0);
-                        DevelopmentExtentionMethods.Log(endNote.longNote.status);
+                        DevelopmentExtentionMethods.LogEditor(endNote.longNote.status);
                         longNotesManager.longNoteMeshList[longNoteListIndex].SetActive(false);
                         longNotesManager.longNotesList.RemoveAt(longNoteListIndex);
                         longNotesManager.longNoteMeshList.RemoveAt(longNoteListIndex);
@@ -356,7 +356,7 @@ public class Judge : UtilityBase
                     //押されていなければ。
                     else
                     {
-                        ScoreMessage(SettingUtility.JudgementStatus.miss);
+                        ScoreMessage(Reference.JudgementStatus.Miss);
                         GameManager.instance.scoreManager.scoreCount["miss"]++;
                         GameManager.instance.scoreManager.combo = 0;
                         ComboText.SetText("{0}", GameManager.instance.scoreManager.combo);
@@ -386,8 +386,8 @@ public class Judge : UtilityBase
             if (timeLag <= JudgementTiming["perfect"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                ScoreMessage(SettingUtility.JudgementStatus.perfect);
-                GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
+                ScoreMessage(Reference.JudgementStatus.Perfect);
+                GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Perfect;
                 GameManager.instance.scoreManager.scoreCount["perfect"]++;
                 GameManager.instance.scoreManager.combo++;
                 DeleteNote(targetIndex);
@@ -395,8 +395,8 @@ public class Judge : UtilityBase
             else if (timeLag <= JudgementTiming["great"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-                ScoreMessage(SettingUtility.JudgementStatus.great);
-                GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.great;
+                ScoreMessage(Reference.JudgementStatus.Great);
+                GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Great;
                 GameManager.instance.scoreManager.scoreCount["great"]++;
                 GameManager.instance.scoreManager.combo++;
                 DeleteNote(targetIndex);
@@ -404,8 +404,8 @@ public class Judge : UtilityBase
             else if (timeLag <= JudgementTiming["good"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[1]);
-                ScoreMessage(SettingUtility.JudgementStatus.good);
-                GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.good;
+                ScoreMessage(Reference.JudgementStatus.Good);
+                GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Good;
                 GameManager.instance.scoreManager.scoreCount["good"]++;
                 GameManager.instance.scoreManager.combo++;
                 DeleteNote(targetIndex);
@@ -414,8 +414,8 @@ public class Judge : UtilityBase
             else if (timeLag <= JudgementTiming["bad"])
             {
                 GameManager.instance.seSource.PlayOneShot(hitSE[1]);
-                ScoreMessage(SettingUtility.JudgementStatus.bad);
-                GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.bad;
+                ScoreMessage(Reference.JudgementStatus.Bad);
+                GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Bad;
                 GameManager.instance.scoreManager.scoreCount["bad"]++;
                 GameManager.instance.scoreManager.combo = 0;
                 DeleteNote(targetIndex);
@@ -427,8 +427,8 @@ public class Judge : UtilityBase
     private void Judgement(int noteNumber)
     {
         GameManager.instance.seSource.PlayOneShot(hitSE[0]);
-        ScoreMessage(SettingUtility.JudgementStatus.perfect);
-        GameManager.instance.scoreManager.ratioScore += (int)SettingUtility.JudgementStatusScore.perfect;
+        ScoreMessage(Reference.JudgementStatus.Perfect);
+        GameManager.instance.scoreManager.ratioScore += (int)Reference.JudgementStatusScore.Perfect;
         GameManager.instance.scoreManager.scoreCount["perfect"]++;
         GameManager.instance.scoreManager.combo++;
         DeleteNote(noteNumber, mode: 1);
@@ -479,23 +479,23 @@ public class Judge : UtilityBase
 
     ///<summary>判定ステータスを画面上に表示する。</summary>
     ///<remarks>オブジェクトプール(<see cref = "ScoreObjectPool"/>)を利用する。</remarks>
-    private void ScoreMessage(SettingUtility.JudgementStatus status)
+    private void ScoreMessage(Reference.JudgementStatus status)
     {
         switch (status)
         {
-            case SettingUtility.JudgementStatus.perfect:
+            case Reference.JudgementStatus.Perfect:
                 scoreObject = scoreObjectPool.perfect.Get();
                 break;
-            case SettingUtility.JudgementStatus.great:
+            case Reference.JudgementStatus.Great:
                 scoreObject = scoreObjectPool.great.Get();
                 break;
-            case SettingUtility.JudgementStatus.good:
+            case Reference.JudgementStatus.Good:
                 scoreObject = scoreObjectPool.good.Get();
                 break;
-            case SettingUtility.JudgementStatus.bad:
+            case Reference.JudgementStatus.Bad:
                 scoreObject = scoreObjectPool.bad.Get();
                 break;
-            case SettingUtility.JudgementStatus.miss:
+            case Reference.JudgementStatus.Miss:
                 scoreObject = scoreObjectPool.miss.Get();
                 break;
         }

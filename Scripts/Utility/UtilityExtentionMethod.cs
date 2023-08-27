@@ -2,8 +2,11 @@ using UnityEngine;
 using System;
 using System.Collections;
 
-namespace Game.Utility.ExtentionMethod
+namespace Game.Utility
 {
+    /// <summary>
+    /// うまく使えそうなメソッド集
+    /// </summary>
     public static class UtilityMethod
     {
         /// <summary>
@@ -15,6 +18,32 @@ namespace Game.Utility.ExtentionMethod
         {
             lineRenderer.positionCount = positions.Length;
             lineRenderer.SetPositions(positions);
+        }
+
+        /// <summary>
+        /// テンポラリー変数と元の変数を比較して値の更新の必要性の確認をしたいときにつかう。
+        /// </summary>
+        /// <typeparam name="T">比較したい変数のデータ型。</typeparam>
+        /// <param name="temp">テンポラリー（一時保存用の）変数。</param>
+        /// <param name="original">元（普段使いしている）の変数。</param>
+        /// <returns><c>temp</c>と<c>original</c>が等しいかどうか。</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static bool IsValueChanged<T>(ref T temp, in T original)
+        {
+            // tempがnullだった場合tempを強制上書き
+            if (temp == null) 
+            {
+                temp = original;
+                return true;
+            }
+            // tempとoriginalが異なっていたら、tempを更新してtrueを返す
+            if (!temp.Equals(original))
+            {
+                temp = original;
+                return true;
+            }
+            // 同じだったらfalseを返す
+            else { return false; }
         }
     }
 }

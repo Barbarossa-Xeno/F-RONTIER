@@ -2,7 +2,7 @@ using System;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Game.Development
+namespace Game.Utility.Development
 {
 
     public sealed class CheckGCAllocScope : IDisposable

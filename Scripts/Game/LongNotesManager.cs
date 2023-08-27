@@ -6,7 +6,7 @@ using UnityEngine;
 using Game.Utility;
 
 ///<summary>ロングノーツ生成を行うクラス。</summary>
-public class LongNotesManager : UtilityBase
+public class LongNotesManager : UtilityClass
 {
     /* フィールド */
     ///<summary>レーン番号を格納するリスト。</summary>
@@ -304,20 +304,20 @@ public class LongNotesManager : UtilityBase
         longNote.tag = "LongNoteMesh";
         longNote.layer = LayerMask.NameToLayer("LongNoteMesh");
         longNote.GetComponent<Notes>().longNote = new Notes.LongNote();
-        longNote.GetComponent<Notes>().longNote.status = SettingUtility.LongNoteStatus.Mesh;
+        longNote.GetComponent<Notes>().longNote.status = Reference.LongNoteStatus.Mesh;
         longNote.GetComponent<Notes>().longNote.index = index;
         longNote.GetComponent<Notes>().longNote.isInner = SwitchLongNoteInnerType(type);
         longNoteMeshList.Add(longNote);
         //レーン番号からX座標を求め、パラメーターを元にノーツの始点、終点、曲線型では制御点を計算。
-        Vector3 startPositon = new Vector3(LANE_GAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, startZ);
-        Vector3 endPosition = new Vector3(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, endZ);
+        Vector3 startPositon = new Vector3(LANE_GAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.SpecialNotesPosition.y, startZ);
+        Vector3 endPosition = new Vector3(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.SpecialNotesPosition.y, endZ);
         Vector3 controlPositon;
 
         //曲線型であった場合。
         if (type == (int)LongNoteType.NoInnerCurve || type == (int)LongNoteType.AnyInnerCurve)
         {
             //制御点の計算。
-            controlPositon = new Vector3(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, SettingUtility.specialNotesPosition.y, (startZ + endZ) / 2);
+            controlPositon = new Vector3(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.SpecialNotesPosition.y, (startZ + endZ) / 2);
             //int variableSplit = SPLIT_SIZE * 3;
             //ベジェ曲線から曲線上の点を計算する。
             Vector3[] curvePoints = SetBezierCurves(startPositon, controlPositon, endPosition, splitSize: SPLIT_SIZE);
@@ -376,13 +376,13 @@ public class LongNotesManager : UtilityBase
             for (int j = 0; j < laneNum[i].Count; j++)
             {
                 positionX = SwitchNoteLane(laneNum[i][j]);
-                positionZ = notesTime[i][j] * GameManager.instance.noteSpeed + SettingUtility.origin.z;
+                positionZ = notesTime[i][j] * GameManager.instance.noteSpeed + Reference.Origin.z;
                 _positionX[i, j] = positionX;
                 _positionZ[i, j] = positionZ;
                 //直線型で中間点のないノーツ。
                 if (innnerNotesNum[i] == 0 && notesType[i] == 2)
                 {
-                    note = Instantiate(notesManager.noteObject.longOnly, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
+                    note = Instantiate(notesManager.noteObject.longOnly, new Vector3(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
                     if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
@@ -392,11 +392,11 @@ public class LongNotesManager : UtilityBase
                         if (j == laneNum[i].Count - 1) { innerNotes.Add(i, inners); }
                     }
 
-                    if (j == 0) { prop.longNote.status = SettingUtility.LongNoteStatus.Start; }
-                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = SettingUtility.LongNoteStatus.End; }
-                    else { prop.longNote.status = SettingUtility.LongNoteStatus.Inner; }
+                    if (j == 0) { prop.longNote.status = Reference.LongNoteStatus.Start; }
+                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = Reference.LongNoteStatus.End; }
+                    else { prop.longNote.status = Reference.LongNoteStatus.Inner; }
 
-                    prop.type = SettingUtility.NoteType.LongLinear;
+                    prop.type = Reference.NoteType.LongLinear;
                     prop.longNote.index = i;
 
                     if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
@@ -407,7 +407,7 @@ public class LongNotesManager : UtilityBase
                 //曲線型で中間点のないノーツ。
                 else if (innnerNotesNum[i] == 0 && notesType[i] == 3)
                 {
-                    note = Instantiate(notesManager.noteObject.longOnly, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
+                    note = Instantiate(notesManager.noteObject.longOnly, new Vector3(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
                     if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
@@ -417,11 +417,11 @@ public class LongNotesManager : UtilityBase
                         if (j == laneNum[i].Count - 1) { innerNotes.Add(i, inners); }
                     }
 
-                    if (j == 0) { prop.longNote.status = SettingUtility.LongNoteStatus.Start; }
-                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = SettingUtility.LongNoteStatus.End; }
-                    else { prop.longNote.status = SettingUtility.LongNoteStatus.Inner; }
+                    if (j == 0) { prop.longNote.status = Reference.LongNoteStatus.Start; }
+                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = Reference.LongNoteStatus.End; }
+                    else { prop.longNote.status = Reference.LongNoteStatus.Inner; }
 
-                    prop.type = SettingUtility.NoteType.LongCurve;
+                    prop.type = Reference.NoteType.LongCurve;
                     prop.longNote.index = i;
 
                     if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
@@ -432,7 +432,7 @@ public class LongNotesManager : UtilityBase
                 //直線型で中間点のあるノーツ。
                 else if (innnerNotesNum[i] != 0 && notesType[i] == 2)
                 {
-                    note = Instantiate(notesManager.noteObject.longAny, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
+                    note = Instantiate(notesManager.noteObject.longAny, new Vector3(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
                     if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
@@ -442,11 +442,11 @@ public class LongNotesManager : UtilityBase
                         if (j == laneNum[i].Count - 1) { innerNotes.Add(i, inners); }
                     }
 
-                    if (j == 0) { prop.longNote.status = SettingUtility.LongNoteStatus.Start; }
-                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = SettingUtility.LongNoteStatus.End; }
-                    else { prop.longNote.status = SettingUtility.LongNoteStatus.Inner; }
+                    if (j == 0) { prop.longNote.status = Reference.LongNoteStatus.Start; }
+                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = Reference.LongNoteStatus.End; }
+                    else { prop.longNote.status = Reference.LongNoteStatus.Inner; }
 
-                    prop.type = SettingUtility.NoteType.LongLinear;
+                    prop.type = Reference.NoteType.LongLinear;
                     prop.longNote.index = i;
 
                     if (j > 0)
@@ -457,7 +457,7 @@ public class LongNotesManager : UtilityBase
                 //曲線型で中間点のあるノーツ。
                 else if (innnerNotesNum[i] != 0 && notesType[i] == 3)
                 {
-                    note = Instantiate(notesManager.noteObject.longAny, new Vector3(positionX, SettingUtility.specialNotesPosition.y, positionZ), Quaternion.identity);
+                    note = Instantiate(notesManager.noteObject.longAny, new Vector3(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity);
                     Notes prop = note.GetComponent<Notes>();
 
                     if (GameManager.instance.autoPlay || (!GameManager.instance.autoPlay && j == 0)) { notesManager.notesObjects.Add(note); }
@@ -467,11 +467,11 @@ public class LongNotesManager : UtilityBase
                         if (j == laneNum[i].Count - 1) { innerNotes.Add(i, inners); }
                     }
 
-                    if (j == 0) { prop.longNote.status = SettingUtility.LongNoteStatus.Start; }
-                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = SettingUtility.LongNoteStatus.End; }
-                    else { prop.longNote.status = SettingUtility.LongNoteStatus.Inner; }
+                    if (j == 0) { prop.longNote.status = Reference.LongNoteStatus.Start; }
+                    else if (j == laneNum[i].Count - 1) { prop.longNote.status = Reference.LongNoteStatus.End; }
+                    else { prop.longNote.status = Reference.LongNoteStatus.Inner; }
 
-                    prop.type = SettingUtility.NoteType.LongCurve;
+                    prop.type = Reference.NoteType.LongCurve;
                     prop.longNote.index = i;
                     if (j > 0)
                     {
@@ -652,7 +652,7 @@ public class LongNotesManager : UtilityBase
             Notes notesProp = parents[j].AddComponent<Notes>();
             parents[j].AddComponent<MeshCollider>();
             notesProp.longNote = new Notes.LongNote();
-            notesProp.longNote.status = SettingUtility.LongNoteStatus.Mesh;
+            notesProp.longNote.status = Reference.LongNoteStatus.Mesh;
             notesProp.longNote.index = duplicateKeys[j];
             notesProp.longNote.isInner = true;
             for (int k = 0; k < meshIndexList.Count; k++)

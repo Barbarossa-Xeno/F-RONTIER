@@ -1,11 +1,10 @@
 /* REFERENCE */
 /* https://nn-hokuson.hatenablog.com/entry/2021/12/09/205155 */
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Development
+namespace Game.Utility.Development
 {
     public class ColliderVisualizer : MonoBehaviour
     {

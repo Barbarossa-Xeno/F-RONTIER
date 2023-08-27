@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Game.Development
+namespace Game.Utility.Development
 {
     ///<summary>エディタ上のデバッグをカスタマイズしたクラスです。</summary>
     public static class DevelopmentExtentionMethods
     {
         ///<summary>Unityエディター上でしかログを吐かないメソッド。</summary>
-        public static void Log(object message)
+        public static void LogEditor(object message)
         {
             #if UNITY_EDITOR
             Debug.Log(message);
@@ -39,7 +39,7 @@ namespace Game.Development
         }
         public static void Pause(object message)
         {
-            Log(message);
+            LogEditor(message);
             Pause();
         }
         ///<summary>ゲームオブジェクトのマテリアルをデフォルトに変更します。</summary>

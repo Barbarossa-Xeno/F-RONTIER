@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using EasingCore;
 
-namespace FancyScrollView.SongSelect
+namespace FancyScrollView.FRONTIER
 {
     class ScrollView : FancyScrollView<ItemData, Context>
     {
@@ -22,9 +22,16 @@ namespace FancyScrollView.SongSelect
         
         private Vector3 viewScale { set { base.cellContainer.localScale = value; } }
 
-        Action<int> onSelectionChanged;
+        /// <summary>
+        /// 選択中のセルが変更されたときに発火されるイベント
+        /// </summary>
+        private event Action<int> OnSelectionChangedAction;
 
         protected override GameObject CellPrefab => cellPrefab;
+
+        public bool Holding => scroller.hold;
+        public bool Scrolling => scroller.scrolling;
+        public bool Dragging => scroller.dragging;
 
         protected override void Initialize()
         {
@@ -46,7 +53,7 @@ namespace FancyScrollView.SongSelect
             Context.SelectedIndex = index;
             Refresh();
 
-            onSelectionChanged?.Invoke(index);
+            OnSelectionChangedAction?.Invoke(index);
         }
 
         public void UpdateData(IList<ItemData> items)
@@ -55,9 +62,13 @@ namespace FancyScrollView.SongSelect
             scroller.SetTotalCount(items.Count);
         }
 
+        /// <summary>
+        /// 選択中のセルが変わった時のアクションをイベントに登録する
+        /// </summary>
+        /// <param name="callback">イベントで発火させる関数</param>
         public void OnSelectionChanged(Action<int> callback)
         {
-            onSelectionChanged = callback;
+            OnSelectionChangedAction += callback;
         }
 
         public void SelectNextCell()

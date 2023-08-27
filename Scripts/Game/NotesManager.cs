@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.Utility;
 
-public class NotesManager : UtilityBase
+public class NotesManager : UtilityClass
 {
     /* フィールド */
     ///<summary>楽曲に含まれる総ノーツ数。</summary>
@@ -47,7 +47,7 @@ public class NotesManager : UtilityBase
         numberOfNotes = 0;
         noteSpeed = GameManager.instance.noteSpeed;
         longNotesManager = this.GetComponent<LongNotesManager>();
-        Game.Development.DevelopmentExtentionMethods.Log(GameManager.instance.difficulty);
+        Game.Utility.Development.DevelopmentExtentionMethods.LogEditor(GameManager.instance.difficulty);
         LoadJSON($"Data/{songID}/{GameManager.instance.difficulty}");
     }
 
@@ -68,7 +68,7 @@ public class NotesManager : UtilityBase
         for (int i = 0; i < inputJson.notes.Length; i++)
         {    //ノーツの数だけ繰り返す。[ループ①]とする。
             //もし、ノーツのタイプが「2」=>ロングノーツであった時。
-            if (inputJson.notes[i].type == (int)SettingUtility.NoteType.LongLinear || inputJson.notes[i].type == (int)SettingUtility.NoteType.LongCurve)
+            if (inputJson.notes[i].type == (int)Reference.NoteType.LongLinear || inputJson.notes[i].type == (int)Reference.NoteType.LongCurve)
             {
                 //ロングノーツのプロパティ（レーン番号や到達時間等）だけを格納するリスト。最終的にLongNotesManagerに送ったりする。
                 List<float> longNotesTime = new List<float>();
@@ -124,7 +124,7 @@ public class NotesManager : UtilityBase
                 longNotesManager.SetPosition(longNotesManager.laneNum.Count - 1);
             }
             //ノーツのタイプが通常ノーツであった時。
-            if (inputJson.notes[i].type == (int)SettingUtility.NoteType.Normal)
+            if (inputJson.notes[i].type == (int)Reference.NoteType.Normal)
             {
                 float secPerBeat = 60f / (float)inputJson.BPM;
                 float minDistance = secPerBeat / (float)inputJson.notes[i].LPB;
@@ -135,11 +135,11 @@ public class NotesManager : UtilityBase
                 notesType.Add(inputJson.notes[i].type);
                 //座標計算。
                 float positionX = SwitchNoteLane(inputJson.notes[i].block);  //X座標の振り分け。
-                float positionZ = notesTime[notesTime.Count - 1] * noteSpeed + SettingUtility.origin.z;    //Z座標の算出。
+                float positionZ = notesTime[notesTime.Count - 1] * noteSpeed + Reference.Origin.z;    //Z座標の算出。
                 //ノーツをオブジェクトとして生成する。
-                notesObjects.Add(Instantiate(noteObject.normal, new Vector3(positionX, SettingUtility.origin.y, positionZ), Quaternion.identity));
+                notesObjects.Add(Instantiate(noteObject.normal, new Vector3(positionX, Reference.Origin.y, positionZ), Quaternion.identity));
                 //プロパティを渡す。
-                notesObjects[notesObjects.Count - 1].GetComponent<Notes>().type = SettingUtility.NoteType.Normal;
+                notesObjects[notesObjects.Count - 1].GetComponent<Notes>().type = Reference.NoteType.Normal;
                 notesObjects[notesObjects.Count - 1].name = $"Note_{i}";
             }
         }

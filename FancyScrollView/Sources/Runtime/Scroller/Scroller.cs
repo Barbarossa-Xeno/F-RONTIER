@@ -154,9 +154,9 @@ namespace FancyScrollView
 
         int totalCount;
 
-        bool hold;
-        bool scrolling;
-        bool dragging;
+        public bool hold;
+        public bool scrolling;
+        public bool dragging;
         float velocity;
 
         [Serializable]

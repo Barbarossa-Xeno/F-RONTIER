@@ -6,7 +6,7 @@
 
 using System;
 
-namespace FancyScrollView.SongSelect
+namespace FancyScrollView.FRONTIER
 {
     class Context
     {

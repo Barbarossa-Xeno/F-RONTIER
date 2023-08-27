@@ -16,7 +16,7 @@ public class Tap : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPoint
     {
         tapManager = transform.parent.GetComponent<TapManager>();
         material = GetComponent<Renderer>().material;
-        se = (AudioClip)Resources.Load(SettingUtility.ResourcesPath.TAP_SE_PATH);
+        se = (AudioClip)Resources.Load(Reference.ResourcesPath.TAP_SE_PATH);
     }
 
     // Update is called once per frame

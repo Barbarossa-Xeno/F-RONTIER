@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Game;
+using Game.Menu;
+using Game.Menu.Save;
 using Game.Utility;
-using Game.Development;
+using Game.Utility.Development;
 using FadeTransition;
 
 /// <summary>
 /// ゲームを総括するクラス。
 /// </summary>
 public class GameManager : SingletonMonoBehaviour<GameManager>
-{
+{    
     /// <summary>
     /// 読み込む楽曲のID。
     /// </summary>
@@ -26,39 +27,39 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     /// <summary>
     /// 難易度の番号。
     /// </summary>
-    public int difficultyNumber;
+    public Reference.DifficultyEnum difficultyNumber;
     /// <summary>
     /// ノーツの速度。
     /// </summary>
-    [SerializeField] public float noteSpeed;
+    public float noteSpeed;
     /// <summary>
     /// 判定ずらしの秒数。
     /// </summary>
-    [SerializeField] public float judgingTiming;
+    public float judgingTiming;
     /// <summary>
     /// オートプレイが選択されたか。
     /// </summary>
-    [SerializeField] public bool autoPlay;
+    public bool autoPlay;
     /// <summary>
     /// MVを再生するか。
     /// </summary>
-    [SerializeField] public bool mv;
+    public bool mv;
     /// <summary>
     /// 音楽を再生するオーディオソース。
     /// </summary>
-    [SerializeField] public AudioSource musicSource = null;
+    public AudioSource musicSource = null;
     /// <summary>
     /// 効果音を再生するオーディオソース。
     /// </summary>
-    [SerializeField] public AudioSource seSource = null;
+    public AudioSource seSource = null;
     /// <summary>
     /// <see cref = "MusicManager"/>
     /// </summary>
-    [SerializeField] public MusicManager musicManager;
+    public MusicManager musicManager;
     /// <summary>
     /// <see cref = "SEManager"/>
     /// </summary>
-    [SerializeField] public SEManager seManager;
+    public SEManager seManager;
     /// <summary>
     /// 音楽の再生が開始したか。
     /// </summary>
@@ -67,6 +68,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     /// 音楽の再生が開始した時間を記録する。判定時間の算出に用いる。
     /// </summary>
     public float startTime;
+
     /// <summary>
     /// スコア情報を保存するクラス。
     /// </summary>
@@ -91,14 +93,14 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         }
     }
     public ScoreManager scoreManager = new ScoreManager();
-    public SettingUtility.GameScenes gameScene
+    public Reference.GameScenes gameScene
     {
         get
         {
-            if (SceneManager.GetActiveScene().buildIndex == 0) { return SettingUtility.GameScenes.Title; }
-            if (SceneManager.GetActiveScene().buildIndex == 1) { return SettingUtility.GameScenes.Menu; }
-            if (SceneManager.GetActiveScene().buildIndex == 2) { return SettingUtility.GameScenes.Game; }
-            if (SceneManager.GetActiveScene().buildIndex == 3) { return SettingUtility.GameScenes.Result; }
+            if (SceneManager.GetActiveScene().buildIndex == 0) { return Reference.GameScenes.Title; }
+            if (SceneManager.GetActiveScene().buildIndex == 1) { return Reference.GameScenes.Menu; }
+            if (SceneManager.GetActiveScene().buildIndex == 2) { return Reference.GameScenes.Game; }
+            if (SceneManager.GetActiveScene().buildIndex == 3) { return Reference.GameScenes.Result; }
             else { return 0; }
         }
     }
@@ -141,16 +143,16 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         if (instance.gamePlayState == GamePlayState.Inactiving) { instance.start = false; }
     }
 
-    public override void OnSceneLoaded(SettingUtility.GameScenes scene)
+    public override void OnSceneLoaded(Reference.GameScenes scene)
     {
         switch (scene)
         {
-            case SettingUtility.GameScenes.Game:
-                instance.songID = MenuInfo.menuInfo.selectedSongID;
-                instance.difficulty = MenuInfo.menuInfo.selectedDifficulty;
-                instance.difficultyNumber = MenuInfo.menuInfo.selectedDifficultyNumber;
-                instance.noteSpeed = Game.Save.Setting.setting.Save[0].noteSpeed * SettingUtility.NOTE_SPEED_FACTOR;
-                instance.judgingTiming = Game.Save.Setting.setting.Save[0].timing;
+            case Reference.GameScenes.Game:
+                instance.songID = MenuInfo.menuInfo.id;
+                instance.difficulty = MenuInfo.menuInfo.DifficultyTo().Item1;
+                instance.difficultyNumber = MenuInfo.menuInfo.difficulty;
+                instance.noteSpeed = SettingData.instance.save[0].noteSpeed * Reference.NOTE_SPEED_FACTOR;
+                instance.judgingTiming = SettingData.instance.save[0].timing;
                 instance.autoPlay = MenuInfo.menuInfo.autoPlay;
                 instance.mv = MenuInfo.menuInfo.mv;
                 instance.scoreManager = new ScoreManager();

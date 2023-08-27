@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Game.Utility;
 
-public class MusicManager : UtilityBase
+public class MusicManager : UtilityClass
 {
     private AudioSource audioSource;
     private AudioClip music;
@@ -24,10 +24,10 @@ public class MusicManager : UtilityBase
     {
         switch (GameManager.instance.gameScene)
         {
-            case SettingUtility.GameScenes.Menu:
+            case Reference.GameScenes.Menu:
                 audioSource.loop = true;
                 break;
-            case SettingUtility.GameScenes.Game:
+            case Reference.GameScenes.Game:
                 if (GameManager.instance.gamePlayState == GameManager.GamePlayState.Starting && !musicPlayed && !isCalledOnce && bpm != 0)
                 {
                     StartCoroutine(StartingRoutine());
@@ -50,13 +50,13 @@ public class MusicManager : UtilityBase
         }
     }
 
-    public override void OnSceneLoaded(SettingUtility.GameScenes scene)
+    public override void OnSceneLoaded(Reference.GameScenes scene)
     {
         switch (scene)
         {
-            case SettingUtility.GameScenes.Menu:
+            case Reference.GameScenes.Menu:
                 break;
-            case SettingUtility.GameScenes.Game:
+            case Reference.GameScenes.Game:
                 music = (AudioClip)Resources.Load<AudioClip>($"Data/{GameManager.instance.songID}/song");
                 musicPlayed = false;
                 isCalledOnce = false;

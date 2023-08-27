@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using FadeTransition;
 using Game.Utility;
-using Game.Development;
+using Game.Utility.Development;
 
 ///<summary>リザルトの管理を行うクラスです。</summary>
 public class ResultManager : MonoBehaviour
@@ -103,7 +103,7 @@ public class ResultManager : MonoBehaviour
         //リザルトの値を受け取る。
         songID = GameManager.instance.songID;
         score = GameManager.instance.scoreManager.score;
-        DevelopmentExtentionMethods.Log($"{score}, {GameManager.instance.scoreManager.score}");
+        DevelopmentExtentionMethods.LogEditor($"{score}, {GameManager.instance.scoreManager.score}");
         detailValueCount = GameManager.instance.scoreManager.scoreCount;
         //アクティブの設定。
         scoreElements.fullCombo.gameObject.SetActive(scoreElements.fullCombo.gameObject.activeSelf ? false : false);
@@ -157,9 +157,9 @@ public class ResultManager : MonoBehaviour
             string loadData = streamReader.ReadToEnd();
             streamReader.Close();
             data = JsonUtility.FromJson<SongSaveData>(loadData);
-            DevelopmentExtentionMethods.Log("楽曲セーブデータの読込に成功しました。");
+            DevelopmentExtentionMethods.LogEditor("楽曲セーブデータの読込に成功しました。");
         }
-        else { DevelopmentExtentionMethods.Log("データが見つからなかったので新規データを保存します。"); }
+        else { DevelopmentExtentionMethods.LogEditor("データが見つからなかったので新規データを保存します。"); }
 
         if(detailValueCount["bad"] == 0 && detailValueCount["miss"] == 0)
         {
@@ -212,7 +212,7 @@ public class ResultManager : MonoBehaviour
         streamWriter.Write(serialedSaveData);
         streamWriter.Flush();
         streamWriter.Close();
-        DevelopmentExtentionMethods.Log($"{songID}.jsonを保存しました。");
+        DevelopmentExtentionMethods.LogEditor($"{songID}.jsonを保存しました。");
     }
     ///<summary>獲得したアチーブメントに応じてゲームオブジェクトの演出をします。</summary>
     ///<param name = "gameObject">演出（アクティブ）させるオブジェクト。</param>
@@ -224,14 +224,14 @@ public class ResultManager : MonoBehaviour
     ///<summary>スコアに応じてランク評価を振り分けます。</summary>
     private string SelectRank(int _score)
     {
-        if (_score >= (int)SettingUtility.RankBorder.S_plus) { return "s+"; }
-        else if (_score >= (int)SettingUtility.RankBorder.S && _score < (int)SettingUtility.RankBorder.S_plus) { return "s"; }
-        else if (_score >= (int)SettingUtility.RankBorder.A_plus && _score < (int)SettingUtility.RankBorder.S) { return "a+"; }
-        else if (_score >= (int)SettingUtility.RankBorder.A && _score < (int)SettingUtility.RankBorder.A_plus) { return "a"; }
-        else if (_score >= (int)SettingUtility.RankBorder.B_plus && _score < (int)SettingUtility.RankBorder.A) { return "b+"; }
-        else if (_score >= (int)SettingUtility.RankBorder.B && _score < (int)SettingUtility.RankBorder.B_plus) { return "b"; }
-        else if (_score >= (int)SettingUtility.RankBorder.C_plus && _score < (int)SettingUtility.RankBorder.B) { return "c+"; }
-        else if (_score < (int)SettingUtility.RankBorder.C_plus) { return "c"; }
+        if (_score >= (int)Reference.RankBorder.S_plus) { return "s+"; }
+        else if (_score >= (int)Reference.RankBorder.S && _score < (int)Reference.RankBorder.S_plus) { return "s"; }
+        else if (_score >= (int)Reference.RankBorder.A_plus && _score < (int)Reference.RankBorder.S) { return "a+"; }
+        else if (_score >= (int)Reference.RankBorder.A && _score < (int)Reference.RankBorder.A_plus) { return "a"; }
+        else if (_score >= (int)Reference.RankBorder.B_plus && _score < (int)Reference.RankBorder.A) { return "b+"; }
+        else if (_score >= (int)Reference.RankBorder.B && _score < (int)Reference.RankBorder.B_plus) { return "b"; }
+        else if (_score >= (int)Reference.RankBorder.C_plus && _score < (int)Reference.RankBorder.B) { return "c+"; }
+        else if (_score < (int)Reference.RankBorder.C_plus) { return "c"; }
         else { return ""; }
     }
 

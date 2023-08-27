@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace Game.Utility
 {
-    ///<summary>ゲームの要素やユーティリティの情報を持ちます。</summary>
-    public static class SettingUtility
+    ///<summary>ゲームの自体の設定でよく参照できる情報をまとめたクラス。</summary>
+    public static class Reference
     {
         ///<summary>ノーツの種類。</summary>
         public enum NoteType
@@ -18,19 +18,40 @@ namespace Game.Utility
             Start, Inner, End, Mesh, None
         }
         ///<summary>難易度のランク。</summary>
-        public enum DifficultyRank
+        public enum DifficultyEnum
         {
-            normal, hard, expert, master
+            Lite, Hard, Ecstasy, Restricted
+        }
+        /// <summary>
+        /// 難易度のランクの名前。
+        /// </summary>
+        public static class DifficultyUtilities
+        {
+            public const string LITE = "LITE";
+            public const string HARD = "HARD";
+            public const string ECSTASY = "ECSTASY";
+            public const string RESTRICTED = "RESTRICTED";
+
+            /// <summary>
+            /// 各難易度に対応したイメージカラー。
+            /// </summary>
+            public readonly struct Colors
+            {
+                public static readonly Color32 Lite = new(76, 199, 255, 255);
+                public static readonly Color32 Hard = new(255, 157, 13, 255);
+                public static readonly Color32 Ecstasy = new(254, 101, 205, 255);
+                public static readonly Color32 Restricted = new(238, 39, 55, 255);
+            }
         }
         ///<summary>判定のステータス。</summary>
         public enum JudgementStatus
         {
-            perfect, great, good, bad, miss
+            Perfect, Great, Good, Bad, Miss
         }
         ///<summary>判定のステータスに応じて加算されるスコア。</summary>
         public enum JudgementStatusScore : int
         {
-            perfect = 5, great = 3, good = 2, bad = 1, miss = 0
+            Perfect = 5, Great = 3, Good = 2, Bad = 1, Miss = 0
         }
         ///<summary>リザルトスコアのランク。</summary>
         public enum ScoreRank
@@ -50,9 +71,9 @@ namespace Game.Utility
             C = 300000
         }
         ///<summary>ノーツを設定する基準と判定線の位置。</summary>
-        public static Vector3 origin { get { return new Vector3(0, 0.05f, 7.3f); } }
+        public static Vector3 Origin { get { return new Vector3(0, 0.05f, 7.3f); } }
         ///<summary>特殊ノーツのY座標。</summary>
-        public static Vector3 specialNotesPosition { get { return new Vector3(0, 0.1f, 0f); } }
+        public static Vector3 SpecialNotesPosition { get { return new Vector3(0, 0.1f, 0f); } }
         ///<summary>親オブジェクトと子オブジェクトの全てにレイヤー変更を適用する拡張メソッド。</summary>
         public static void SetLayerSelfChildren(this GameObject self, int layer)
         {

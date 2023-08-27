@@ -9,8 +9,11 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 using CLSrollProject;
+using Game.Menu;
+using Game.Utility;
 
-namespace FancyScrollView.SongSelect
+
+namespace FancyScrollView.FRONTIER
 {
     class Cell : FancyCell<ItemData, Context>
     {
@@ -70,23 +73,23 @@ namespace FancyScrollView.SongSelect
         ///<see cref = "BackGround"></see>のカラーと、<see cref = "diffcultyText"></see>のテキストを変更します。
         ///</summary>
         ///<param name = "difficulty">現在選択中の難易度ランク。</param>
-        private void UpdateContentByDifficulty(int difficulty){
+        private void UpdateContentByDifficulty(Reference.DifficultyEnum difficulty){
             switch(difficulty){
-                case 0:
-                BackGround.color = Game.MenuInfo.menuInfo.selectedImageColor = new Color32(76, 199, 255, 255);                
-                diffcultyText.text = Game.MenuInfo.menuInfo.selectedDifficulty = "NORMAL";
+                case Reference.DifficultyEnum.Lite:
+                BackGround.color = MenuInfo.menuInfo.DifficultyColor = new Color32(76, 199, 255, 255);                
+                diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
-                case 1:
-                image.color = Game.MenuInfo.menuInfo.selectedImageColor = new Color32(255, 162, 76, 255);
-                diffcultyText.text = Game.MenuInfo.menuInfo.selectedDifficulty = "HARD";
+                case Reference.DifficultyEnum.Hard:
+                image.color = MenuInfo.menuInfo.DifficultyColor = new Color32(255, 162, 76, 255);
+                diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
-                case 2:
-                image.color = Game.MenuInfo.menuInfo.selectedImageColor = new Color32(255, 76, 89, 255);
-                diffcultyText.text = Game.MenuInfo.menuInfo.selectedDifficulty = "EXPERT";
+                case Reference.DifficultyEnum.Ecstasy:
+                image.color = MenuInfo.menuInfo.DifficultyColor = new Color32(255, 76, 89, 255);
+                diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
-                case 3:
-                image.color = Game.MenuInfo.menuInfo.selectedImageColor = new Color32(140, 76, 255, 255);
-                diffcultyText.text = Game.MenuInfo.menuInfo.selectedDifficulty = "MASTER";
+                case Reference.DifficultyEnum.Restricted:
+                image.color = MenuInfo.menuInfo.DifficultyColor = new Color32(140, 76, 255, 255);
+                diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
                 default: return;
             }

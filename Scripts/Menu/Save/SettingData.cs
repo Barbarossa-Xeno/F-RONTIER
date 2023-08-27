@@ -1,13 +1,16 @@
 using System;
 
-namespace Game.Save{
+namespace Game.Menu.Save
+{
     [Serializable]
-    public class Setting{
-        public static Setting setting = new Setting();
-        public DEFAULT[] Default;
-        public SAVE[] Save;
+    public class SettingData
+    {
+        public static SettingData instance = new();
+        public Default[] _default;
+        public Save[] save;
         [Serializable]
-        public class DEFAULT{
+        public class Default
+        {
             public float noteSpeed;
             public float timing;
             public bool mirror;
@@ -17,7 +20,8 @@ namespace Game.Save{
             public int indexPosition;
         }
         [Serializable]
-        public class SAVE{
+        public class Save
+        {
             public float noteSpeed;
             public float timing;
             public bool mirror;
@@ -25,7 +29,7 @@ namespace Game.Save{
             public int volumeSE;
             public int diffculty;
             public int indexPosition;
-        }   
+        }
     }
 }
 

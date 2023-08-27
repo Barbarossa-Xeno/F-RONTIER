@@ -1,90 +1,175 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using TMPro;
+using Game.Utility;
 
-/// <summary>
-/// オーバーフローしたTextMeshProのテキストを左にスクロールさせる。
-/// </summary>
-public class OverflowTextScroll : MonoBehaviour
+namespace Game.Menu
 {
     /// <summary>
-    /// スクロールさせるTMPro。
+    /// オーバーフローしたTextMeshProのテキストを左にスクロールさせる。
     /// </summary>
-    [SerializeField] private TextMeshProUGUI tmp;
-    
-    /// <summary>
-    /// スクロールの速さ。
-    /// </summary>
-    [SerializeField] private float scrollSpeed;
-    
-    /// <summary>
-    /// スクロールの待ち時間。
-    /// </summary>
-    [SerializeField] private WaitTime waitTime;
-    
-    /// <summary>
-    /// 溢れてしまったテキストの長さ。
-    /// </summary>
-    private float overflowPosition;
-    
-    /// <summary>
-    /// 親のRectTransform。
-    /// </summary>
-    private RectTransform parentTransform;
-    
-    /// <summary>
-    /// TMProのRectTransform。
-    /// </summary>
-    private RectTransform tmpTransform;
-    
-    /// <summary>
-    /// スクロールの開始待ち時間と終了待ち時間。
-    /// </summary>
-    [System.Serializable]
-    private struct WaitTime
+    public class OverflowTextScroll : MonoBehaviour
     {
-        public float start;
-        public float end;
-    }
+        /// <summary>
+        /// スクロールさせるTMPro。
+        /// </summary>
+        [SerializeField] private TextMeshProUGUI text;
 
-    void Awake()
-    {
-        // いろいろ取得する
-        parentTransform = GetComponent<RectTransform>();
-        overflowPosition = tmp.preferredWidth;
-        tmpTransform = tmp.GetComponent<RectTransform>();
-    }
+        /// <summary>
+        /// スクロールの速さ。
+        /// </summary>
+        [SerializeField] private float scrollSpeed;
 
-    // コルーチンを登録
-    void Start() => StartCoroutine(ScrollText(tmpTransform, overflowPosition));
+        /// <summary>
+        /// スクロールの待ち時間。
+        /// </summary>
+        [SerializeField] private WaitTime waitTime;
 
-    /// <summary>
-    /// テキストをスクロールさせる。
-    /// </summary>
-    /// <param name="rect">TMPの位置。</param>
-    /// <param name="overflow">溢れたテキストの幅。</param>
-    /// <returns>コルーチン登録用</returns>
-    private IEnumerator ScrollText(RectTransform rect, float overflow)
-    {
-        // ループさせてスクロールを繰り返す
-        while (true)
+        /// <summary>
+        /// テキストのパディング。
+        /// </summary>
+        [SerializeField] private Padding padding;
+
+        /// <summary>
+        /// テキスト領域を表示する。
+        /// </summary>
+        [SerializeField] private bool showTextArea = false;
+
+        /// <summary>
+        /// 溢れてしまったテキストの長さ。
+        /// </summary>
+        public float overflowPosition;
+
+        /// <summary>
+        /// 親のRectTransform。
+        /// </summary>
+        private RectTransform parentTransform;
+
+        /// <summary>
+        /// TMPのテキストのテンポラリー
+        /// </summary>
+        private string text_tmp = null;
+
+        /// <summary>
+        /// 使用中のルーチン
+        /// </summary>
+        private IEnumerator currentEnumerator;
+
+        /// <summary>
+        /// TMPに設定するテキスト。
+        /// </summary>
+        public string Text
         {
-            // スクロールの開始を待つ
-            yield return new WaitForSeconds(waitTime.start);
-            // テキストがすべて表示されるまで毎フレームごとにテキストを移動させる
-            while (rect.offsetMin.x >= -overflow + parentTransform.sizeDelta.x)
-            {
-                float delta = scrollSpeed * Time.deltaTime;
-                rect.offsetMin -= new Vector2(delta, rect.offsetMin.y);
-                rect.offsetMax -= new Vector2(delta, rect.offsetMax.y);
-                yield return null;
-            }
-            // 最後までスクロールしたら一定時間待って初期位置に戻す
-            yield return new WaitForSeconds(waitTime.end);
-            rect.offsetMin = new Vector2(0, rect.offsetMin.y);
-            rect.offsetMax = new Vector2(0, rect.offsetMax.y);
+            get { return text.text; }
+            set { text.text = value; }
         }
 
+        /// <summary>
+        /// スクロールの開始待ち時間と終了待ち時間。
+        /// </summary>
+        [Serializable]
+        private struct WaitTime
+        {
+            public float start;
+            public float end;
+        }
 
+        [Serializable]
+        private struct Padding
+        {
+            public float left;
+            public float top;
+            public float right;
+            public float bottom;
+        }
+
+        void Awake() => Init();
+
+        // コルーチンを登録
+        void Start()
+        {
+            currentEnumerator = ScrollText(text.rectTransform, overflowPosition);
+            StartCoroutine(currentEnumerator);
+        }
+
+        void OnValidate()
+        {
+            SetPadding();
+            TextArea();
+        }
+
+        void Update()
+        {
+            if (UtilityMethod.IsValueChanged(ref text_tmp, text.text))
+            {
+                Init();
+                StopCoroutine(currentEnumerator);
+                currentEnumerator = ScrollText(text.rectTransform, overflowPosition);
+                StartCoroutine(currentEnumerator);
+            }
+        }
+
+        /// <summary>
+        /// 要素を再取得する初期化。
+        /// </summary>
+        public void Init()
+        {
+            // いろいろ取得する
+            parentTransform = GetComponent<RectTransform>();
+            overflowPosition = parentTransform.sizeDelta.x - text.preferredWidth;
+            if (overflowPosition < 0) { overflowPosition = -overflowPosition; }
+            else { overflowPosition = 0; }
+            // 位置合わせ
+            text.rectTransform.offsetMin = new Vector2(0, 0);
+            text.rectTransform.offsetMax = new Vector2(0, 0);
+            text_tmp = text.text;
+            SetPadding();
+        }
+
+        /// <summary>
+        /// テキストをスクロールさせる。
+        /// </summary>
+        /// <param name="rect">TMPの位置。</param>
+        /// <param name="overflow">溢れたテキストの幅。</param>
+        /// <returns>コルーチン登録用</returns>
+        private IEnumerator ScrollText(RectTransform rect, float overflow)
+        {
+            // オーバーフローしたテキストが無ければコルーチンを破棄
+            if (overflow == 0) { yield break; }
+
+            // ループさせてスクロールを繰り返す
+            while (true)
+            {
+                // スクロールの開始を待つ
+                yield return new WaitForSeconds(waitTime.start);
+                // テキストがすべて表示されるまで毎フレームごとにテキストを移動させる
+                while (rect.offsetMin.x >= -overflow)
+                {
+                    float delta = scrollSpeed * Time.unscaledDeltaTime;
+                    // (left, top)
+                    rect.offsetMin -= new Vector2(delta, rect.offsetMin.y);
+                    // (right, bottom)
+                    rect.offsetMax -= new Vector2(delta, rect.offsetMax.y);
+
+                    yield return null;
+                }
+                // 最後までスクロールしたら一定時間待って初期位置に戻す
+                yield return new WaitForSeconds(waitTime.end);
+                rect.offsetMin = new Vector2(0, rect.offsetMin.y);
+                rect.offsetMax = new Vector2(0, rect.offsetMax.y);
+            }
+        }
+
+        private void SetPadding()
+        {
+            text.rectTransform.offsetMin = new Vector2(padding.left, -padding.top);
+            text.rectTransform.offsetMax = new Vector2(-padding.right, padding.bottom);
+        }
+
+        private void TextArea()
+        {
+            GetComponent<UnityEngine.UI.Image>().enabled = showTextArea;
+        }
     }
 }

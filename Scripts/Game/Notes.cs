@@ -7,28 +7,28 @@ public class Notes : MonoBehaviour
 {
     private float speed;
     ///<summary>種類。</summary>
-    public SettingUtility.NoteType type;
+    public Reference.NoteType type;
     ///<summary>種類がロングノーツであったとき持つ情報。</summary>
     public LongNote longNote;
     [System.Serializable]
     public class LongNote
     {
         ///<summary>ロングノーツとしてのステータス。</summary>
-        [SerializeField] public SettingUtility.LongNoteStatus status;
+        [SerializeField] public Reference.LongNoteStatus status;
         ///<summary>譜面で何番目のロングノーツか。</summary>
         [SerializeField] public int index;
         ///<summary>中間点があるか。</summary>
         [SerializeField] public bool isInner;
         public LongNote()
         {
-            status = SettingUtility.LongNoteStatus.None;
+            status = Reference.LongNoteStatus.None;
             index = -1;
         }
     }
 
     void Start()
     {
-        if (type == SettingUtility.NoteType.Normal) { longNote = new LongNote(); }
+        if (type == Reference.NoteType.Normal) { longNote = new LongNote(); }
         speed = GameManager.instance.noteSpeed;
     }
 
