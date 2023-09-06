@@ -3,15 +3,33 @@ using UnityEngine.UI;
 using System;
 using Game.Utility;
 using FancyScrollView.FRONTIER;
+using UnityEngine.Events;
 
 namespace Game.Menu
 {
+    /// <summary>
+    /// 難易度を変更するためのスライダー。
+    /// </summary>
     public class DifficultySlider : MonoBehaviour
     {
+        /// <summary>
+        /// スクロールの状態を取得する。
+        /// </summary>
         [SerializeField] private ScrollCondition scrollCondition;
+
+        /// <summary>
+        /// スライダー本体。
+        /// </summary>
         [SerializeField] private Slider slider;
+
+        /// <summary>
+        /// スライダーのハンドルをカスタマイズする要素。
+        /// </summary>
         [Tooltip("スライダーのハンドルをカスタマイズ")][SerializeField] private SliderHandle sliderHandle;
 
+        /// <summary>
+        /// スライダーのハンドル部分。
+        /// </summary>
         [Serializable]
         private class SliderHandle
         {
@@ -24,6 +42,14 @@ namespace Game.Menu
         /// スライダーの値。
         /// </summary>
         public int SliderValue => (int)slider.value;
+
+        /// <summary>
+        /// 外部クラスのメソッドやイベントを<see cref = "slider"/>の値変更時のイベントに登録させるためのメソッド。
+        /// （void型メソッドや引数無しAction型デリゲートを登録しやすいようにしている）
+        /// </summary>
+        /// <param name="action">難易度が変更されたときに発火したいイベント</param>
+        // 本当はonValueChangedは、floatを引数に持つUnityAction型をコールバックにとるけど、わざわざparamで捨て引数にしてアクションを発火させるイベントを登録している
+        public void OnDifficultyChanged(Action action) => slider.onValueChanged.AddListener((param) => action.Invoke());
 
         void Start()
         {
@@ -63,6 +89,9 @@ namespace Game.Menu
             }
         }
 
+        /// <summary>
+        /// スライダーのハンドルをスライダーの動きに追従させる。
+        /// </summary>
         private void HandleFollowSlider()
         {
             sliderHandle.handleShadow.anchorMin = new Vector2(sliderHandle.handle.anchorMin.x, 0);

@@ -19,10 +19,7 @@ namespace Game.Utility.Easing
         /// <param name="x">入力値。</param>
         /// <param name="t">周期。大きいほどイージングの変化が遅くなる。</param>
         /// <returns>計算後の値を返す</returns>
-        public static float EaseInOutSine(this float x, float t = 1f)
-        {
-            return (Mathf.Sin((Mathf.PI * x - (Mathf.PI / 2)) / t) + 1) / 2;
-        }
+        public static float EaseInOutSine(this float x, float t = 1f) => (Mathf.Sin((Mathf.PI * x - (Mathf.PI / 2)) / t) + 1) / 2;
 
         /// <summary>
         /// 入力された値に対してInOutCircなイージングを行う。
@@ -35,5 +32,13 @@ namespace Game.Utility.Easing
                 ? (1 - Mathf.Sqrt(1 - (float)Math.Pow(2 * x, 2))) / 2
                 : (Mathf.Sqrt(1 - (float)Math.Pow(-2 * x + 2, 2)) + 1) / 2;
         }
+
+        /// <summary>
+        /// 入力された値に対してOutQuintなイージングを行う。
+        /// </summary>
+        /// <param name="x">入力値</param>
+        /// <returns>計算後の値を返す</returns>
+        public static float EaseOutQuint(this float x) => 1 - Mathf.Pow(1 - x, 5);
+    
     }
 }

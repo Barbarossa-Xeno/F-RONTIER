@@ -251,7 +251,6 @@ namespace Game.Menu.Background
             List<Vector3> controls = new List<Vector3>();
             // 始点より後の奇数番号の頂点だけ制御点に選び取る
             for (int i = 3; i < vertices.Length - 2; i += 2) { controls.Add(vertices[i]); }
-            controls.Count.LogValue();
             // 球面線形補間に使うためのベクトルのリスト
             List<Vector3> v = new List<Vector3>();
             // -- 球面線形補間 <Slerp> -- //

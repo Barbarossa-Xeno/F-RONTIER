@@ -15,7 +15,7 @@ using Game.Utility;
 
 namespace FancyScrollView.FRONTIER
 {
-    class Cell2 : FancyCell<ItemData, Context>
+    class Cell2 : FancyCell<ItemData, Context>, IMenu
     {
         /// <summary>
         /// セルのアニメーションに用いるアニメーター。
@@ -73,15 +73,11 @@ namespace FancyScrollView.FRONTIER
             // 受け渡されたItemDataの情報がテンポラリーと異なっていたらセルの情報を更新する
             if (UtilityMethod.IsValueChanged(ref itemData_tmp, itemData))
             {
-                cover.sprite = Resources.Load<Sprite>($"Data/{itemData.SongID}/cover");
-                songName.Text = itemData.Title;
+                cover.sprite = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
+                songName.Text = itemData.name;
+                itemData_tmp = itemData;
 
                 bool selected = Context.SelectedIndex == Index;
-
-                if (selected || CellVisible)
-                {
-                    //songName.Init();
-                }
             }
         }
 

@@ -5,43 +5,42 @@ namespace Game.Utility
     /// <summary>
     /// 選択された曲の情報を保持するためのクラス。
     /// </summary>
-    [System.Serializable]
     public class SongInfo
     {
         /// <summary>
         /// 曲のID。
         /// </summary>
-        public int id;
+        public virtual int ID { get; set; }
 
         /// <summary>
         /// 曲名。
         /// </summary>
-        public string name;
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// アーティスト。
         /// </summary>
-        public string artist;
+        public virtual string Artist { get; set; }
 
         /// <summary>
         /// 作品名。
         /// </summary>
-        public string works;
+        public virtual string Works { get; set; }
 
         /// <summary>
         /// 選択中の難易度。
         /// </summary>
-        public Reference.DifficultyEnum difficulty;
+        public virtual Reference.DifficultyEnum Difficulty { get; set; }
 
         /// <summary>
         /// その曲のレベル。
         /// </summary>
-        public string level;
+        public virtual string Level { get; set; }
 
         /// <summary>
         /// その曲のカバー画像。
         /// </summary>
-        public Sprite cover;
+        public virtual Sprite Cover { get; set; }
 
         /// <summary>
         /// 難易度（<see cref="difficulty"/>）からその難易度の文字列とイメージカラーへ変換する。

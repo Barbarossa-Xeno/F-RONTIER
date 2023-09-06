@@ -153,22 +153,7 @@ namespace Game.Menu.Window
         /// <param name="difficulty">曲の難易度</param>
         public override void SetColorTrigger(Reference.DifficultyEnum difficulty)
         {
-            switch (difficulty)
-            {
-                case Reference.DifficultyEnum.Lite:
-                    gradientOption.colorKey[1].color = Reference.DifficultyUtilities.Colors.Lite;
-                    break;
-                case Reference.DifficultyEnum.Hard:
-                    gradientOption.colorKey[1].color = Reference.DifficultyUtilities.Colors.Hard;
-                    break;
-                case Reference.DifficultyEnum.Ecstasy:
-                    gradientOption.colorKey[1].color = Reference.DifficultyUtilities.Colors.Ecstasy;
-                    break;
-                case Reference.DifficultyEnum.Restricted:
-                    gradientOption.colorKey[1].color = Reference.DifficultyUtilities.Colors.Restricted;
-                    break;
-                default: return;
-            }
+            gradientOption.colorKey[1].color = MenuInfo.menuInfo.DifficultyTo(difficulty).Item2;
             gradient.SetKeys(gradientOption.colorKey, gradientOption.alphaKey);
         }
 

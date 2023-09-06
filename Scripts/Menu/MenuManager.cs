@@ -3,16 +3,17 @@ using System.IO;
 using UnityEngine;
 using FancyScrollView.FRONTIER;
 using UnityEngine.Scripting;
-using Game.Menu.Save;
+using Game.Save;
 using Game.Utility.Development;
 using Game.Utility;
+using UnityEngine.UI;
 
 namespace Game.Menu
 {
     ///<summary>
     ///メニュー画面の総括的な管理を行う。
     ///</summary>
-    public class MenuManager : MonoBehaviour
+    public class MenuManager : MonoBehaviour, IMenu
     {
         /* フィールド */
 
@@ -22,14 +23,24 @@ namespace Game.Menu
         [SerializeField] private ScrollManager scrollManager;
 
         /// <summary>
-        /// <see cref = "SongData"/>
+        /// <see cref = "DifficultySlider"/>
         /// </summary>
-        public SongData songData;
+        [SerializeField] private DifficultySlider slider;
 
-        ///<summary>現在選択中の難易度ランク。</summary>
-        private Reference.DifficultyEnum difficulty;
+        /// <summary>
+        /// <see cref = "Window.WindowMenu"/>
+        /// </summary>
+        public Window.WindowMenu windowMenu;
 
+        /// <summary>
+        /// 曲のハイライトを入れる配列。
+        /// </summary>
         private AudioClip[] songHighlights;
+
+        /// <summary>
+        /// 難易度が更新されたときに発火させるアクション。
+        /// </summary>
+        private Action OnDifficultyChangedAction;
 
 
         void Awake()
@@ -37,17 +48,16 @@ namespace Game.Menu
             GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
             //初期化処理。後にセーブデータに対応する予定
             LoadData();
-            difficulty = MenuInfo.menuInfo.difficulty != 0
-                ? MenuInfo.menuInfo.difficulty
-                : Utility.Reference.DifficultyEnum.Lite;
-            scrollManager.difficulty = difficulty;
-        }
 
-        void Update()
-        {
+            // イベントを登録
+            OnDifficultyChangedAction += 
+                () => 
+                {
+                    this.OnDifficultyChanged();
+                    windowMenu.OnDifficultyChanged();
+                };
 
-            //GameManager.instance.musicSource.volume = (float)SettingData.instance.save[0].volumeMusic / 10f;
-            //GameManager.instance.seSource.volume = (float)SettingData.instance.save[0].volumeSE / 10f;
+            slider.OnDifficultyChanged(OnDifficultyChangedAction);
         }
 
         /// <summary>
@@ -55,43 +65,18 @@ namespace Game.Menu
         /// </summary>
         private void LoadData()
         {
-            LoadSetting(Application.persistentDataPath);
-            songData = LoadSongs();
+            SettingData.Instance.Load();
+            NotificationData.Instance.Load();
+            SongData.Instance.Load();
             LoadAudio();
         }
 
         /// <summary>
-        /// 楽曲のデータをロードする。
+        /// 設定ファイルを保存します。
         /// </summary>
-        /// <returns>楽曲データ</returns>
-        private SongData LoadSongs()
-        {
-            return JsonUtility.FromJson<SongData>(Resources.Load<TextAsset>("SongData").ToString());
-        }
-
-        ///<summary>設定ファイルとお知らせを記載したファイルを読み込みます。</summary>
-        public void LoadSetting(string parentPath)
-        {
-            if (File.Exists(parentPath + "/Setting.json"))
-            {
-                StreamReader streamReader = new StreamReader(parentPath + "/Setting.json");
-                string loadData = streamReader.ReadToEnd();
-                streamReader.Close();
-                SettingData.instance = JsonUtility.FromJson<SettingData>(loadData);
-                DevelopmentExtentionMethods.LogEditor($"{Application.persistentDataPath}からの読込に成功しました。");
-            }
-            else
-            {
-                SettingData.instance = JsonUtility.FromJson<SettingData>(Resources.Load<TextAsset>("Setting").ToString());
-                DevelopmentExtentionMethods.LogValue($"{Application.persistentDataPath}からの読込に失敗したかファイルが存在しないためResourceフォルダから読込を完了しました。");
-            }
-            Notification.instance = JsonUtility.FromJson<Notification>(Resources.Load<TextAsset>("Notification").ToString());
-        }
-
-        ///<summary>設定ファイルを保存します。</summary>
         public void SaveSetting(string parentPath)
         {
-            string serialedSaveData = JsonUtility.ToJson(SettingData.instance, true);
+            string serialedSaveData = JsonUtility.ToJson(SettingData.Instance, true);
             StreamWriter streamWriter = new StreamWriter(parentPath + "/Setting.json");
             streamWriter.Write(serialedSaveData);
             streamWriter.Flush();
@@ -99,26 +84,81 @@ namespace Game.Menu
             DevelopmentExtentionMethods.LogEditor($"{parentPath}への保存に成功しました。");
         }
 
+        /// <summary>
+        /// メニューで流れる楽曲のハイライトのオーディオクリップを読み込む。
+        /// </summary>
         private void LoadAudio()
         {
-            songHighlights = new AudioClip[songData.songs.Length];
+            songHighlights = new AudioClip[SongData.Instance.songs.Length];
             for (int i = 0; i < songHighlights.Length; i++) { songHighlights[i] = Resources.Load<AudioClip>($"Data/{i}/highlight"); }
         }
 
-        public void PlayHighLight(int index)
+        public void OnSongSelected(ItemData itemData)
         {
-            GameManager.instance.musicSource.clip = songHighlights[index];
+            PlayHighLight(itemData.id);
+            MenuInfoUpdate(itemData);
+        }
+
+        private int id_tmp = -1;
+        /// <summary>
+        /// ハイライトを再生する。
+        /// </summary>
+        /// <param name="id">曲のID</param>
+        private void PlayHighLight(int id)
+        {
+            if (id_tmp == id) { return;}
+            id_tmp = id;
+            GameManager.instance.musicSource.clip = songHighlights[id];
             GameManager.instance.musicSource.Play();
         }
 
-        public void MenuInfoUpdate(ItemData[] itemDatas, int index)
+        /// <summary>
+        /// メニューで選択された曲情報を更新する。
+        /// </summary>
+        /// <param name="itemDatas">セルのデータ</param>
+        /// <param name="index">曲のインデックス</param>
+        private void MenuInfoUpdate(ItemData itemData)
         {
-            MenuInfo.menuInfo.indexInMenu = index;
-            MenuInfo.menuInfo.id = itemDatas[index].SongID;
-            MenuInfo.menuInfo.name = itemDatas[index].Title;
-            MenuInfo.menuInfo.level = itemDatas[index].Level;
+            MenuInfo.menuInfo.ID = itemData.id;
+            MenuInfo.menuInfo.Name = itemData.name;
+            MenuInfo.menuInfo.Artist = itemData.artist;
+            MenuInfo.menuInfo.Level = itemData.ChangeLevel(MenuInfo.menuInfo.Difficulty);
             MenuInfo.menuInfo.DifficultyColor = MenuInfo.menuInfo.DifficultyTo().Item2;
-            MenuInfo.menuInfo.cover = Resources.Load<Sprite>($"Data/{index}/cover");
+            MenuInfo.menuInfo.Cover = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
+        }
+
+        /// <summary>
+        /// 難易度の変更に合わせて、曲のレベルのみ更新する。
+        /// </summary>
+        /// <param name="level">レベル</param>
+        private void MenuInfoUpdate(string level) => MenuInfo.menuInfo.Level = level;
+
+        public void OnDifficultyChanged()
+        {
+            // メニュー全体の難易度の更新
+            MenuInfo.menuInfo.Difficulty = (Reference.DifficultyEnum)Enum.ToObject(typeof(Reference.DifficultyEnum), slider.SliderValue);
+            // 難易度に応じてアイテムデータのレベルも更新する
+            MenuInfoUpdate(scrollManager.ItemDatas[MenuInfo.menuInfo.indexInMenu].ChangeLevel(MenuInfo.menuInfo.Difficulty));
+        }
+
+        /// <summary>
+        /// ソート時、以前選択していた曲が持っていたIDを通じて、メニュー内のセルのインデックスを参照する。
+        /// </summary>
+        /// <param name="datas">項目</param>
+        /// <returns>以前選択されていた曲のソート後のインデックス位置</returns>
+        public int GetIndexInMenu(in ItemData[] datas, out int index)
+        {
+            int _index = 0;
+            for (int i = 0; i < datas.Length; i++)
+            {
+                if (datas[i].id == MenuInfo.menuInfo.ID)
+                {
+                    _index = datas[i].cellIndex;
+                    break;
+                }
+            }
+            index = _index;
+            return _index;
         }
     }
 }

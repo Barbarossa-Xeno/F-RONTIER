@@ -49,11 +49,11 @@ namespace FancyScrollView.FRONTIER
 
         public override void UpdateContent(ItemData itemData)
         {
-            title.text = itemData.Title;
-            artist.text = itemData.Artist;
-            works.text = itemData.Works;
-            level.text = itemData.Level;
-            LoadImage(itemData.SongID);
+            title.text = itemData.name;
+            artist.text = itemData.artist;
+            works.text = itemData.works;
+            level.text = itemData.level;
+            LoadImage(itemData.id);
 
             var selected = Context.SelectedIndex == Index;
             image.color = selected
@@ -65,7 +65,7 @@ namespace FancyScrollView.FRONTIER
             else{
                 this.GetComponent<CLScrollTextInitialize>().UpdateTextCondition(false);
             }
-            UpdateContentByDifficulty(itemData.Difficulty);
+            UpdateContentByDifficulty(itemData.difficulty);
         }
 
         ///<summary>

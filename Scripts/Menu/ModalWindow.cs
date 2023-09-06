@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using CLSrollProject;
 using FadeTransition;
-using Game.Menu.Save;
+using Game.Save;
 
 namespace Game.Menu
 {
@@ -43,30 +43,30 @@ namespace Game.Menu
         ///<summary>各種表示テキストの初期化を行います。</summary>
         private void Init()
         {
-            settingElement.noteSpeed.text = SettingData.instance.save[0].noteSpeed.ToString("f1");
-            settingElement.timing.text = SettingData.instance.save[0].timing.ToString("f1");
-            settingElement.mirror.isOn = SettingData.instance.save[0].mirror;
-            settingElement.volumeMusic.value = SettingData.instance.save[0].volumeMusic;
-            settingElement.volumeSE.value = SettingData.instance.save[0].volumeSE;
+            settingElement.noteSpeed.text = SettingData.Instance.setting.noteSpeed.ToString("f1");
+            settingElement.timing.text = SettingData.Instance.setting.timing.ToString("f1");
+            settingElement.mirror.isOn = SettingData.Instance.setting.mirror;
+            settingElement.volumeMusic.value = SettingData.Instance.setting.musicVolume;
+            settingElement.volumeSE.value = SettingData.Instance.setting.seVolume;
         }
 
         ///<summary>各種UIで調整した値を基底のデータに反映させる処理を行います。</summary>
         private void Reflect()
         {
-            SettingData.instance.save[0].mirror = settingElement.mirror.isOn;
-            SettingData.instance.save[0].volumeMusic = (int)settingElement.volumeMusic.value;
-            SettingData.instance.save[0].volumeSE = (int)settingElement.volumeSE.value;
+            SettingData.Instance.setting.mirror = settingElement.mirror.isOn;
+            SettingData.Instance.setting.musicVolume = (int)settingElement.volumeMusic.value;
+            SettingData.Instance.setting.seVolume = (int)settingElement.volumeSE.value;
             Init();
         }
         ///<summary>チェックウィンドウ専用のオーバーロード。</summary>
         private void Reflect(CheckWindowElement check)
         {
-            check.songTitle.text = MenuInfo.menuInfo.name;
+            check.songTitle.text = MenuInfo.menuInfo.Name;
             check.difficulty.text = MenuInfo.menuInfo.DifficultyTo().Item1;
-            check.level.text = MenuInfo.menuInfo.level;
+            check.level.text = MenuInfo.menuInfo.Level;
             check.backGround.color = MenuInfo.menuInfo.DifficultyColor;
             check.difficultyHighlight.color = new Color32(MenuInfo.menuInfo.DifficultyColor.r, MenuInfo.menuInfo.DifficultyColor.g, MenuInfo.menuInfo.DifficultyColor.b, 225);
-            check.cover.sprite = MenuInfo.menuInfo.cover;
+            check.cover.sprite = MenuInfo.menuInfo.Cover;
             MenuInfo.menuInfo.autoPlay = check.autoPlay.isOn;
             MenuInfo.menuInfo.mv = check.mv.isOn;
         }
@@ -80,24 +80,24 @@ namespace Game.Menu
                 switch (buttonIndex)
                 {
                     case 0:
-                        SettingData.instance.save[0].noteSpeed -= 1.0f;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
+                        SettingData.Instance.setting.noteSpeed -= 1.0f;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
                         break;
                     case 1:
-                        SettingData.instance.save[0].noteSpeed -= 0.1f;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
+                        SettingData.Instance.setting.noteSpeed -= 0.1f;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
                         break;
                     case 2:
-                        SettingData.instance.save[0].noteSpeed += 0.1f;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
+                        SettingData.Instance.setting.noteSpeed += 0.1f;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
                         break;
                     case 3:
-                        SettingData.instance.save[0].noteSpeed += 1.0f;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
-                        SettingData.instance.save[0].noteSpeed = SettingData.instance.save[0].noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.instance.save[0].noteSpeed;
+                        SettingData.Instance.setting.noteSpeed += 1.0f;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed < MIN_NOTE_SPEED ? MIN_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
+                        SettingData.Instance.setting.noteSpeed = SettingData.Instance.setting.noteSpeed > MAX_NOTE_SPEED ? MAX_NOTE_SPEED : SettingData.Instance.setting.noteSpeed;
                         break;
                 }
             }
@@ -113,24 +113,24 @@ namespace Game.Menu
                 switch (buttonIndex)
                 {
                     case 0:
-                        SettingData.instance.save[0].timing -= 1.0f;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.instance.save[0].timing;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.instance.save[0].timing;
+                        SettingData.Instance.setting.timing -= 1.0f;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.Instance.setting.timing;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.Instance.setting.timing;
                         break;
                     case 1:
-                        SettingData.instance.save[0].timing -= 0.1f;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.instance.save[0].timing;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.instance.save[0].timing;
+                        SettingData.Instance.setting.timing -= 0.1f;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.Instance.setting.timing;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.Instance.setting.timing;
                         break;
                     case 2:
-                        SettingData.instance.save[0].timing += 0.1f;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.instance.save[0].timing;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.instance.save[0].timing;
+                        SettingData.Instance.setting.timing += 0.1f;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.Instance.setting.timing;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.Instance.setting.timing;
                         break;
                     case 3:
-                        SettingData.instance.save[0].timing += 1.0f;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.instance.save[0].timing;
-                        SettingData.instance.save[0].timing = SettingData.instance.save[0].timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.instance.save[0].timing;
+                        SettingData.Instance.setting.timing += 1.0f;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing < MIN_JUDGING_TIMING ? MIN_JUDGING_TIMING : SettingData.Instance.setting.timing;
+                        SettingData.Instance.setting.timing = SettingData.Instance.setting.timing > MAX_JUDGING_TIMING ? MAX_JUDGING_TIMING : SettingData.Instance.setting.timing;
                         break;
                 }
             }
@@ -154,7 +154,7 @@ namespace Game.Menu
         private void NotificationWindowSetUp(GameObject parent)
         {
             //Debug.Log($"{texts.Count}, {texts[0].name}, {texts[1].name}");
-            for (int i = 0; i < Notification.instance.news.Length; i++)
+            for (int i = 0; i < NotificationData.Instance.notification.Length; i++)
             {
                 GameObject info = Instantiate(newsObject);
                 info.transform.SetParent(parent.transform);
@@ -163,8 +163,8 @@ namespace Game.Menu
                 info.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
                 List<Transform> texts = new List<Transform>(info.GetComponentsInChildren<Transform>());    //親と子を含めたオブジェクトを取得。これはTextMeshProを取得するため。
                 texts.RemoveAt(0);  //親を除外。
-                texts[0].GetComponent<TextMeshProUGUI>().text = Notification.instance.news[i].title;
-                texts[1].GetComponent<TextMeshProUGUI>().text = Notification.instance.news[i].p;
+                texts[0].GetComponent<TextMeshProUGUI>().text = NotificationData.Instance.notification[i].title;
+                texts[1].GetComponent<TextMeshProUGUI>().text = NotificationData.Instance.notification[i].p;
             }
         }
         /* 以下、ボタンコンポーネントにアタッチして使うメソッドです。 */
@@ -175,7 +175,7 @@ namespace Game.Menu
         }
         public void CloseSetting()
         {
-            menuManager.SaveSetting(Application.persistentDataPath);
+            //menuManager.SaveSetting(Application.persistentDataPath);
             settingWindow.GetComponent<Animator>().SetBool("isOpen", false);
         }
         public void OpenNotification()
@@ -188,12 +188,12 @@ namespace Game.Menu
         }
         public void CheckWindowOpened()
         {
-            checkWindowElement.songTitle.text = MenuInfo.menuInfo.name;
+            checkWindowElement.songTitle.text = MenuInfo.menuInfo.Name;
             checkWindowElement.difficulty.text = MenuInfo.menuInfo.DifficultyTo().Item1;
-            checkWindowElement.level.text = MenuInfo.menuInfo.level;
+            checkWindowElement.level.text = MenuInfo.menuInfo.Level;
             checkWindowElement.backGround.color = MenuInfo.menuInfo.DifficultyColor;
             checkWindowElement.difficultyHighlight.color = new Color32(MenuInfo.menuInfo.DifficultyColor.r, MenuInfo.menuInfo.DifficultyColor.g, MenuInfo.menuInfo.DifficultyColor.b, 225);
-            checkWindowElement.cover.sprite = MenuInfo.menuInfo.cover;
+            checkWindowElement.cover.sprite = MenuInfo.menuInfo.Cover;
             checkWindowElement.checkWindow.GetComponent<Animator>().SetBool("isActive", true);
             checkWindowElement.checkWindow.GetComponent<CLScrollTextInitialize>().UpdateTextCondition();
         }

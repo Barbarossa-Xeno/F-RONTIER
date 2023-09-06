@@ -1,3 +1,4 @@
+using Game.Utility;
 using UnityEngine;
 
 namespace Game.Menu.Window
@@ -26,6 +27,15 @@ namespace Game.Menu.Window
         /// 生成するメッシュのプロパティ。
         /// </summary>
         private BackMeshPropaties backMeshProp;
+
+        /// <summary>
+        /// メッシュのマテリアルを変更するためのプロパティ。
+        /// </summary>
+        public Material BackMeshColor
+        {
+            get => meshRenderer.material;
+            private set => meshRenderer.material = value;
+        }
 
         /// <summary>
         /// メッシュにプロパティを適用するためのクラス。
@@ -58,6 +68,23 @@ namespace Game.Menu.Window
         public override void ReScaleObject()
         {
             transform.localScale = new(1, canvasSize.y / parentRect.height, 1);
+        }
+
+        public override void SetColorTrigger(Reference.DifficultyEnum difficulty)
+        {
+            // 背景の色を変えるためのローカル関数
+            // ブラー背景には、元々のRGBを1.4で割ったものを適用すると外見が元々の色に程近くなる
+            static Color32 FixColorForBlur(Color32 color)
+            {
+                return new(
+                            r:(byte)((float)color.r / 1.4f), 
+                            g:(byte)((float)color.g / 1.4f), 
+                            b:(byte)((float)color.b / 1.4f), 
+                            a:255
+                          );
+            }
+            
+            BackMeshColor.SetColor("_Color", FixColorForBlur(MenuInfo.menuInfo.DifficultyTo(difficulty).Item2));
         }
 
         /* メソッド */

@@ -5,49 +5,106 @@
  */
 
 using Game.Utility;
-using Game.Menu.Save;
+using Game.Save;
+using UnityEngine;
 
 namespace FancyScrollView.FRONTIER
 {
+    /// <summary>
+    /// セルに表示する項目のデータ。
+    /// </summary>
     [System.Serializable]
     public class ItemData
     {
-        public string Message { get; }
-        public string Title;
-        public string Artist;
-        public string Works;
-        public string Level;
-        public Reference.DifficultyEnum Difficulty;
-        public int SongID;
+        /// <summary>
+        /// 曲名
+        /// </summary>
+        public string name;
 
-        ///<param name = "index">セルの番号。</param>
-        ///<param name = "data">出力させたい情報を入れたクラス。</param>
-        ///<param name = "difficulty">難易度数値の指定。</param>
-        ///<summary>
-        ///配列の文字列を受け取ってそれぞれをコンストラクタで振り分けます。
-        ///</summary>
+        /// <summary>
+        /// アーティスト名
+        /// </summary>
+        public string artist;
+
+        /// <summary>
+        /// 作品名
+        /// </summary>
+        public string works;
+
+        /// <summary>
+        /// 曲のID
+        /// </summary>
+        public int id;
+
+        /// <summary>
+        /// レベル
+        /// </summary>
+        public string level;
+
+        /// <summary>
+        /// ジャンル
+        /// </summary>
+        public string genre;
+
+        /// <summary>
+        /// 難易度
+        /// </summary>
+        public Reference.DifficultyEnum difficulty;
+
+        /// <summary>
+        /// セルでのインデックス
+        /// </summary>
+        public int cellIndex;
+
+        /// <summary>
+        /// 難易度に対応したレベルたち
+        /// </summary>
+        private SongData.Songs.Level levelCollection;
+
+
+        /// <summary>
+        /// 曲の情報を受け取ってセルに反映させるアイテム（項目）の情報を作成する。
+        /// </summary>
+        /// <param name = "index">セルの番号。</param>
+        /// <param name = "data">曲の情報。</param>
+        /// <param name = "difficulty">難易度。</param>
         public ItemData(SongData data, int index, Reference.DifficultyEnum difficulty)
         {
-            Title = data.songs[index].name;
-            Artist = data.songs[index].artist;
-            Works = data.songs[index].works;
-            SongID = data.songs[index].id;
-            Difficulty = difficulty;
-            switch(difficulty){
+            name = data.songs[index].name;
+            artist = data.songs[index].artist;
+            works = data.songs[index].works;
+            id = data.songs[index].id;
+            genre = data.songs[index].genre;
+
+            this.difficulty = difficulty;
+            cellIndex = index;
+            levelCollection = data.songs[index].level;
+
+            ChangeLevel(difficulty);
+        }
+
+        /// <summary>
+        /// <see cref="level"/>を選択中の難易度に合わせて変更させる。
+        /// </summary>
+        /// <param name="difficulty"></param>
+        public string ChangeLevel(Reference.DifficultyEnum difficulty)
+        {
+            switch (difficulty)
+            {
                 case Reference.DifficultyEnum.Lite:
-                Level = data.songs[index].level[0].lite;
-                break;
+                    level = levelCollection.lite;
+                    break;
                 case Reference.DifficultyEnum.Hard:
-                Level = data.songs[index].level[0].hard;
-                break;
+                    level = levelCollection.hard;
+                    break;
                 case Reference.DifficultyEnum.Ecstasy:
-                Level = data.songs[index].level[0].ecstacy;
-                break;
+                    level = levelCollection.ecstacy;
+                    break;
                 case Reference.DifficultyEnum.Restricted:
-                Level = data.songs[index].level[0].restricted;
-                break;
-                default: return;
+                    level = levelCollection.restricted;
+                    break;
             }
+            return level;
         }
     }
 }

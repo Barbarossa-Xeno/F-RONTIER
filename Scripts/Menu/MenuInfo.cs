@@ -20,7 +20,7 @@ namespace Game.Menu
         public Color32 DifficultyColor;
 
         /// <summary>
-        /// 
+        /// メニューで選択されていた楽曲が表示されていたセルのインデックスを保持する。
         /// </summary>
         public int indexInMenu;
 
@@ -33,7 +33,7 @@ namespace Game.Menu
         /// <returns></returns>
         public (string, Color32) DifficultyTo()
         {
-            return DifficultyTo(menuInfo.difficulty);
+            return DifficultyTo(menuInfo.Difficulty);
         }
     }
 }
