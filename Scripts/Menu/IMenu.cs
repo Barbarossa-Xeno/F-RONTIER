@@ -1,3 +1,4 @@
+using System;
 using FancyScrollView.FRONTIER;
 
 namespace Game.Menu
@@ -27,10 +28,27 @@ namespace Game.Menu
         /// </summary>
         public void OnDifficultyChanged() { }
 
+        /// <summary>
+        /// 楽曲のソートを何を基準に行うか。
+        /// </summary>
         public enum SortOption
         {
             ID, Name, Genre, Level
         }
+
+        /// <summary>
+        /// <see cref="SortOption"/>の項目数。
+        /// </summary>
+        public int SortOptionCount => Enum.GetNames(typeof(SortOption)).Length;
+
+        /// <summary>
+        /// 楽曲のソート順。
+        /// </summary>
         public enum SortOrder { Ascending, Descending }
+
+        /// <summary>
+        /// <see cref="SortOption"/>の項目数。 
+        /// </summary>
+        public int SortOrderCount => Enum.GetNames(typeof(SortOrder)).Length;
     }
 }

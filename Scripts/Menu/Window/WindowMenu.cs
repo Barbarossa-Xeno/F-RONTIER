@@ -86,12 +86,18 @@ namespace Game.Menu.Window
             [SerializeField] public Button start;
         }
 
+        /// <summary>
+        /// 設定画面を開くイベント（を外部に共有するためのアクション）
+        /// </summary>
+        public Action OpenSetting { get; private set; }
+
         void Start()
         {
             // 最初に１度実行して背景に色を適用させる
             OnDifficultyChanged();
 
-            buttons.setting.onClick.AddListener(settingWindowManager.Open);
+            OpenSetting = settingWindowManager.Open;
+            buttons.setting.onClick.AddListener(OpenSetting.Invoke);
         }
 
         public void OnSongSelected()

@@ -6,7 +6,6 @@ using UnityEngine.Scripting;
 using Game.Save;
 using Game.Utility.Development;
 using Game.Utility;
-using UnityEngine.UI;
 
 namespace Game.Menu
 {
@@ -40,7 +39,35 @@ namespace Game.Menu
         /// <summary>
         /// 難易度が更新されたときに発火させるアクション。
         /// </summary>
-        private Action OnDifficultyChangedAction;
+        public Action OnDifficultyChangedAction { get; set; }
+
+        /// <summary>
+        /// 楽曲データを表示するときのソートを管理するインスタンス。
+        /// </summary>
+        public SongSort songSort = new();
+
+        /// <summary>
+        /// 楽曲データを表示するときのソートを管理する。
+        /// </summary>
+        public class SongSort
+        {
+            /// <summary>
+            /// ソートの基準が変更された時に発火するイベント。
+            /// </summary>
+            public Action<IMenu.SortOption> OnSortOptionChanged { get; set; }
+
+            /// <summary>
+            /// ソート順が変更されたときに発火するイベント。
+            /// </summary>
+            public Action<IMenu.SortOrder> OnSortOrderChanged { get; set; }
+
+            public SongSort()
+            {
+                // コンストラクタで、ソートが変わった時に値を反映させるイベントを登録させる
+                OnSortOptionChanged += (option) => MenuInfo.menuInfo.SortOption = option;
+                OnSortOrderChanged += (order) => MenuInfo.menuInfo.SortOrder = order;
+            }
+        }
 
 
         void Awake()
@@ -50,12 +77,9 @@ namespace Game.Menu
             LoadData();
 
             // イベントを登録
-            OnDifficultyChangedAction += 
-                () => 
-                {
-                    this.OnDifficultyChanged();
-                    windowMenu.OnDifficultyChanged();
-                };
+            OnDifficultyChangedAction += OnDifficultyChanged;
+            OnDifficultyChangedAction += windowMenu.OnDifficultyChanged;
+            OnDifficultyChangedAction += scrollManager.OnDifficultyChanged;
 
             slider.OnDifficultyChanged(OnDifficultyChangedAction);
         }
@@ -106,7 +130,7 @@ namespace Game.Menu
         /// <param name="id">曲のID</param>
         private void PlayHighLight(int id)
         {
-            if (id_tmp == id) { return;}
+            if (id_tmp == id) { return; }
             id_tmp = id;
             GameManager.instance.musicSource.clip = songHighlights[id];
             GameManager.instance.musicSource.Play();
@@ -127,18 +151,12 @@ namespace Game.Menu
             MenuInfo.menuInfo.Cover = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
         }
 
-        /// <summary>
-        /// 難易度の変更に合わせて、曲のレベルのみ更新する。
-        /// </summary>
-        /// <param name="level">レベル</param>
-        private void MenuInfoUpdate(string level) => MenuInfo.menuInfo.Level = level;
-
         public void OnDifficultyChanged()
         {
             // メニュー全体の難易度の更新
             MenuInfo.menuInfo.Difficulty = (Reference.DifficultyEnum)Enum.ToObject(typeof(Reference.DifficultyEnum), slider.SliderValue);
             // 難易度に応じてアイテムデータのレベルも更新する
-            MenuInfoUpdate(scrollManager.ItemDatas[MenuInfo.menuInfo.indexInMenu].ChangeLevel(MenuInfo.menuInfo.Difficulty));
+            MenuInfo.menuInfo.Level = scrollManager.ItemDatas[MenuInfo.menuInfo.indexInMenu].ChangeLevel(MenuInfo.menuInfo.Difficulty);
         }
 
         /// <summary>

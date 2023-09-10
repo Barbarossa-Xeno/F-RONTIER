@@ -22,7 +22,7 @@ public class MusicManager : UtilityClass
     // Update is called once per frame
     void Update()
     {
-        switch (GameManager.instance.gameScene)
+        switch (GameManager.instance.GameScene)
         {
             case Reference.GameScenes.Menu:
                 audioSource.loop = true;

@@ -47,19 +47,8 @@ namespace FancyScrollView.FRONTIER
         /// <summary>
         /// セルが格納するすべてのデータ。
         /// </summary>
-        [SerializeField] private ItemData[] itemDatas;
-
-        /// <summary>
-        /// セルが格納するすべてのデータ。
-        /// </summary>
-        public ItemData[] ItemDatas
-        {
-            get => itemDatas;
-            private set => itemDatas = value;
-        }
-
-        [SerializeField] private IMenu.SortOption sortOption = IMenu.SortOption.ID;
-        [SerializeField] private IMenu.SortOrder sortOrder = IMenu.SortOrder.Ascending;
+        public ItemData[] ItemDatas { get; private set; }
+        
 
         void Start()
         {
@@ -81,32 +70,24 @@ namespace FancyScrollView.FRONTIER
             scrollView.UpdateData(ItemDatas);
 
             scrollView.SelectCell(MenuInfo.menuInfo.indexInMenu);
-        }
 
-        void OnValidate()
-        {
-            SortItemData(sortOption, sortOrder);
-        }
-
-        void Update()
-        {
-            //Update内にもコンストラクタと同じ処理を書くことで難易度の変更に対応しました。
-            //itemDatas = GetItemData();
-            //scrollView.UpdateData(itemDatas);
+            // ソートイベントを登録
+            menuManager.songSort.OnSortOptionChanged += (option) => SortItemData(option, MenuInfo.menuInfo.SortOrder);
+            menuManager.songSort.OnSortOrderChanged += (order) => SortItemData(MenuInfo.menuInfo.SortOption, order);
         }
 
         /// <summary>
         /// 曲数だけの<see cref="ItemData"/>を全取得する。
         /// </summary>
         /// <returns><c>ItemData</c>の配列</returns>
-        public ItemData[] GetItemData() => Enumerable.Range(0, SongData.Instance.songs.Length).Select(i => new ItemData(SongData.Instance, i, MenuInfo.menuInfo.Difficulty)).ToArray();
+        private ItemData[] GetItemData() => Enumerable.Range(0, SongData.Instance.songs.Length).Select(i => new ItemData(SongData.Instance, i, MenuInfo.menuInfo.Difficulty)).ToArray();
 
         /// <summary>
         /// セルに表示する<see cref="itemDatas"/>をソートする。
         /// </summary>
-        /// <param name="sortOption"></param>
-        /// <param name="sortOrder"></param>
-        public void SortItemData(IMenu.SortOption sortOption, IMenu.SortOrder sortOrder = IMenu.SortOrder.Ascending)
+        /// <param name="sortOption">現在選択されているソートの基準</param>
+        /// <param name="sortOrder">現在選択されているソートの並び順</param>
+        private void SortItemData(IMenu.SortOption sortOption, IMenu.SortOrder sortOrder)
         {
             switch (sortOption)
             {
@@ -135,6 +116,11 @@ namespace FancyScrollView.FRONTIER
 
             scrollView.UpdateData(ItemDatas);
             scrollView.SelectCell(menuManager.GetIndexInMenu(ItemDatas, out MenuInfo.menuInfo.indexInMenu));
+        }
+
+        public void OnDifficultyChanged()
+        {
+            Enumerable.Range(0, ItemDatas.Length).ToList().ForEach(i => ItemDatas[i].level = ItemDatas[i].ChangeLevel(MenuInfo.menuInfo.Difficulty));
         }
     }
 }

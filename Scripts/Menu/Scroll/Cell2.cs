@@ -5,8 +5,6 @@
  * Modified by @roots.eji for "F-RONTIER"
  */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -15,14 +13,15 @@ using Game.Utility;
 
 namespace FancyScrollView.FRONTIER
 {
+    /// <summary>
+    /// セル バージョン２
+    /// </summary>
     class Cell2 : FancyCell<ItemData, Context>, IMenu
     {
         /// <summary>
         /// セルのアニメーションに用いるアニメーター。
         /// </summary>
         [SerializeField] private Animator animator = default;
-
-        //ソートクラス実装しよう [SerializeField] private 
 
         /// <summary>
         /// 楽曲のカバー画像。
@@ -35,23 +34,31 @@ namespace FancyScrollView.FRONTIER
         [SerializeField] private OverflowTextScroll songName = default;
 
         /// <summary>
-        /// セル全体の透明度を管轄する。
+        /// ソートの基準として使っている情報を表示するテキスト。
         /// </summary>
-        [SerializeField] private CanvasGroup canvasGroup = default;
+        [SerializeField] private TextMeshProUGUI sortInfo = default;
+
+        /// <summary>
+        /// 曲のジャンルを表示するときに設定する項目。
+        /// </summary>
+        [SerializeField] private Genre genre;
+
+        [System.Serializable]
+        private struct Genre
+        {
+            public GameObject parent;
+            public Image background;
+            public TextMeshProUGUI genreName;
+        }
 
         // GameObject が非アクティブになると Animator がリセットされてしまうため
         // 現在位置を保持しておいて OnEnable のタイミングで現在位置を再設定します
         float currentPosition = 0;
 
         /// <summary>
-        /// <c>ItemData</c>のテンポラリー変数
+        /// <c>ItemData</c>のテンポラリー変数。セルに表示する情報は自身が保持する。
         /// </summary>
         public ItemData itemData_tmp = null;
-
-        /// <summary>
-        /// セルが可視状態かどうか。<see cref="canvasGroup"/>のアルファでチェックする
-        /// </summary>
-        private bool CellVisible { get { return canvasGroup.alpha >= 0.2f; } }
 
         /// <summary>
         /// アニメーターのパラメーターのハッシュ値を保存
@@ -60,13 +67,17 @@ namespace FancyScrollView.FRONTIER
         {
             public static readonly int scroll = Animator.StringToHash("scroll");
         }
+        
+        void Update()
+        {
+            // 屈辱ながら、Updateで実行させるしかなかった...
+            UpdateSortInfo();
+        }
 
         void OnEnable()
         {
             UpdatePosition(currentPosition);
         }
-
-        public override void Initialize() { }
 
         public override void UpdateContent(ItemData itemData)
         {
@@ -75,10 +86,8 @@ namespace FancyScrollView.FRONTIER
             {
                 cover.sprite = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
                 songName.Text = itemData.name;
-                itemData_tmp = itemData;
-
-                bool selected = Context.SelectedIndex == Index;
             }
+            UpdateSortInfo(MenuInfo.menuInfo.SortOption);
         }
 
         public override void UpdatePosition(float position)
@@ -91,6 +100,65 @@ namespace FancyScrollView.FRONTIER
             }
 
             animator.speed = 0;
+        }
+
+
+        /// <summary>
+        /// 現在選択中のソートの基準に応じてセルの表示を変更する。
+        /// </summary>
+        /// <param name="sortOption">ソートの基準</param>
+        private void UpdateSortInfo(IMenu.SortOption sortOption)
+        {
+            switch (sortOption)
+            {
+                case IMenu.SortOption.ID:
+                case IMenu.SortOption.Genre:
+                case IMenu.SortOption.Level:
+                    sortInfo.SetText(itemData_tmp.level);
+                    break;
+                case IMenu.SortOption.Name:
+                    sortInfo.SetText(songName.Text.ToCharArray()[0].ToString());
+                    break;
+            }
+            switch (sortOption)
+            {
+                case IMenu.SortOption.Genre:
+                    genre.parent.SetActive(true);
+                    switch (itemData_tmp.genre)
+                    {
+                        case "F":
+                            genre.background.color = new Color32(238, 39, 55, 255);
+                            genre.genreName.text = "F";
+                            break;
+                        case "ANIME":
+                            genre.background.color = new Color32(229, 179, 73, 255);
+                            genre.genreName.text = "ANIME";
+                            break;
+                        case "GAME":
+                            genre.background.color = new Color32(65, 105, 225, 255);
+                            genre.genreName.text = "GAME";
+                            break;
+                    }
+                    break;
+                default:
+                    genre.parent.SetActive(false);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 現在選択中のソートの基準と難易度に応じてセルの表示を変更する。
+        /// </summary>
+        private void UpdateSortInfo()
+        {
+            switch (MenuInfo.menuInfo.SortOption)
+            {
+                case IMenu.SortOption.ID:
+                case IMenu.SortOption.Genre:
+                case IMenu.SortOption.Level:
+                    sortInfo.SetText(itemData_tmp.level);
+                    break;
+            }
         }
     }
 }

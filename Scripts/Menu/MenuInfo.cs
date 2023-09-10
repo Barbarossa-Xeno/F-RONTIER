@@ -24,6 +24,16 @@ namespace Game.Menu
         /// </summary>
         public int indexInMenu;
 
+        /// <summary>
+        /// ソート順を決める。
+        /// </summary>
+        public IMenu.SortOption SortOption { get; set; }
+
+        /// <summary>
+        /// ソートが昇順か降順かを決める。
+        /// </summary>
+        public IMenu.SortOrder SortOrder { get; set; }
+
         public bool autoPlay;
         public bool mv;
 

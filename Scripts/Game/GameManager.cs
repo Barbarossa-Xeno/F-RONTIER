@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Game.Menu;
-using Game.Menu.Save;
+using Game.Save;
 using Game.Utility;
 using Game.Utility.Development;
 using FadeTransition;
@@ -16,58 +17,84 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     /// 読み込む楽曲のID。
     /// </summary>
     public int songID;
+
     /// <summary>
     /// 読み込む楽曲の名前。
     /// </summary>
     public string songName;
+
     /// <summary>
     /// 楽曲の難易度。
     /// </summary>
     public string difficulty;
+
     /// <summary>
     /// 難易度の番号。
     /// </summary>
     public Reference.DifficultyEnum difficultyNumber;
+
     /// <summary>
     /// ノーツの速度。
     /// </summary>
     public float noteSpeed;
+
     /// <summary>
     /// 判定ずらしの秒数。
     /// </summary>
     public float judgingTiming;
+
     /// <summary>
     /// オートプレイが選択されたか。
     /// </summary>
     public bool autoPlay;
+
     /// <summary>
     /// MVを再生するか。
     /// </summary>
     public bool mv;
+
     /// <summary>
     /// 音楽を再生するオーディオソース。
     /// </summary>
     public AudioSource musicSource = null;
+
     /// <summary>
     /// 効果音を再生するオーディオソース。
     /// </summary>
     public AudioSource seSource = null;
+
     /// <summary>
     /// <see cref = "MusicManager"/>
     /// </summary>
     public MusicManager musicManager;
+
     /// <summary>
     /// <see cref = "SEManager"/>
     /// </summary>
     public SEManager seManager;
+
     /// <summary>
     /// 音楽の再生が開始したか。
     /// </summary>
     public bool start = false;
+    
     /// <summary>
     /// 音楽の再生が開始した時間を記録する。判定時間の算出に用いる。
     /// </summary>
     public float startTime;
+    
+    public Info info = new();
+    [Serializable]
+    public class Info : SongInfo
+    {
+        public override int ID => MenuInfo.menuInfo.ID;
+        public override string Name => MenuInfo.menuInfo.Name;
+        public override string Artist => MenuInfo.menuInfo.Artist;
+        public override string Works => MenuInfo.menuInfo.Works;
+        public override Reference.DifficultyEnum Difficulty => MenuInfo.menuInfo.Difficulty;
+        public override string Level => MenuInfo.menuInfo.Level;
+        public override Sprite Cover => MenuInfo.menuInfo.Cover;
+    }
 
     /// <summary>
     /// スコア情報を保存するクラス。
@@ -92,8 +119,10 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
             };
         }
     }
-    public ScoreManager scoreManager = new ScoreManager();
-    public Reference.GameScenes gameScene
+
+    public ScoreManager scoreManager = new();
+
+    public Reference.GameScenes GameScene
     {
         get
         {
@@ -104,12 +133,15 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
             else { return 0; }
         }
     }
+
     [HideInInspector]
     public enum GamePlayState
     {
         Idling, Starting, Playing, Pausing, Finishing, Inactiving
     }
+
     public GamePlayState gamePlayState = GamePlayState.Idling;
+
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void AbsoluteInit()
@@ -148,11 +180,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         switch (scene)
         {
             case Reference.GameScenes.Game:
-                instance.songID = MenuInfo.menuInfo.id;
+                instance.songID = MenuInfo.menuInfo.ID;
                 instance.difficulty = MenuInfo.menuInfo.DifficultyTo().Item1;
-                instance.difficultyNumber = MenuInfo.menuInfo.difficulty;
-                instance.noteSpeed = SettingData.instance.save[0].noteSpeed * Reference.NOTE_SPEED_FACTOR;
-                instance.judgingTiming = SettingData.instance.save[0].timing;
+                instance.difficultyNumber = MenuInfo.menuInfo.Difficulty;
+                instance.noteSpeed = SettingData.Instance.setting.noteSpeed * Reference.NOTE_SPEED_FACTOR;
+                instance.judgingTiming = SettingData.Instance.setting.timing;
                 instance.autoPlay = MenuInfo.menuInfo.autoPlay;
                 instance.mv = MenuInfo.menuInfo.mv;
                 instance.scoreManager = new ScoreManager();
