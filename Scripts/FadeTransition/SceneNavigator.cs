@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Game.Utility;
+using FRONTIER.Utility;
 
 namespace FadeTransition
 {
@@ -13,32 +13,43 @@ namespace FadeTransition
     public class SceneNavigator : SingletonMonoBehaviour<SceneNavigator>
     {
         /* フィールド */
-        ///<summary>使用する<see cref = "CanvasFader"/>。</summary>
+        /// <summary>
+        /// 使用する<see cref = "CanvasFader"/>。
+        /// </summary>
         [SerializeField] private CanvasFader canvasFader = null;
-        ///<summary>フェードにかける時間。</summary>
+
+        /// <summary>
+        /// フェードにかける時間。
+        /// </summary>
         public const float FADETIME = 0.5f;
+
         private float fadeTime = FADETIME;
-        ///<summary>フェード中か否かを示すフラグ。</summary>
-        ///<returns>
-        ///<see cref = "CanvasFader.isFading"/>の真偽か、
-        ///<see cref = "CanvasFader.alpha"/>が0でない条件の真偽のどちらかがtrueになればtrueを返します。
-        ///</returns>
-        public bool isFading
-        {
-            get
-            {
-                return canvasFader.isFading || canvasFader.alpha != 0;
-            }
-        }
+        /// <summary>
+        /// フェード中か否かを示すフラグ。
+        /// </summary>
+        /// <returns>
+        /// <see cref = "CanvasFader.isFading"/>の<c>bool</c>値か、
+        /// <see cref = "CanvasFader.alpha"/>が0でないかどうか。
+        /// </returns>
+        public bool IsFading => canvasFader.isFading || canvasFader.alpha != 0;        
+
         private string _currentSceneName = "";
-        public string currentSceneName { get { return _currentSceneName; } }
+        public string CurrentSceneName => _currentSceneName;
+
         private string _beforeSceneName = "";
-        public string beforeSceneName { get { return _beforeSceneName; } }
+        public string BeforeSceneName => _beforeSceneName;
+
         private string _nextSceneName = "";
-        public string nextSceneName { get { return _nextSceneName; } }
-        ///<summary>フェードアウト後のイベント。</summary>
+        public string NextSceneName => _nextSceneName;
+
+        /// <summary>
+        /// フェードアウト後のイベント。
+        /// </summary>
         public event Action FadeOutFinished = delegate { };
-        ///<summary>フェードイン後のイベント。</summary>
+
+        /// <summary>
+        /// フェードイン後のイベント。
+        /// </summary>
         public event Action FadeInFinished = delegate { };
 
         /* メソッド */
@@ -81,9 +92,9 @@ namespace FadeTransition
             imageObject.GetComponent<RectTransform>().sizeDelta = new Vector2(2000, 2000);
         }
         ///<summary>シーン遷移を行います。</summary>
-        public void SceneChange(string sceneName, float _fadeTime = FADETIME, bool ignoreTimeScale = false)
+        public void ChangeScene(string sceneName, float _fadeTime = FADETIME, bool ignoreTimeScale = false)
         {
-            if(instance.isFading)
+            if(instance.IsFading)
             {
                 Debug.LogError("フェード中です！");
                 return;
@@ -99,7 +110,7 @@ namespace FadeTransition
 
         private void OnFadeOutFinish()
         {
-            FadeOutFinished();
+            FadeOutFinished?.Invoke();
 
             SceneManager.LoadScene(_nextSceneName);
             
@@ -116,20 +127,16 @@ namespace FadeTransition
         private void OnFadeInFinish()
         {
             canvasFader.gameObject.SetActive(false);
-            FadeInFinished();
+            FadeInFinished?.Invoke();
         }
 
-        public void ResetAction(int mode)
+        /// <summary>
+        /// <see cref="FadeInFinished"/> と <see cref="FadeOutFinished"/> のイベントハンドラを初期化する。
+        /// </summary>
+        public void ResetEvent()
         {
-            switch (mode)
-            {
-                case 0:
-                    FadeInFinished = delegate { };
-                    break;
-                case 1: 
-                    FadeOutFinished = delegate { };
-                    break;
-            }
+            FadeInFinished = null;
+            FadeOutFinished = null;
         }
     }
 }
