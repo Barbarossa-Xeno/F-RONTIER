@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
-using Game.Utility;
+using FRONTIER.Utility;
 using FancyScrollView.FRONTIER;
 using UnityEngine.Events;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// 難易度を変更するためのスライダー。

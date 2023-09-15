@@ -1,60 +1,63 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Game.Utility;
+using FRONTIER.Utility;
 
-public class Tap : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
+namespace FRONTIER.Game
 {
-    public int laneIndex;
-    TapManager tapManager;
-    Material material;
-    private float alfa;
-    public float time { get { return tapManager.tapTime[laneIndex]; } set { tapManager.tapTime[laneIndex] = value; } }
-    private bool isPressed { get { return tapManager.tapFlag[laneIndex]; } set { tapManager.tapFlag[laneIndex] = value; } }
-    private AudioClip se;
-
-    void Start()
+    public class Tap : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
-        tapManager = transform.parent.GetComponent<TapManager>();
-        material = GetComponent<Renderer>().material;
-        se = (AudioClip)Resources.Load(Reference.ResourcesPath.TAP_SE_PATH);
-    }
+        public int laneIndex;
+        TapManager tapManager;
+        Material material;
+        private float alfa;
+        public float time { get { return tapManager.tapTime[laneIndex]; } set { tapManager.tapTime[laneIndex] = value; } }
+        private bool isPressed { get { return tapManager.tapFlag[laneIndex]; } set { tapManager.tapFlag[laneIndex] = value; } }
+        private AudioClip se;
 
-    // Update is called once per frame
-    void Update()
-    {
-        material.color = ColorApply(alfa);
-        if (alfa > 0 && !isPressed)
+        void Start()
         {
-            alfa -= tapManager.lightSpeed * Time.unscaledDeltaTime;
+            tapManager = transform.parent.GetComponent<TapManager>();
+            material = GetComponent<Renderer>().material;
+            se = (AudioClip)Resources.Load(Reference.ResourcesPath.TAP_SE_PATH);
         }
-        alfa = alfa < 0 ? 0 : alfa;
-    }
 
-    public void GetTap()
-    {        
-        alfa = 0.2f;
-        time = Time.time;
-    }
-    public Color ColorApply(float alfaValue) { return new Color(1f, 1f, 1f, alfaValue); }
+        // Update is called once per frame
+        void Update()
+        {
+            material.color = ColorApply(alfa);
+            if (alfa > 0 && !isPressed)
+            {
+                alfa -= tapManager.lightSpeed * Time.unscaledDeltaTime;
+            }
+            alfa = alfa < 0 ? 0 : alfa;
+        }
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        GetTap();
-        isPressed = true;
-        GameManager.instance.seSource.PlayOneShot(se);
-    }
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        isPressed = false;
-    }
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        GetTap();
-        //isPressed = true;
-        GameManager.instance.seSource.PlayOneShot(se);
-    }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        isPressed = false;
+        public void GetTap()
+        {
+            alfa = 0.2f;
+            time = Time.time;
+        }
+        public Color ColorApply(float alfaValue) { return new Color(1f, 1f, 1f, alfaValue); }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            GetTap();
+            isPressed = true;
+            GameManager.instance.seSource.PlayOneShot(se);
+        }
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            isPressed = false;
+        }
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            GetTap();
+            //isPressed = true;
+            GameManager.instance.seSource.PlayOneShot(se);
+        }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            isPressed = false;
+        }
     }
 }

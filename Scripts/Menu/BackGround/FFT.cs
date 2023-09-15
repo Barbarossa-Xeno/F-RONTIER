@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Game.Menu.Background
+namespace FRONTIER.Menu.Background
 {
     public class FFT : MonoBehaviour
     {

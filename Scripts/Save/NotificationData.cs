@@ -1,4 +1,4 @@
-namespace Game.Save
+namespace FRONTIER.Save
 {
     /// <summary>
     /// 通知（お知らせやニュース）を読み込んで情報を保持する。

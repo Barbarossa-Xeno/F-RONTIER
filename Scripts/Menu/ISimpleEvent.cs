@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// <see cref="SimpleEventTrigger"/>とともに実装するインターフェイス。

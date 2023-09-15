@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Menu.Window.Setting
+namespace FRONTIER.Menu.Window.Setting
 {
     public class SettingItemBar : MonoBehaviour, IWindow
     {

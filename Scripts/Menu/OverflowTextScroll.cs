@@ -2,9 +2,9 @@ using UnityEngine;
 using System;
 using System.Collections;
 using TMPro;
-using Game.Utility;
+using FRONTIER.Utility;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// オーバーフローしたTextMeshProのテキストを左にスクロールさせる。

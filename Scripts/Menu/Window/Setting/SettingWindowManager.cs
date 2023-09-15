@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Menu.Window.Setting
+namespace FRONTIER.Menu.Window.Setting
 {
     /// <summary>
     /// 設定画面（ウィンドウ）の挙動を管理する。

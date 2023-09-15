@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Game.Utility.Development
+namespace FRONTIER.Utility.Development
 {
     ///<summary>エディタ上のデバッグをカスタマイズしたクラスです。</summary>
     public static class DevelopmentExtentionMethods

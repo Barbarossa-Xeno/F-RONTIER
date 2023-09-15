@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// このクラスをいずれかのスクリプトと一緒に使うことで、スクリプト内のメソッドをこのクラス側で実行させる。<br/>

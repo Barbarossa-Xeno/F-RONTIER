@@ -1,7 +1,7 @@
 using System;
 using FancyScrollView.FRONTIER;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// メニューの処理で実装するインターフェイス

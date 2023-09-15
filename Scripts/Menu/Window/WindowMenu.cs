@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using Game.Utility;
+using FadeTransition;
+using FRONTIER.Utility;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     /// <summary>
     /// 選曲画面のウィンドウを管理する。
@@ -78,12 +79,22 @@ namespace Game.Menu.Window
             /// <summary>
             /// 設定ボタン。
             /// </summary>
-            [SerializeField] public Button setting;
+            public Button setting;
 
             /// <summary>
             /// スタートボタン。
             /// </summary>
-            [SerializeField] public Button start;
+            public Button start;
+
+            /// <summary>
+            /// MVを再生するかどうか選択するボタン。
+            /// </summary>
+            public ToggleSwitch mv;
+
+            /// <summary>
+            /// オートプレイを選択するボタン。
+            /// </summary>
+            public ToggleSwitch auto;
         }
 
         /// <summary>
@@ -98,6 +109,9 @@ namespace Game.Menu.Window
 
             OpenSetting = settingWindowManager.Open;
             buttons.setting.onClick.AddListener(OpenSetting.Invoke);
+            buttons.start.onClick.AddListener(GameManager.instance.sceneLoad.game.Invoke);
+            buttons.mv.OnToggleChanged += isOn => MenuInfo.menuInfo.mv = isOn;
+            buttons.auto.OnToggleChanged += isOn => MenuInfo.menuInfo.autoPlay = isOn;
         }
 
         public void OnSongSelected()

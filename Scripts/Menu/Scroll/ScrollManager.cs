@@ -7,9 +7,9 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Game.Menu;
-using Game.Save;
-using Game.Utility;
+using FRONTIER.Menu;
+using FRONTIER.Save;
+using FRONTIER.Utility;
 using System;
 
 namespace FancyScrollView.FRONTIER

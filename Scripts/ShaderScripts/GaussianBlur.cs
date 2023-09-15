@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Game.ShaderScripts
+namespace FRONTIER.ShaderScripts
 {
     public class GaussianBlur : MonoBehaviour
     {

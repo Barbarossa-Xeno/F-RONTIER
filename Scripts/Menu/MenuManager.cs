@@ -2,12 +2,11 @@ using System;
 using System.IO;
 using UnityEngine;
 using FancyScrollView.FRONTIER;
-using UnityEngine.Scripting;
-using Game.Save;
-using Game.Utility.Development;
-using Game.Utility;
+using FRONTIER.Save;
+using FRONTIER.Utility.Development;
+using FRONTIER.Utility;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     ///<summary>
     ///メニュー画面の総括的な管理を行う。
@@ -72,7 +71,6 @@ namespace Game.Menu
 
         void Awake()
         {
-            GarbageCollector.GCMode = GarbageCollector.Mode.Enabled;
             //初期化処理。後にセーブデータに対応する予定
             LoadData();
 

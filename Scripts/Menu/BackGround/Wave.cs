@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Game.Utility;
-using Game.Utility.Development;
+using FRONTIER.Utility;
+using FRONTIER.Utility.Development;
 
-namespace Game.Menu.Background
+namespace FRONTIER.Menu.Background
 {
     public class Wave : UtilityClass
     {

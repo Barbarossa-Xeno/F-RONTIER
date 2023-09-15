@@ -1,10 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using FRONTIER.Utility;
 
-public class SEManager : MonoBehaviour
+namespace FRONTIER.Game
 {
-    public AudioSource audioSource;
+    public class SEManager : UtilityClass
+    {
+        public AudioSource audioSource;
 
-    void Awake() => audioSource = GetComponent<AudioSource>();
+        void Awake() => audioSource = GetComponent<AudioSource>();
+
+        public override void OnSceneLoaded()
+        {
+            audioSource.Stop();
+        }
+    }
 }

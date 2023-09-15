@@ -1,8 +1,8 @@
 using UnityEngine;
-using Game.Utility;
-using Game.Utility.Easing;
+using FRONTIER.Utility;
+using FRONTIER.Utility.Easing;
 
-namespace Game.Menu.Background
+namespace FRONTIER.Menu.Background
 {/// <summary>
  /// ラインレンダラーを使って波状のビジュアライザーをつくる。
  /// </summary>

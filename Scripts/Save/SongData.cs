@@ -1,6 +1,6 @@
 using System;
 
-namespace Game.Save
+namespace FRONTIER.Save
 {
     /// <summary>
     /// 楽曲のデータを読み込んで情報を保存する。

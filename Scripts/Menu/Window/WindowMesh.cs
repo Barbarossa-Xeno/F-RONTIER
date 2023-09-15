@@ -1,7 +1,7 @@
-using Game.Utility;
+using FRONTIER.Utility;
 using UnityEngine;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {/// <summary>
  /// メニューウィンドウの背景をメッシュでかたどる。
  /// </summary>

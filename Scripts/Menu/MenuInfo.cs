@@ -1,7 +1,7 @@
 using UnityEngine;
-using Game.Utility;
+using FRONTIER.Utility;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// メニューで選択されている様々な情報を保存する。

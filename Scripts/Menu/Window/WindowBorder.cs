@@ -1,9 +1,9 @@
 using UnityEngine;
-using Game.Utility;
+using FRONTIER.Utility;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     /// <summary>
     /// ウィンドウの境界線を描くためのクラス。

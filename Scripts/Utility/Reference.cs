@@ -1,18 +1,51 @@
 using UnityEngine;
 
-namespace Game.Utility
+namespace FRONTIER.Utility
 {
-    ///<summary>ゲームの自体の設定でよく参照できる情報をまとめたクラス。</summary>
+    /// <summary>
+    /// ゲームの自体の設定でよく参照できる情報をまとめたクラス。
+    /// </summary>
     public static class Reference
     {
-        ///<summary>ノーツの種類。</summary>
+        /// <summary>
+        /// ノーツの種類。
+        /// </summary>
         public enum NoteType
         {
             Normal = 1,
             LongLinear = 2,
             LongCurve = 3
         }
-        ///<summary>ロングノーツのステータス。</summary>
+
+        /// <summary>
+        /// ロングノーツの種類。
+        /// </summary>
+        public enum LongNoteType
+        {
+            /// <summary>
+            /// 中間点なし直線型
+            /// </summary>
+            NoInnerLinear,
+
+            /// <summary>
+            /// 中間点あり直線型
+            /// </summary>
+            AnyInnerLinear,
+
+            /// <summary>
+            /// 中間点なし曲線型
+            /// </summary>
+            NoInnerCurve,
+
+            /// <summary>
+            /// 中間点あり曲線型
+            /// </summary>
+            AnyInnerCurve
+        }
+
+        /// <summary>
+        /// ロングノーツのステータス。
+        /// </summary>
         public enum LongNoteStatus
         {
             Start, Inner, End, Mesh, None
@@ -23,7 +56,7 @@ namespace Game.Utility
             Lite, Hard, Ecstasy, Restricted
         }
         /// <summary>
-        /// 難易度のランクの名前。
+        /// 難易度のランクの名前とイメージカラー。
         /// </summary>
         public static class DifficultyUtilities
         {
@@ -81,10 +114,43 @@ namespace Game.Utility
             //再帰で子オブジェクトにもレイヤーを適用。
             foreach (Transform child in self.transform) { SetLayerSelfChildren(child.gameObject, layer); }
         }
-        ///<summary>このプロジェクト内に存在するシーン。</summary>
-        public enum GameScenes
+
+        public static class Scene
         {
-            Title, Menu, Game, Result
+            /// <summary>
+            /// このプロジェクト内に存在するシーン。
+            /// </summary>
+            public enum GameScenes
+            {
+                Title, Menu, Game, Result
+            }
+
+            /// <summary>
+            /// 列挙型<see cref="GameScenes"/>を文字列に変換する。
+            /// </summary>
+            /// <param name="gameScenes">シーン</param>
+            /// <returns>シーン名</returns>
+            public static string ToString(GameScenes gameScenes)
+            {
+                string name = "";
+                switch (gameScenes)
+                {
+                    case GameScenes.Title:
+                        name = "Title";
+                        break;
+                    case GameScenes.Menu:
+                        name = "Menu";
+                        break;
+                    case GameScenes.Game:
+                        name = "Game";
+                        break;
+                    case GameScenes.Result:
+                        name = "Result";
+                        break;
+                }
+                return name;
+            }
+            
         }
         /// <summary> 使用するリソースのパス。 </summary>
         public struct ResourcesPath

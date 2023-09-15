@@ -1,8 +1,8 @@
 using UnityEngine;
 using System;
-using System.Collections;
+using System.Linq;
 
-namespace Game.Utility
+namespace FRONTIER.Utility
 {
     /// <summary>
     /// うまく使えそうなメソッド集
@@ -45,5 +45,7 @@ namespace Game.Utility
             // 同じだったらfalseを返す
             else { return false; }
         }
+
+        public static void Add(this Action _event, params Action[] handlers) => Enumerable.Range(0, handlers.Length).Select(i => _event += handlers[i]);
     }
 }

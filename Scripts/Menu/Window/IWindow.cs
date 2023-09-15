@@ -1,4 +1,4 @@
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     public interface IWindow
     {

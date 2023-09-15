@@ -8,8 +8,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Game.Menu;
-using Game.Utility;
+using FRONTIER.Menu;
+using FRONTIER.Utility;
 
 namespace FancyScrollView.FRONTIER
 {

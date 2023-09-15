@@ -4,8 +4,8 @@
  * Licensed under MIT (https://github.com/setchi/FancyScrollView/blob/master/LICENSE)
  */
 
-using Game.Utility;
-using Game.Save;
+using FRONTIER.Utility;
+using FRONTIER.Save;
 using UnityEngine;
 
 namespace FancyScrollView.FRONTIER

@@ -1,12 +1,15 @@
 using UnityEngine;
 using FadeTransition;
 
-public class GameStart : MonoBehaviour
+namespace FRONTIER.Title
 {
-    [SerializeField] private float fadeSpeed;
-    // Start is called before the first frame update
+    public class GameStart : MonoBehaviour
+    {
+        [SerializeField] private float fadeSpeed;
 
-    public void ScreenTaped(){
-        SceneNavigator.instance.SceneChange(sceneName: "Menu", _fadeTime: fadeSpeed);
+        public void ScreenTaped()
+        {
+            GameManager.instance.sceneLoad.menu.Invoke();
+        }
     }
 }

@@ -2,19 +2,35 @@ using UnityEngine;
 using System;
 using System.Collections;
 
-namespace Game.Utility
+namespace FRONTIER.Utility
 {
     ///<summary>ゲーム内の処理で頻繁に使用するメソッドをまとめた抽象クラス。</summary>
     public abstract class UtilityClass : MonoBehaviour
     {
+        
+        protected static GameManager Manager => GameManager.instance;
+
         ///<summary>シーンがロードされた時に実行する処理。</summary>
-        ///<remarks>デリゲートのコールバックに追加すると便利です。</remarks>
         ///<param name = "scene">現在のシーン。</param>
-        public virtual void OnSceneLoaded(Reference.GameScenes scene) { }
+        public virtual void OnSceneLoaded() { }
+
+        ///<summary>シーンがロードされた時に実行する処理。</summary>
+        ///<param name = "scene">現在のシーン。</param>
+        [Banzan.Lib.Utility.EnumAction(typeof(Reference.Scene.GameScenes))]
+        public virtual void OnSceneLoaded(int scene) { }
+
+        ///<summary>シーンがロードされた時に実行する処理。</summary>
+        ///<param name = "scene">現在のシーン。</param>
+        public virtual void OnSceneLoaded(Reference.Scene.GameScenes scene) { }
+
         ///<summary>シーンがアンロードされた時に実行する処理。</summary>
-        ///<remarks>デリゲートのコールバックに追加すると便利です。</remarks>
         ///<param name = "scene">現在のシーン。</param>
-        public virtual void OnSceneUnLoaded(Reference.GameScenes scene) { }
+        public virtual void OnSceneUnLoaded() { }
+
+        ///<summary>シーンがアンロードされた時に実行する処理。</summary>
+        ///<param name = "scene">現在のシーン。</param>
+        public virtual void OnSceneUnLoaded(Reference.Scene.GameScenes scene) { }
+        
         ///<summary>レーン番号に応じてノーツのX座標を設定します。</summary>
         ///<param name = "laneIndex">レーン番号。</param>
         ///<param name = "useSplitLane">レーン数を細分するか。</param>

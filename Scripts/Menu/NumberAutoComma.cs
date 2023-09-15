@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     public class NumberAutoComma : MonoBehaviour
     {

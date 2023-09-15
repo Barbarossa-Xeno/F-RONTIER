@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
-using Game.Save;
+using FRONTIER.Save;
 
-namespace Game.Menu.Window.Setting
+namespace FRONTIER.Menu.Window.Setting
 {
     public class SettingValues : MonoBehaviour
     {

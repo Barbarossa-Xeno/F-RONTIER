@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     /// <summary>
     /// サイドメニューを管理する。

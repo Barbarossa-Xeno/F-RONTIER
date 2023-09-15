@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Game.Utility
+namespace FRONTIER.Utility
 {
     /// <summary>
     /// シングルトンなMonoBehaviorを実装するクラス。

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Save
+namespace FRONTIER.Save
 {
     /// <summary>
     /// 設定データを保持するクラス。

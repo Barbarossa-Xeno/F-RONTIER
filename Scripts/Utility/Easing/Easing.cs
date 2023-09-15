@@ -6,7 +6,7 @@ using UnityEngine;
  * イージング関数チートシート (https://easings.net)
  */
 
-namespace Game.Utility.Easing
+namespace FRONTIER.Utility.Easing
 {
     /// <summary>
     /// イージング関数をまとめたクラス。

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Utility.Development
+namespace FRONTIER.Utility.Development
 {
     public class ColliderVisualizer : MonoBehaviour
     {

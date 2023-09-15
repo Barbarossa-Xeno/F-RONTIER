@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     public class AdjustCoverHeight : MonoBehaviour, ISimpleEvent
     {

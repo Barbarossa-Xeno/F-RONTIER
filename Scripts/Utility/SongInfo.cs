@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Utility
+namespace FRONTIER.Utility
 {
     /// <summary>
     /// 選択された曲の情報を保持するためのクラス。

@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Game.Utility.Easing;
+using FRONTIER.Utility.Easing;
 using System;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     public class ToggleSwitch : MonoBehaviour, IPointerClickHandler
     {

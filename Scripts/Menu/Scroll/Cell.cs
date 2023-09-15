@@ -9,8 +9,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 using CLSrollProject;
-using Game.Menu;
-using Game.Utility;
+using FRONTIER.Menu;
+using FRONTIER.Utility;
 
 
 namespace FancyScrollView.FRONTIER

@@ -1,9 +1,9 @@
 using UnityEngine;
-using Game.Utility;
-using Game.Utility.Easing;
+using FRONTIER.Utility;
+using FRONTIER.Utility.Easing;
 using System;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     /// <summary>
     /// メニュー画面と曲リストのボーダーを曲線で描く。

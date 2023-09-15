@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.IO;
 
-namespace Game.Save
+namespace FRONTIER.Save
 {
     /// <summary>
     /// JSONファイルで保存されたセーブデータを読み込んだり書き込んだりする。

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using CLSrollProject;
 using FadeTransition;
-using Game.Save;
+using FRONTIER.Save;
 
-namespace Game.Menu
+namespace FRONTIER.Menu
 {
     public class ModalWindow : MonoBehaviour
     {
@@ -206,8 +206,8 @@ namespace Game.Menu
 
         public void PlayGameScene()
         {
-            SceneNavigator.instance.FadeOutFinished += () => GameManager.instance.OnSceneLoaded(Game.Utility.Reference.GameScenes.Game);
-            SceneNavigator.instance.SceneChange("Game", 1.5f, ignoreTimeScale: true);
+            SceneNavigator.instance.FadeOutFinished += () => GameManager.instance.OnSceneLoaded(FRONTIER.Utility.Reference.Scene.GameScenes.Game);
+            SceneNavigator.instance.ChangeScene("Game", 1.5f, ignoreTimeScale: true);
         }
     }
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.Menu.Window
+namespace FRONTIER.Menu.Window
 {
     /// <summary>
     /// クローズボタン用のスクリプト。
