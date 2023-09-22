@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FRONTIER.Utility
 {
@@ -46,6 +47,12 @@ namespace FRONTIER.Utility
             else { return false; }
         }
 
-        public static void Add(this Action _event, params Action[] handlers) => Enumerable.Range(0, handlers.Length).Select(i => _event += handlers[i]);
+        /// <summary>
+        /// <c>System.Index</c>型でリストから削除したいインデックスを指定する拡張メソッド
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list">要素を削除するリスト</param>
+        /// <param name="indexFromEnd">後ろから数えた時のインデックス</param>
+        public static void RemoveAt<T>(this List<T> list, Index indexFromEnd) => list.RemoveAt(list.Count - indexFromEnd.Value);
     }
 }
