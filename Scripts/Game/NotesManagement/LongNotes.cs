@@ -37,7 +37,12 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// ロングノーツが押下されているときに発火するイベント。
         /// </summary>
-        private event Action<bool> OnPressed;
+        public event Action<bool> OnPressed;
+
+        /// <summary>
+        /// ロングノーツの押下の状態に応じて、毎フレーム発火するイベント。
+        /// </summary>
+        public event Action<bool> OnPressedUpdate;
 
         /// <summary>
         /// 直線型ロングノーツのマテリアル。（直線なので一個だけ）
@@ -117,7 +122,7 @@ namespace FRONTIER.Game.NotesManagement
 
         #region MonoBehaviorメソッド
 
-        void Start()
+        protected sealed override void Start()
         {
             // イベントの登録
             OnPressed += isOn => isPressed = isOn;
@@ -143,6 +148,13 @@ namespace FRONTIER.Game.NotesManagement
             if (GameManager.instance.AutoPlay) { OnPressed.Invoke(true); }
         }
 
+        protected sealed override void Update()
+        {
+            base.Update();
+
+            Pressing();
+        }
+
         #endregion
 
         #region メソッド
@@ -155,6 +167,23 @@ namespace FRONTIER.Game.NotesManagement
         {
             if (!GameManager.instance.AutoPlay) { OnPressed.Invoke(flag); }
             else { OnPressed.Invoke(true); }
+        }
+
+        /// <summary>
+        /// ロングノーツが押下されているかどうかを毎フレーム監視してメソッド及びイベントを処理する。
+        /// </summary>
+        private void Pressing()
+        {
+            // ゲーム中に押されていた時
+            if (isPressed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing)
+            {
+                OnPressedUpdate?.Invoke(true);
+            }
+            // ゲーム中に押されていない時
+            else if (!isPressed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing)
+            {
+                OnPressedUpdate?.Invoke(false);
+            }
         }
 
         /// <summary>

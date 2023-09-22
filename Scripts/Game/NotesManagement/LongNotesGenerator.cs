@@ -494,7 +494,7 @@ namespace FRONTIER.Game.NotesManagement
                 for (int j = 0; j < laneNumbers[i].Count; j++)
                 {
                     positionX = SwitchNoteLane(laneNumbers[i][j]);
-                    positionZ = notesTimes[i][j] * GameManager.instance.NoteSpeed + Reference.Origin.z;
+                    positionZ = notesTimes[i][j] * GameManager.instance.NoteSpeed + Reference.noteOrigin.z;
                     _positionX[i, j] = positionX;
                     _positionZ[i, j] = positionZ;
 
@@ -502,6 +502,7 @@ namespace FRONTIER.Game.NotesManagement
                     if (innerNotesCounts[i] == 0 && notesTypes[i] == 2)
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note.name = $"Note_Long_Only_Linear_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
                         if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
@@ -527,6 +528,7 @@ namespace FRONTIER.Game.NotesManagement
                     else if (innerNotesCounts[i] == 0 && notesTypes[i] == 3)
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note.name = $"Note_Long_Only_Curve_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
                         if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
@@ -552,6 +554,7 @@ namespace FRONTIER.Game.NotesManagement
                     else if (innerNotesCounts[i] != 0 && notesTypes[i] == 2)
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note.name = $"Note_Long_Any_Linear_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
                         if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
@@ -574,6 +577,7 @@ namespace FRONTIER.Game.NotesManagement
                     else if (innerNotesCounts[i] != 0 && notesTypes[i] == 3)
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note.name = $"Note_Long_Any_Curve_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
                         if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }

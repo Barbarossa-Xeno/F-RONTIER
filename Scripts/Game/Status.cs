@@ -9,11 +9,11 @@ namespace FRONTIER.Game
         {
             perfect, great, good, bad, miss
         }
-        Judge judge;
+        JudgementManager judge;
         ScoreObjectPool scoreObjectPool;
         void Start()
         {
-            judge = GameObject.Find("JudgementManager").GetComponent<Judge>();
+            judge = GameObject.Find("JudgementManager").GetComponent<JudgementManager>();
             scoreObjectPool = GameObject.Find("JudgementManager").GetComponent<ScoreObjectPool>();
         }
         public void Active()

@@ -21,7 +21,7 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーツのプレハブ。
         /// </summary>
         public NotePrefabs notePrefabs = new();
-        
+
         /// <summary>
         /// ロングノーツを管理するスクリプト。
         /// </summary>
@@ -60,12 +60,12 @@ namespace FRONTIER.Game.NotesManagement
             /// </summary>
             public GameObject longOnly;
         }
-        
+
         #endregion
 
         #region Monobehaviorメソッド
 
-        private void Start()
+        void Awake()
         {
             notesCount = 0;
             data = base.LoadNotePattern(Manager.info.ID, Manager.info.DifficultyTo(Manager.info.Difficulty).Item1);
@@ -77,7 +77,7 @@ namespace FRONTIER.Game.NotesManagement
         #endregion
 
         #region メソッド
-        
+
         public override void GenerateNotes()
         {
             // 値の代入と受け渡し
@@ -88,17 +88,17 @@ namespace FRONTIER.Game.NotesManagement
             // ノーツの数だけループさせる
             // [ループ①]
             for (int i = 0; i < data.notes.Length; i++)
-            {    
+            {
                 //もし、ノーツのタイプが「2」または「３」=> いずれかのロングノーツであった時
                 if (data.notes[i].type == (int)Reference.NoteType.LongLinear || data.notes[i].type == (int)Reference.NoteType.LongCurve)
                 {
                     // ロングノーツのプロパティ（レーン番号や到達時間等）だけを格納するリスト
                     List<float> longNoteTimes = new();
                     List<int> longNoteLaneNumbers = new();
-                    
+
                     // ノーツの到達時間（再生時間）
                     float noteTime = CalculateNoteTime(data.notes[i].LPB, data.notes[i].num);
-                    
+
                     // 各リストへの追加
                     // Lノーツの始点はマニュアル・オートプレイに拘わらず、通常ノーツのリストへ追加する（始点は到達時間で判定するため）
                     notesTimes.Add(noteTime);
@@ -112,7 +112,7 @@ namespace FRONTIER.Game.NotesManagement
                     // ロングノーツ１まとまりに存在する中間点の数だけループさせる
                     // [ループ②]
                     for (int j = 0; j < data.notes[i].notes.Length; j++)
-                    {   
+                    {
                         float _noteTime = CalculateNoteTime(data.notes[i].notes[j].LPB, data.notes[i].notes[j].num);
 
                         // ゲームをオートでプレイするときは、中間点ノーツの情報も通常ノーツのリストに追加する
@@ -136,10 +136,10 @@ namespace FRONTIER.Game.NotesManagement
                     // 各リストへの追加
                     longNotesGenerator.notesTimes.Add(longNoteTimes);
                     longNotesGenerator.laneNumbers.Add(longNoteLaneNumbers);
-                    
+
                     // ノーツ総数に追加
                     notesCount += data.notes[i].notes.Length;
-                    
+
                     // ロングノーツを生成
                     longNotesGenerator.GenerateNotes();
                 }
@@ -152,31 +152,37 @@ namespace FRONTIER.Game.NotesManagement
 
                     // 座標計算
                     // X座標の振り分け
-                    float positionX = SwitchNoteLane(data.notes[i].block);  
-                    
+                    float positionX = SwitchNoteLane(data.notes[i].block);
+
                     // Z座標の算出
-                    float positionZ = notesTimes[^1] * Manager.NoteSpeed + Reference.Origin.z;
-                    
+                    float positionZ = notesTimes[^1] * Manager.NoteSpeed + Reference.noteOrigin.z;
+
                     // ノーツをゲームオブジェクトとして生成する
-                    notesObjects.Add(Instantiate(notePrefabs.normal, new(positionX, Reference.Origin.y, positionZ), Quaternion.identity, noteObjectParent));
-                    
-                    //プロパティを渡す。
+                    notesObjects.Add(Instantiate(notePrefabs.normal, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteObjectParent));
+
+                    // プロパティを渡す
                     notesObjects[^1].GetComponent<Notes>().type = Reference.NoteType.Normal;
+                    notesObjects[^1].GetComponent<Notes>().index = i;
                     notesObjects[^1].name = $"Note_{i}";
                 }
             }
 
-            //Linqを使ってノーツの到達時間を降順にソートする。
+            // Linqを使ってノーツの到達時間を降順にソートする
             notesTimes.Reverse();
-            
-            //ノーツのオブジェクトを到達順に整理したいが、Linqを使ったソートでは方法が思いつかないため、オブジェクトのZ座標を利用する。
+
+            // ノーツのオブジェクトを到達順に整理したいが、Linqを使ったソートでは方法が思いつかないため、オブジェクトのZ座標を利用する
             notePositionZBase = notesObjects.Select(note => note.transform.position.z).ToList();
             NotesSort();
 
+            // 各ノーツにリスト内でのインデックスの情報を渡す
+            for (int i = 0; i < notesObjects.Count; i++)
+            {
+                Notes info = notesObjects[i].GetComponent<Notes>() ?? notesObjects[i].GetComponent<LongNotes>();
+                info.indexOfList = i;
+            }
+
             // ロングノーツの整理
             longNotesGenerator.NotesSort();
-
-            
         }
 
         /// <summary>
@@ -194,7 +200,7 @@ namespace FRONTIER.Game.NotesManagement
             // ノーツの判定線への到達時間
             // 小節位置に与えられた小節の通し番号（インデックス）を乗算して実際の再生時間を算出する
             float noteTime = (float)index * minDistance + Manager.JudgingTiming;
-        
+
             return noteTime;
         }
 
@@ -216,7 +222,7 @@ namespace FRONTIER.Game.NotesManagement
 
             // リストは変更が参照されて引数に設定した元のリストまで変わるので実体コピーすること。
             List<float> clone = new(notePositionZBase);
-            
+
             if (isAscending)
             {
                 for (int i = 0; i < clone.Count; i++)
@@ -265,7 +271,7 @@ namespace FRONTIER.Game.NotesManagement
             // ノーツタイプのソート
             NotesSort(notesTypes, false);
         }
-        
+
         #endregion
     }
 }

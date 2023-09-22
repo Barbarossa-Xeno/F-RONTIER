@@ -22,6 +22,7 @@ namespace FRONTIER.Utility
         /// </summary>
         public enum LongNoteType
         {
+            None,
             /// <summary>
             /// 中間点なし直線型
             /// </summary>
@@ -81,10 +82,16 @@ namespace FRONTIER.Utility
         {
             Perfect, Great, Good, Bad, Miss
         }
-        ///<summary>判定のステータスに応じて加算されるスコア。</summary>
-        public enum JudgementStatusScore : int
+        /// <summary>
+        /// 判定のステータスに応じて加算されるスコア。
+        /// </summary>
+        public static class JudgementStatusScore
         {
-            Perfect = 5, Great = 3, Good = 2, Bad = 1, Miss = 0
+            public const int PERFECT = 5;
+            public const int GREAT = 3;
+            public const int GOOD = 2;
+            public const int BAD = 1;
+            public const int MISS = 0;
         }
         ///<summary>リザルトスコアのランク。</summary>
         public enum ScoreRank
@@ -104,7 +111,7 @@ namespace FRONTIER.Utility
             C = 300000
         }
         ///<summary>ノーツを設定する基準と判定線の位置。</summary>
-        public static Vector3 Origin { get { return new Vector3(0, 0.05f, 7.3f); } }
+        public static readonly Vector3 noteOrigin = new(0, 0.05f, 7.3f);
         ///<summary>特殊ノーツのY座標。</summary>
         public static Vector3 SpecialNotesPosition { get { return new Vector3(0, 0.1f, 0f); } }
         ///<summary>親オブジェクトと子オブジェクトの全てにレイヤー変更を適用する拡張メソッド。</summary>
