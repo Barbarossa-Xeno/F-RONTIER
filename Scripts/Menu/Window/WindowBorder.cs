@@ -10,6 +10,8 @@ namespace FRONTIER.Menu.Window
     /// </summary>
     public class WindowBorder : MonoBehaviour
     {
+        #region フィールド
+
         /// <summary>
         /// 曲線をかたどる点（ローカル座標）の集まり。
         /// </summary>
@@ -27,6 +29,34 @@ namespace FRONTIER.Menu.Window
         /// 親の幅や高さを取得する。
         /// </summary>
         protected static ParentRect parentRect;
+
+        /// <summary>
+        /// キャンバスの大きさ。
+        /// </summary>
+        protected static Vector2 canvasSize;
+
+        /// <summary>
+        /// 初期化メソッドをインスペクターから指定するためのイベント。
+        /// </summary>
+        [SerializeField] protected UnityEvent InitializeEvents;
+
+        /// <summary>
+        /// Update時に実行するメソッドをインスペクターから指定するためのイベント。
+        /// </summary>
+        [SerializeField] protected UnityEvent OnUpdateEvents;
+
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
+        /// キャンバスの大きさを取得し続ける。
+        /// </summary>
+        private Vector2 CanvasSize => transform.root.GetComponent<RectTransform>().sizeDelta;
+
+        #endregion
+
+        #region クラス
 
         /// <summary>
         /// 親（このクラス(<see cref = "WindowBorder"/>)からすると自分だが）の幅や高さ、トランスフォームを保持するクラス。
@@ -49,27 +79,10 @@ namespace FRONTIER.Menu.Window
             public float widthToParent;
         }
 
-        /// <summary>
-        /// キャンバスの大きさ。
-        /// </summary>
-        protected static Vector2 canvasSize;
-
-        /// <summary>
-        /// キャンバスの大きさを取得し続ける。
-        /// </summary>
-        private Vector2 CanvasSize => transform.root.GetComponent<RectTransform>().sizeDelta;
-
-        /// <summary>
-        /// 初期化メソッドをインスペクターから指定するためのイベント。
-        /// </summary>
-        [SerializeField] private UnityEvent InitializeEvents;
-
-        /// <summary>
-        /// Update時に実行するメソッドをインスペクターから指定するためのイベント。
-        /// </summary>
-        [SerializeField] private UnityEvent OnUpdateEvents;
-
-        /* Monobehavior イベント */
+        #endregion
+        
+        #region MonoBehaviourメソッド
+        
         void Awake() => Initialize();
 
         void OnValidate() => Initialize();
@@ -79,6 +92,10 @@ namespace FRONTIER.Menu.Window
             canvasSize = CanvasSize;
             OnUpdateEvents?.Invoke();
         }
+
+        #endregion
+
+        #region 仮想メソッド
 
         /// <summary>
         /// 初期化する。
@@ -106,5 +123,7 @@ namespace FRONTIER.Menu.Window
         /// オブジェクトのスケールを変更する。（画面の高さが変わった時に）
         /// </summary>
         public virtual void ReScaleObject() { }
+
+        #endregion
     }
 }

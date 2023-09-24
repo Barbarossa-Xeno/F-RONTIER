@@ -27,7 +27,36 @@ namespace FRONTIER.Menu.Background
 
         public float lineWidth;
 
+        [SerializeField] private FPSLimit.TargetFPS targetFPS;
+
         [SerializeField] private Material material = default;
+
+        private class FPSLimit
+        {
+            public static float FPSToSecond(TargetFPS fps)
+            {
+                switch (fps)
+                {
+                    case TargetFPS._30:
+                        return 0.0333f;
+                    case TargetFPS._40:
+                        return 0.0248f;
+                    case TargetFPS._45:
+                        return 0.0222f;
+                    case TargetFPS._50:
+                        return 0.0199f;
+                    case TargetFPS._60:
+                        return 0.0166f;
+                    default: break;
+                }
+                return 0f;
+            }
+
+            public enum TargetFPS
+            {
+                _30, _40, _45, _50, _60
+            }
+        }
 
         void Awake()
         {
@@ -45,7 +74,7 @@ namespace FRONTIER.Menu.Background
         {
             // コルーチンでラインレンダラーを使ったスペクトラムの更新を一定秒間隔にすることで、処理落ちを防ぎ、波の高さの急激な変化を控えさせる
             // 0.028s(28ms)がだいたい40fpsくらい
-            SetInterval(() => SetLineWave(line, wave.GenerateSpectrumBezierCurve(wave.activeWaveVertices, 100)), 0.028f);
+            SetInterval(() => SetLineWave(line, wave.GenerateSpectrumBezierCurve(wave.activeWaveVertices, 100)), FPSLimit.FPSToSecond(targetFPS));
         }
 
         /// <summary>

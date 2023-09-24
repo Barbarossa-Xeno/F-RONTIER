@@ -2,12 +2,15 @@ using FRONTIER.Utility;
 using UnityEngine;
 
 namespace FRONTIER.Menu.Window
-{/// <summary>
- /// メニューウィンドウの背景をメッシュでかたどる。
- /// </summary>
+{
+    /// <summary>
+    /// メニューウィンドウの背景をメッシュでかたどる。
+    /// </summary>
     [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
     public class WindowMesh : WindowBorder
     {
+        #region フィールド
+
         /// <summary>
         /// 使用するレンダラー。
         /// </summary>
@@ -28,6 +31,10 @@ namespace FRONTIER.Menu.Window
         /// </summary>
         private BackMeshPropaties backMeshProp;
 
+        #endregion
+
+        #region プロパティ
+
         /// <summary>
         /// メッシュのマテリアルを変更するためのプロパティ。
         /// </summary>
@@ -36,6 +43,10 @@ namespace FRONTIER.Menu.Window
             get => meshRenderer.material;
             private set => meshRenderer.material = value;
         }
+
+        #endregion
+
+        #region クラス
 
         /// <summary>
         /// メッシュにプロパティを適用するためのクラス。
@@ -55,12 +66,21 @@ namespace FRONTIER.Menu.Window
             }
         }
 
-        /* Monobehavior イベント */
+        #endregion
+
+        #region MonoBehaviourメソッド
+
         void OnValidate() => Initialize();
 
-        /* 継承メソッド */
+        void Start() => Initialize();
+
+        #endregion
+
+        #region オーバライドメソッド
+
         public override void Initialize()
         {
+            InitializeEvents?.Invoke();
             GenerateMesh();
             SetMesh();
         }
@@ -87,7 +107,10 @@ namespace FRONTIER.Menu.Window
             BackMeshColor.SetColor("_Color", FixColorForBlur(MenuInfo.menuInfo.DifficultyTo(difficulty).Item2));
         }
 
-        /* メソッド */
+        #endregion
+
+        #region メソッド
+
         /// <summary>
         /// メッシュを生成する。
         /// </summary>
@@ -161,5 +184,25 @@ namespace FRONTIER.Menu.Window
                 backMeshProp.vertices[i] -= new Vector3(meshWidth / 2, 0);
             }
         }
+
+        /// <summary>
+        /// ブラー係数を調整する。
+        /// </summary>
+        public void SetBlurFactor()
+        {
+            // スマホでブラー処理がとても重かったので、スマホではブラーしない（自棄）
+
+            #if UNITY_EDITOR || UNITY_STANDALONE_WIN
+
+            BackMeshColor.SetFloat("_Blur", 100f);
+
+            #elif UNITY_ANDROID
+
+            BackMeshColor.SetFloat("_Blur", 0);
+
+            #endif
+        }
+        
+        #endregion
     }
 }
