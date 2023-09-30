@@ -11,6 +11,8 @@ namespace FRONTIER.Menu
     /// </summary>
     public class OverflowTextScroll : MonoBehaviour
     {
+        #region フィールド
+
         /// <summary>
         /// スクロールさせるTMPro。
         /// </summary>
@@ -30,6 +32,11 @@ namespace FRONTIER.Menu
         /// テキストのパディング。
         /// </summary>
         [SerializeField] private Padding padding;
+
+        /// <summary>
+        /// タイムスケールを無視するか。
+        /// </summary>
+        [SerializeField] private bool ignoreTimeScale = false;
 
         /// <summary>
         /// テキスト領域を表示する。
@@ -56,6 +63,10 @@ namespace FRONTIER.Menu
         /// </summary>
         private IEnumerator currentEnumerator;
 
+        #endregion
+
+        #region プロパティ
+
         /// <summary>
         /// TMPに設定するテキスト。
         /// </summary>
@@ -64,6 +75,22 @@ namespace FRONTIER.Menu
             get { return text.text; }
             set { text.text = value; }
         }
+
+        /// <summary>
+        /// タイムスケールを無視するかどうかでデルタタイムの参照先を変える。
+        /// </summary>
+        private float DeltaTime
+        {
+            get
+            {
+                if (ignoreTimeScale) return Time.unscaledDeltaTime;
+                else return Time.deltaTime;
+            }
+        }
+
+        #endregion
+
+        #region 構造体
 
         /// <summary>
         /// スクロールの開始待ち時間と終了待ち時間。
@@ -83,6 +110,10 @@ namespace FRONTIER.Menu
             public float right;
             public float bottom;
         }
+
+        #endregion
+
+        #region MonoBehaviourメソッド
 
         void Awake() => Init();
 
@@ -109,6 +140,10 @@ namespace FRONTIER.Menu
                 StartCoroutine(currentEnumerator);
             }
         }
+
+        #endregion
+
+        #region メソッド
 
         /// <summary>
         /// 要素を再取得する初期化。
@@ -142,11 +177,11 @@ namespace FRONTIER.Menu
             while (true)
             {
                 // スクロールの開始を待つ
-                yield return new WaitForSeconds(waitTime.start);
+                yield return ignoreTimeScale ? new WaitForSecondsRealtime(waitTime.start) : new WaitForSeconds(waitTime.start);
                 // テキストがすべて表示されるまで毎フレームごとにテキストを移動させる
                 while (rect.offsetMin.x >= -overflow)
                 {
-                    float delta = scrollSpeed * Time.unscaledDeltaTime;
+                    float delta = scrollSpeed * DeltaTime;
                     // (left, top)
                     rect.offsetMin -= new Vector2(delta, rect.offsetMin.y);
                     // (right, bottom)
@@ -155,7 +190,7 @@ namespace FRONTIER.Menu
                     yield return null;
                 }
                 // 最後までスクロールしたら一定時間待って初期位置に戻す
-                yield return new WaitForSeconds(waitTime.end);
+                yield return ignoreTimeScale ? new WaitForSecondsRealtime(waitTime.end) : new WaitForSeconds(waitTime.end);
                 rect.offsetMin = new Vector2(0, rect.offsetMin.y);
                 rect.offsetMax = new Vector2(0, rect.offsetMax.y);
             }
@@ -171,5 +206,7 @@ namespace FRONTIER.Menu
         {
             GetComponent<UnityEngine.UI.Image>().enabled = showTextArea;
         }
+        
+        #endregion
     }
 }
