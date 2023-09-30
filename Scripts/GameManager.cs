@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
-using FRONTIER.Game;
 using FRONTIER.Menu;
 using FRONTIER.Save;
 using FRONTIER.Utility;
@@ -39,24 +38,9 @@ namespace FRONTIER
         public bool Mv { get; private set; }
 
         /// <summary>
-        /// 音楽を再生するオーディオソース。
+        /// 楽曲やSEの再生を管理するクラスたち。
         /// </summary>
-        public AudioSource musicSource = null;
-
-        /// <summary>
-        /// 効果音を再生するオーディオソース。
-        /// </summary>
-        public AudioSource seSource = null;
-
-        /// <summary>
-        /// <see cref = "MusicManager"/>
-        /// </summary>
-        public MusicManager musicManager;
-
-        /// <summary>
-        /// <see cref = "SEManager"/>
-        /// </summary>
-        public SEManager seManager;
+        public AudioManagers audioManagers;
 
         /// <summary>
         /// 音楽の再生が開始したか。
@@ -79,6 +63,23 @@ namespace FRONTIER
         [Header("SceneNavigaterと連動してシーンのロード時に発火させるイベント")] public SceneLoad sceneLoad;
 
         /// <summary>
+        /// 楽曲やSEの再生を管理する。
+        /// </summary>
+        [Serializable]
+        public class AudioManagers
+        {
+            /// <summary>
+            /// <see cref = "MusicManager"/>
+            /// </summary>
+            public MusicManager musicManager;
+
+            /// <summary>
+            /// <see cref = "SEManager"/>
+            /// </summary>
+            public SEManager seManager;
+        }
+
+        /// <summary>
         /// プレイする楽曲の情報を記録する。
         /// </summary>
         public class Info : SongInfo
@@ -87,9 +88,10 @@ namespace FRONTIER
             public override string Name => MenuInfo.menuInfo.Name;
             public override string Artist => MenuInfo.menuInfo.Artist;
             public override string Works => MenuInfo.menuInfo.Works;
-            public override Reference.DifficultyEnum Difficulty => MenuInfo.menuInfo.Difficulty;
+            public override Reference.DifficultyRank Difficulty => MenuInfo.menuInfo.Difficulty;
             public override string Level => MenuInfo.menuInfo.Level;
             public override Sprite Cover => MenuInfo.menuInfo.Cover;
+            public int Bpm { get; set; }
         }
 
         /// <summary>
@@ -122,28 +124,64 @@ namespace FRONTIER
         /// <summary>
         /// スコア情報を保存するクラス。
         /// </summary>
-        public class ScoreManager
+        [Serializable]
+        public class ScoreData
         {
+            /// <summary>
+            /// コンボ数
+            /// </summary>
             public int combo;
-            public int score;
+
+            /// <summary>
+            /// 表示するスコア
+            /// </summary>
+            public int Score { get; private set; }
+
+            /// <summary>
+            /// 楽曲の総てのノーツをPerfect判定で叩いたと仮定したときの最大スコア
+            /// </summary>
+            /// <remarks>
+            /// 楽曲の総ノーツ数 × Perfect判定のスコア
+            /// </remarks>
             public float maxScore;
-            public float ratioScore;
-            public const int THEORETICALVALUE = 1000000;
-            public Dictionary<string, int> scoreCount;
-            public ScoreManager()
+
+            /// <summary>
+            /// 判定ステータスに応じて加算していく、見かけ上のスコア
+            /// </summary>
+            public float apparentScore;
+
+            /// <summary>
+            /// スコアの理論値
+            /// </summary>
+            public const int THEORETICAL_SCORE = 1000000;
+
+            public Dictionary<Reference.JudgementStatus, int> scoreCount;
+
+            public void CalculateScore()
+            {
+                if (maxScore == 0) return;
+
+                Score = Mathf.RoundToInt(THEORETICAL_SCORE * Mathf.Floor(apparentScore / maxScore * THEORETICAL_SCORE) / THEORETICAL_SCORE);
+            }
+
+            public ScoreData()
             {
                 combo = 0;
-                score = 0;
+                Score = 0;
                 maxScore = 0;
-                ratioScore = 0;
-                scoreCount = new Dictionary<string, int>()
-            {
-                {"perfect", 0}, {"great", 0}, {"good", 0}, {"bad", 0}, {"miss", 0}
-            };
+                apparentScore = 0;
+                scoreCount = new()
+                {
+                    {Reference.JudgementStatus.Perfect, 0},
+                    {Reference.JudgementStatus.Great, 0},
+                    {Reference.JudgementStatus.Good, 0},
+                    {Reference.JudgementStatus.Bad, 0},
+                    {Reference.JudgementStatus.Miss, 0}
+                };
             }
         }
 
-        public ScoreManager scoreManager = new();
+        public ScoreData scoreData = new();
 
         public Reference.Scene.GameScenes GameScene
         {
@@ -160,10 +198,10 @@ namespace FRONTIER
         [HideInInspector]
         public enum GamePlayState
         {
-            Idling, Starting, Playing, Pausing, Finishing, Inactiving
+            Starting, Playing, Pausing, Finishing
         }
 
-        public GamePlayState gamePlayState = GamePlayState.Idling;
+        public GamePlayState gamePlayState = GamePlayState.Starting;
 
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -177,29 +215,10 @@ namespace FRONTIER
         {
             base.Init();
             DontDestroyOnLoad(gameObject);
-            AudioManagerInitialize();
-        }
-
-        void Update()
-        {
-            if (instance.start)
-            {
-                if (instance.gamePlayState == GamePlayState.Starting)
-                {
-                    instance.gamePlayState = GamePlayState.Playing;
-                }
-            }
-            if (!instance.start && instance.gamePlayState == GameManager.GamePlayState.Finishing)
-            {
-                instance.gamePlayState = GamePlayState.Inactiving;
-                SceneNavigator.instance.ResetEvent();
-                SceneNavigator.instance.ChangeScene("Result", _fadeTime: 1.5f);
-            }
-            if (instance.gamePlayState == GamePlayState.Inactiving) { instance.start = false; }
         }
 
         [Banzan.Lib.Utility.EnumAction(typeof(Reference.Scene.GameScenes))]
-        public override void OnSceneLoaded(int scene)
+        public override void Construct(int scene)
         {
             Reference.Scene.GameScenes _scene = (Reference.Scene.GameScenes)scene;
             // シーンナビゲータ側のイベントを初期化する。
@@ -208,51 +227,27 @@ namespace FRONTIER
             {
                 case Reference.Scene.GameScenes.Menu:
                     SceneNavigator.instance.FadeOutFinished += () => instance.info = new();
+                    SceneNavigator.instance.FadeOutFinished += () => instance.audioManagers.musicManager.Construct(_scene);
+                    SceneNavigator.instance.FadeInFinished += () => Menu.Background.FFT.OnAudioClipChanged?.Invoke();
                     break;
 
                 case Reference.Scene.GameScenes.Game:
                     SceneNavigator.instance.FadeOutFinished += InitializeFieldProperty;
-                    SceneNavigator.instance.FadeOutFinished += () => instance.musicManager.OnSceneLoaded(_scene);
-                    SceneNavigator.instance.FadeOutFinished += instance.musicManager.OnSceneLoaded;                /*
-                instance.musicSource.Stop();
-                instance.musicSource.loop = false;
-                instance.seSource.Stop();
-                instance.musicManager.OnSceneLoaded();*/
+                    SceneNavigator.instance.FadeOutFinished += () => instance.audioManagers.musicManager.Construct(_scene);
+                    SceneNavigator.instance.FadeOutFinished += instance.audioManagers.musicManager.Construct;
                     break;
+
+                case Reference.Scene.GameScenes.Result:
+                    SceneNavigator.instance.FadeOutFinished += () =>
+                    {
+                        instance.start = false;
+                        instance.gamePlayState = GamePlayState.Finishing;
+                    };
+                    break;
+
             }
 
-            SceneNavigator.instance.ChangeScene(Reference.Scene.ToString(_scene));
-        }
-
-        /// <summary>
-        /// MusicManagerとSEManagerをシングルトンにする。
-        /// </summary>
-        private void AudioManagerInitialize()
-        {
-            if (musicSource == null)
-            {
-                GameObject ml = instance.transform.Find("MusicManager").gameObject;
-                if (ml == null)
-                {
-                    ml = new GameObject("MusicManager");
-                    ml.transform.SetParent(instance.gameObject.transform);
-                    ml.AddComponent<AudioSource>();
-                }
-                musicSource = ml.GetComponent<AudioSource>();
-                musicManager = ml.AddComponent<MusicManager>();
-            }
-            if (seSource == null)
-            {
-                GameObject sl = instance.transform.Find("SEManager").gameObject;
-                if (sl == null)
-                {
-                    sl = new GameObject("SEManager");
-                    sl.transform.SetParent(instance.gameObject.transform);
-                    sl.AddComponent<AudioSource>();
-                }
-                seSource = sl.GetComponent<AudioSource>();
-                seManager = sl.AddComponent<SEManager>();
-            }
+            SceneNavigator.instance.ChangeScene(Reference.Scene.ToString(_scene), _fadeTime: 1f);
         }
 
         /// <summary>
@@ -266,14 +261,10 @@ namespace FRONTIER
             instance.AutoPlay = MenuInfo.menuInfo.autoPlay;
             instance.Mv = MenuInfo.menuInfo.mv;
             // フィールド
-            instance.scoreManager = new ScoreManager();
-            instance.gamePlayState = GamePlayState.Idling;
-        }
-
-
-        public void ScoreCalc()
-        {
-            scoreManager.score = Mathf.RoundToInt(ScoreManager.THEORETICALVALUE * Mathf.Floor(scoreManager.ratioScore / scoreManager.maxScore * ScoreManager.THEORETICALVALUE) / ScoreManager.THEORETICALVALUE);
+            instance.scoreData = new();
+            instance.gamePlayState = GamePlayState.Starting;
+            instance.start = false;
+            instance.startTime = 0;
         }
     }
 }

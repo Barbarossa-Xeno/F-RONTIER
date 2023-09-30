@@ -3,36 +3,15 @@ using UnityEngine.Video;
 
 namespace FRONTIER.Game
 {
-    public class MVManager : MonoBehaviour
+    public class MVManager : Utility.UtilityClass
     {
-        private VideoClip videoClip;
-        private VideoPlayer videoPlayer;
-        private MusicManager musicManager;
-        private bool isCalledOnce = false;
+        public VideoPlayer Player { get; private set; }
 
-        // Start is called before the first frame update
-        void Start()
+        public override void Construct()
         {
-            videoPlayer = this.GetComponent<VideoPlayer>();
-            videoClip = (VideoClip)Resources.Load($"Data/{GameManager.instance.info.ID}/mv");
-            videoPlayer.source = VideoSource.VideoClip;
-            videoPlayer.clip = videoClip;
-
-            isCalledOnce = false;
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (!isCalledOnce && GameManager.instance.musicManager.musicPlayed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing && GameManager.instance.Mv)
-            {
-                videoPlayer.Play();
-                isCalledOnce = true;
-            }
-            if (!GameManager.instance.musicManager.musicPlayed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Finishing)
-            {
-                videoPlayer.Stop();
-            }
+            Player = GetComponent<VideoPlayer>();
+            Player.source = VideoSource.VideoClip;
+            Player.clip = Resources.Load<VideoClip>($"Data/{GameManager.instance.info.ID}/mv");
         }
     }
 }
