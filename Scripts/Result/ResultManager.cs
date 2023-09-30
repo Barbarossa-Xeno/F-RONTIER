@@ -81,7 +81,7 @@ namespace FRONTIER.Result
         ///<summary>ランク。</summary>
         private string rank;
         ///<summary>判定ステータスの結果と総数を格納する辞書。</summary>
-        private Dictionary<string, int> detailValueCount = new Dictionary<string, int>();
+        private Dictionary<Reference.JudgementStatus, int> detailValueCount = new();
         ///<summary>ランクのスプライト。</summary>
         private Sprite rankSprite;
         ///<summary>キャラのスプライト。</summary>
@@ -104,9 +104,9 @@ namespace FRONTIER.Result
             mask.SetActive(true);
             //リザルトの値を受け取る。
             songID = GameManager.instance.info.ID;
-            score = GameManager.instance.scoreManager.score;
-            DevelopmentExtentionMethods.LogEditor($"{score}, {GameManager.instance.scoreManager.score}");
-            detailValueCount = GameManager.instance.scoreManager.scoreCount;
+            score = GameManager.instance.scoreData.Score;
+            DevelopmentExtentionMethods.LogEditor($"{score}, {GameManager.instance.scoreData.Score}");
+            detailValueCount = GameManager.instance.scoreData.scoreCount;
             //アクティブの設定。
             scoreElements.fullCombo.gameObject.SetActive(scoreElements.fullCombo.gameObject.activeSelf ? false : false);
             scoreElements.allPerfect.gameObject.SetActive(scoreElements.allPerfect.gameObject.activeSelf ? false : false);
@@ -117,11 +117,11 @@ namespace FRONTIER.Result
         {
             //詳細ゾーンのテキストをセット。
             scoreElements.scoreText.SetText("{0}", score);
-            detailElements.perfect.SetText("{0}", detailValueCount["perfect"]);
-            detailElements.great.SetText("{0}", detailValueCount["great"]);
-            detailElements.good.SetText("{0}", detailValueCount["good"]);
-            detailElements.bad.SetText("{0}", detailValueCount["bad"]);
-            detailElements.miss.SetText("{0}", detailValueCount["miss"]);
+            detailElements.perfect.SetText("{0}", detailValueCount[Reference.JudgementStatus.Perfect]);
+            detailElements.great.SetText("{0}", detailValueCount[Reference.JudgementStatus.Great]);
+            detailElements.good.SetText("{0}", detailValueCount[Reference.JudgementStatus.Good]);
+            detailElements.bad.SetText("{0}", detailValueCount[Reference.JudgementStatus.Bad]);
+            detailElements.miss.SetText("{0}", detailValueCount[Reference.JudgementStatus.Miss]);
             //ランクに応じたスプライトを取得してセット。
             rank = SelectRank(score);
             rankSprite = (Sprite)Resources.Load<Sprite>($"Images/Result/rank_{rank}");
@@ -163,10 +163,10 @@ namespace FRONTIER.Result
             }
             else { DevelopmentExtentionMethods.LogEditor("データが見つからなかったので新規データを保存します。"); }
 
-            if (detailValueCount["bad"] == 0 && detailValueCount["miss"] == 0)
+            if (detailValueCount[Reference.JudgementStatus.Bad] == 0 && detailValueCount[Reference.JudgementStatus.Miss] == 0)
             {
                 state = ComboAchivement.FullCombo;
-                if (detailValueCount["great"] == 0 && detailValueCount["good"] == 0)
+                if (detailValueCount[Reference.JudgementStatus.Great] == 0 && detailValueCount[Reference.JudgementStatus.Good] == 0)
                 {
                     state = ComboAchivement.AllPerfect;
                 }
@@ -226,14 +226,14 @@ namespace FRONTIER.Result
         ///<summary>スコアに応じてランク評価を振り分けます。</summary>
         private string SelectRank(int _score)
         {
-            if (_score >= (int)Reference.RankBorder.S_plus) { return "s+"; }
-            else if (_score >= (int)Reference.RankBorder.S && _score < (int)Reference.RankBorder.S_plus) { return "s"; }
-            else if (_score >= (int)Reference.RankBorder.A_plus && _score < (int)Reference.RankBorder.S) { return "a+"; }
-            else if (_score >= (int)Reference.RankBorder.A && _score < (int)Reference.RankBorder.A_plus) { return "a"; }
-            else if (_score >= (int)Reference.RankBorder.B_plus && _score < (int)Reference.RankBorder.A) { return "b+"; }
-            else if (_score >= (int)Reference.RankBorder.B && _score < (int)Reference.RankBorder.B_plus) { return "b"; }
-            else if (_score >= (int)Reference.RankBorder.C_plus && _score < (int)Reference.RankBorder.B) { return "c+"; }
-            else if (_score < (int)Reference.RankBorder.C_plus) { return "c"; }
+            if (_score >= (int)Reference.ClearRankBorder.S_PLUS) { return "s+"; }
+            else if (_score >= (int)Reference.ClearRankBorder.S && _score < (int)Reference.ClearRankBorder.S_PLUS) { return "s"; }
+            else if (_score >= (int)Reference.ClearRankBorder.A_PLUS && _score < (int)Reference.ClearRankBorder.S) { return "a+"; }
+            else if (_score >= (int)Reference.ClearRankBorder.A && _score < (int)Reference.ClearRankBorder.A_PLUS) { return "a"; }
+            else if (_score >= (int)Reference.ClearRankBorder.B_PLUS && _score < (int)Reference.ClearRankBorder.A) { return "b+"; }
+            else if (_score >= (int)Reference.ClearRankBorder.B && _score < (int)Reference.ClearRankBorder.B_PLUS) { return "b"; }
+            else if (_score >= (int)Reference.ClearRankBorder.C_PLUS && _score < (int)Reference.ClearRankBorder.B) { return "c+"; }
+            else if (_score < (int)Reference.ClearRankBorder.C_PLUS) { return "c"; }
             else { return ""; }
         }
 

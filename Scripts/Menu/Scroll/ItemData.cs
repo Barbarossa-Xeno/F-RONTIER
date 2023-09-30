@@ -49,7 +49,7 @@ namespace FancyScrollView.FRONTIER
         /// <summary>
         /// 難易度
         /// </summary>
-        public Reference.DifficultyEnum difficulty;
+        public Reference.DifficultyRank difficulty;
 
         /// <summary>
         /// セルでのインデックス
@@ -68,7 +68,7 @@ namespace FancyScrollView.FRONTIER
         /// <param name = "index">セルの番号。</param>
         /// <param name = "data">曲の情報。</param>
         /// <param name = "difficulty">難易度。</param>
-        public ItemData(SongData data, int index, Reference.DifficultyEnum difficulty)
+        public ItemData(SongData data, int index, Reference.DifficultyRank difficulty)
         {
             name = data.songs[index].name;
             artist = data.songs[index].artist;
@@ -87,20 +87,20 @@ namespace FancyScrollView.FRONTIER
         /// <see cref="level"/>を選択中の難易度に合わせて変更させる。
         /// </summary>
         /// <param name="difficulty"></param>
-        public string ChangeLevel(Reference.DifficultyEnum difficulty)
+        public string ChangeLevel(Reference.DifficultyRank difficulty)
         {
             switch (difficulty)
             {
-                case Reference.DifficultyEnum.Lite:
+                case Reference.DifficultyRank.Lite:
                     level = levelCollection.lite;
                     break;
-                case Reference.DifficultyEnum.Hard:
+                case Reference.DifficultyRank.Hard:
                     level = levelCollection.hard;
                     break;
-                case Reference.DifficultyEnum.Ecstasy:
+                case Reference.DifficultyRank.Ecstasy:
                     level = levelCollection.ecstacy;
                     break;
-                case Reference.DifficultyEnum.Restricted:
+                case Reference.DifficultyRank.Restricted:
                     level = levelCollection.restricted;
                     break;
             }

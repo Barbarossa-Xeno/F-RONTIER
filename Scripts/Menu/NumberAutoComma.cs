@@ -58,7 +58,7 @@ namespace FRONTIER.Menu
             {
                 if (this.gameObject.name == "val.score")
                 {
-                    nowText = GameManager.instance.scoreManager.score.ToString();
+                    nowText = GameManager.instance.scoreData.Score.ToString();
                 }
             }
         }

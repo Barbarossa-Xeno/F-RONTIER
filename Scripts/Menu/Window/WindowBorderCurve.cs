@@ -151,7 +151,7 @@ namespace FRONTIER.Menu.Window
         /// 難易度の変更に応じてグラデーションのカラーキーを変更する。
         /// </summary>
         /// <param name="difficulty">曲の難易度</param>
-        public override void SetColorTrigger(Reference.DifficultyEnum difficulty)
+        public override void SetColorTrigger(Reference.DifficultyRank difficulty)
         {
             gradientOption.colorKey[1].color = MenuInfo.menuInfo.DifficultyTo(difficulty).Item2;
             gradient.SetKeys(gradientOption.colorKey, gradientOption.alphaKey);

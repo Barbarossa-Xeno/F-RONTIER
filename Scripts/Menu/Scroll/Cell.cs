@@ -73,21 +73,21 @@ namespace FancyScrollView.FRONTIER
         ///<see cref = "BackGround"></see>のカラーと、<see cref = "diffcultyText"></see>のテキストを変更します。
         ///</summary>
         ///<param name = "difficulty">現在選択中の難易度ランク。</param>
-        private void UpdateContentByDifficulty(Reference.DifficultyEnum difficulty){
+        private void UpdateContentByDifficulty(Reference.DifficultyRank difficulty){
             switch(difficulty){
-                case Reference.DifficultyEnum.Lite:
+                case Reference.DifficultyRank.Lite:
                 BackGround.color = MenuInfo.menuInfo.DifficultyColor = new Color32(76, 199, 255, 255);                
                 diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
-                case Reference.DifficultyEnum.Hard:
+                case Reference.DifficultyRank.Hard:
                 image.color = MenuInfo.menuInfo.DifficultyColor = new Color32(255, 162, 76, 255);
                 diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
-                case Reference.DifficultyEnum.Ecstasy:
+                case Reference.DifficultyRank.Ecstasy:
                 image.color = MenuInfo.menuInfo.DifficultyColor = new Color32(255, 76, 89, 255);
                 diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;
-                case Reference.DifficultyEnum.Restricted:
+                case Reference.DifficultyRank.Restricted:
                 image.color = MenuInfo.menuInfo.DifficultyColor = new Color32(140, 76, 255, 255);
                 diffcultyText.text = MenuInfo.menuInfo.DifficultyTo().Item1;
                 break;

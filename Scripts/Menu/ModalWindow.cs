@@ -206,7 +206,7 @@ namespace FRONTIER.Menu
 
         public void PlayGameScene()
         {
-            SceneNavigator.instance.FadeOutFinished += () => GameManager.instance.OnSceneLoaded(FRONTIER.Utility.Reference.Scene.GameScenes.Game);
+            SceneNavigator.instance.FadeOutFinished += () => GameManager.instance.Construct(FRONTIER.Utility.Reference.Scene.GameScenes.Game);
             SceneNavigator.instance.ChangeScene("Game", 1.5f, ignoreTimeScale: true);
         }
     }

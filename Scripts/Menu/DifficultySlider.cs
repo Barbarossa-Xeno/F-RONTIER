@@ -67,8 +67,8 @@ namespace FRONTIER.Menu
         /// </summary>
         private void SliderInit()
         {
-            slider.minValue = (int)Reference.DifficultyEnum.Lite;
-            slider.maxValue = (int)Reference.DifficultyEnum.Restricted;
+            slider.minValue = (int)Reference.DifficultyRank.Lite;
+            slider.maxValue = (int)Reference.DifficultyRank.Restricted;
             slider.wholeNumbers = true;
         }
 

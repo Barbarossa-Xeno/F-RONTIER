@@ -90,7 +90,7 @@ namespace FRONTIER.Menu.Window
             transform.localScale = new(1, canvasSize.y / parentRect.height, 1);
         }
 
-        public override void SetColorTrigger(Reference.DifficultyEnum difficulty)
+        public override void SetColorTrigger(Reference.DifficultyRank difficulty)
         {
             // 背景の色を変えるためのローカル関数
             // ブラー背景には、元々のRGBを1.4で割ったものを適用すると外見が元々の色に程近くなる

@@ -130,8 +130,8 @@ namespace FRONTIER.Menu
         {
             if (id_tmp == id) { return; }
             id_tmp = id;
-            GameManager.instance.musicSource.clip = songHighlights[id];
-            GameManager.instance.musicSource.Play();
+            GameManager.instance.audioManagers.musicManager.Source.clip = songHighlights[id];
+            GameManager.instance.audioManagers.musicManager.Source.Play();
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace FRONTIER.Menu
         public void OnDifficultyChanged()
         {
             // メニュー全体の難易度の更新
-            MenuInfo.menuInfo.Difficulty = (Reference.DifficultyEnum)Enum.ToObject(typeof(Reference.DifficultyEnum), slider.SliderValue);
+            MenuInfo.menuInfo.Difficulty = (Reference.DifficultyRank)Enum.ToObject(typeof(Reference.DifficultyRank), slider.SliderValue);
             // 難易度に応じてアイテムデータのレベルも更新する
             MenuInfo.menuInfo.Level = scrollManager.ItemDatas[MenuInfo.menuInfo.indexInMenu].ChangeLevel(MenuInfo.menuInfo.Difficulty);
         }

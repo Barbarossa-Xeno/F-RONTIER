@@ -117,7 +117,7 @@ namespace FRONTIER.Menu.Window
         /// 難易度の変更に応じてオブジェクトの色を変更する。
         /// </summary>
         /// <param name="difficulty">難易度</param>
-        public virtual void SetColorTrigger(Reference.DifficultyEnum difficulty) { }
+        public virtual void SetColorTrigger(Reference.DifficultyRank difficulty) { }
 
         /// <summary>
         /// オブジェクトのスケールを変更する。（画面の高さが変わった時に）

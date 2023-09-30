@@ -97,8 +97,8 @@ namespace FRONTIER.Menu.Window
             {
                 if (handle.anchorMax.x <= 1 || handle.anchorMin.x <= 1)
                 {
-                    handle.anchorMax += new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.deltaTime), 0);
-                    handle.anchorMin += new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.deltaTime), 0);
+                    handle.anchorMax += new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.unscaledDeltaTime), 0);
+                    handle.anchorMin += new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.unscaledDeltaTime), 0);
                 }
 
             }
@@ -106,8 +106,8 @@ namespace FRONTIER.Menu.Window
             {
                 if (handle.anchorMax.x >= 0 || handle.anchorMin.x >= 0)
                 {
-                    handle.anchorMax -= new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.deltaTime), 0);
-                    handle.anchorMin -= new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.deltaTime), 0);
+                    handle.anchorMax -= new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.unscaledDeltaTime), 0);
+                    handle.anchorMin -= new Vector2(EasingExtensions.EaseOutQuint(HANDLE_SPEED * Time.unscaledDeltaTime), 0);
                 }
             }
         }
