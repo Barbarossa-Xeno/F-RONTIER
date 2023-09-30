@@ -425,15 +425,15 @@ namespace FRONTIER.Game.NotesManagement
             longNoteMeshList.Add(longNote);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点、曲線型では制御点も計算
-            Vector3 startPositon = new(LANE_GAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.SpecialNotesPosition.y, startZ);
-            Vector3 endPosition = new(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.SpecialNotesPosition.y, endZ);
+            Vector3 startPositon = new(LANE_GAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
+            Vector3 endPosition = new(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
             Vector3 controlPositon;
 
             // 曲線型の場合
             if (type == Reference.LongNoteType.NoInnerCurve || type == Reference.LongNoteType.AnyInnerCurve)
             {
                 // 制御点の計算
-                controlPositon = new(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.SpecialNotesPosition.y, (startZ + endZ) / 2);
+                controlPositon = new(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
                 //int variableSplit = SPLIT_SIZE * 3;
 
                 // ベジェ曲線から曲線上の点を計算する。
@@ -501,7 +501,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 直線型で中間点のないノーツ
                     if (innerNotesCounts[i] == 0 && notesTypes[i] == 2)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Linear_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
@@ -527,7 +527,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 曲線型で中間点のないノーツ
                     else if (innerNotesCounts[i] == 0 && notesTypes[i] == 3)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Curve_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
@@ -553,7 +553,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 直線型で中間点のあるノーツ
                     else if (innerNotesCounts[i] != 0 && notesTypes[i] == 2)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Linear_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
@@ -576,7 +576,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 曲線型で中間点のあるノーツ
                     else if (innerNotesCounts[i] != 0 && notesTypes[i] == 3)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.SpecialNotesPosition.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Curve_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 

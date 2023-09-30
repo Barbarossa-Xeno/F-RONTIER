@@ -67,11 +67,11 @@ namespace FRONTIER.Game.NotesManagement
 
         void Awake()
         {
-            notesCount = 0;
             data = base.LoadNotePattern(Manager.info.ID, Manager.info.DifficultyTo(Manager.info.Difficulty).Item1);
             GenerateNotes();
             //最大スコアの計算
-            GameManager.instance.scoreManager.maxScore = notesCount * 5;
+            Manager.scoreData.maxScore = notesCount * 5;
+            Manager.info.Bpm = data.BPM;
         }
 
         #endregion
@@ -80,10 +80,8 @@ namespace FRONTIER.Game.NotesManagement
 
         public override void GenerateNotes()
         {
-            // 値の代入と受け渡し
             notesCount = data.notes.Length;
-            GameManager.instance.musicManager.bpm = data.BPM;
-
+            
             // 読み込んだデータからノーツを生成する
             // ノーツの数だけループさせる
             // [ループ①]

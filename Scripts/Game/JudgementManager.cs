@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using UnityEngine.Events;
 using FRONTIER.Game.NotesManagement;
 using FRONTIER.Game.InputManageMent;
 using FRONTIER.Utility;
@@ -15,7 +15,6 @@ namespace FRONTIER.Game
     /// </summary>
     public class JudgementManager : UtilityClass
     {
-
         #region フィールド
 
         /// <summary>
@@ -36,7 +35,12 @@ namespace FRONTIER.Game
         /// <summary>
         /// <see cref = "InputManager"/>
         /// </summary>
-        [SerializeField] private InputManager tapManager;
+        [SerializeField] private InputManager inputManager;
+
+        /// <summary>
+        /// ノーツが削除されたタイミングで発火するイベント。
+        /// </summary>
+        [Header("ノーツが削除されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent OnNoteDeleted;
 
         /// <summary>
         /// 判定の対象とするノーツ。
@@ -51,16 +55,6 @@ namespace FRONTIER.Game
         {
             new(), new(), new(), new(), new(), new()
         };
-
-        /// <summary>
-        /// コンボ数を表示するテキスト。
-        /// </summary>
-        [SerializeField] private TextMeshProUGUI ComboText;
-
-        /// <summary>
-        /// スコアを表示するテキスト。
-        /// </summary>
-        [SerializeField] private TextMeshProUGUI ScoreText;
 
         /// <summary>
         /// ノーツ関連のSE。
@@ -153,18 +147,40 @@ namespace FRONTIER.Game
             hitSE = new();
 
             // タップしたときのイベントを登録する
-            tapManager.onInput.ToList().ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
+            inputManager.onInput.ToList().ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
 
             // ノーツが判定線を越えたときのイベントを登録する
             notesGenerator.notesObjects.ForEach
             (
                 note =>
                 {
+                    // 通常時
                     if (!Manager.AutoPlay)
-                    {
+                    { 
                         Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
                         // 判定線を超過して画面の外に出たらミスにする
                         info.OnReachedJudgement += () => DeleteNote(targetIndex: info.indexOfList, isMissed: true);
+                    }
+                    // オート時
+                    else
+                    {
+                        // 判定線あたりでノーツをPerfect判定する
+                        Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
+                        // ノーツがロングノーツだったら、始点・中間点・終点のノーツだけイベントを登録するようにする
+                        if (info.type == NoteType.LongLinear || info.type == NoteType.LongCurve)
+                        {
+                            // ダウンキャスト
+                            LongNotes _info = info as LongNotes;
+                            if (!(_info.status == LongNoteStatus.Mesh || _info.status == LongNoteStatus.None))
+                            {
+                                _info.OnReachedJudgement += () => DeleteNote(_info.indexOfList, isAuto: true);
+                            }
+                        }
+                        // 通常ノーツのときは関係なくイベントを登録
+                        else
+                        {
+                            info.OnReachedJudgement += () => DeleteNote(info.indexOfList, isAuto: true);
+                        }
                     }
                 }
             );
@@ -177,16 +193,6 @@ namespace FRONTIER.Game
                                                     info.OnPressedUpdate += isOn =>
                                                     JudgeLongNote(isOn, info.isInner, info.index)
                                                );
-        }
-
-        void Update()
-        {
-            //オートプレイが選択されている場合
-            if (Manager.start && Manager.AutoPlay)
-            {   
-                try { JudgeNote(); }
-                catch (ArgumentOutOfRangeException) { }
-            }
         }
 
         #endregion
@@ -208,7 +214,7 @@ namespace FRONTIER.Game
             // タップされたレーンと押された時間をもとにノーツの判定をする
             /// <param name="laneIndex">タップされたレーン</param>
             /// <param name="tapTime">タップされた時間</param>
-            void JudgeNote(int laneIndex, float tapTime)
+            void Judge(int laneIndex, float tapTime)
             {
                 // インデックスがオーバーしたときのことを考えて、例外はキャッチだけする
                 try
@@ -244,7 +250,7 @@ namespace FRONTIER.Game
                 if (note.transform.position.x == SwitchNoteLane(laneIndex))
                 {
                     float differenceZ = GetNotePositionDifference(note.transform.position.z);
-                    if (differenceZ > -1f && differenceZ < 5f)
+                    if (differenceZ > -1.5f && differenceZ < 5f)
                     {
                         eachLanesNotes[laneIndex].Add(note);
                     }
@@ -254,14 +260,16 @@ namespace FRONTIER.Game
             // 該当したノーツが１つもないようなら処理を抜ける
             if (eachLanesNotes[laneIndex].Count == 0) { return; }
 
-            // 最接近しているノーツは抽出したノーツリストのうち、z座標が最も小さいものをさらに抽出
+            // 最接近しているノーツは抽出したノーツリストのうち、
+            // そのz座標と判定線との距離の差が最も小さいものを１つ抽出
+            // 参照値をリストの一番初めの要素のz座標で初期化
             float reference = eachLanesNotes[laneIndex][0].transform.position.z;
             int targetIndex = 0;
 
             for (int i = 0; i < eachLanesNotes[laneIndex].Count; i++)
             {
-                // ノーツリストの一番初めの要素よりもZ座標が小さいものがあるか確認する
-                if (eachLanesNotes[laneIndex][i].transform.position.z < reference)
+                // 参照値よりもZ座標の差が小さいものがあるか確認する
+                if (eachLanesNotes[laneIndex][i].transform.position.z - noteOrigin.z < reference - noteOrigin.z)
                 {
                     // あれば、参照値を変更し、その番号を記憶する
                     reference = eachLanesNotes[laneIndex][i].transform.position.z;
@@ -275,11 +283,11 @@ namespace FRONTIER.Game
             // 便宜上、ノーツの種類のよって処理を分ける
             if (target.info.type == NoteType.Normal)
             {
-                JudgeNote(laneIndex, tapTime);
+                Judge(laneIndex, tapTime);
             }
             else if (target.info.type == NoteType.LongLinear || target.info.type == NoteType.LongCurve)
             {
-                JudgeNote(laneIndex, tapTime);
+                Judge(laneIndex, tapTime);
             }
         }
 
@@ -347,42 +355,40 @@ namespace FRONTIER.Game
                 // ラグを判定幅に照応させて判定する
                 if (timeLag <= judgementTime[JudgementStatus.Perfect])
                 {
-                    Manager.seSource.PlayOneShot(hitSE.GreatOrPerfect);
-                    ShowScore(JudgementStatus.Perfect);
-                    Manager.scoreManager.ratioScore += JudgementStatusScore.PERFECT;
-                    Manager.scoreManager.scoreCount["perfect"]++;
-                    Manager.scoreManager.combo++;
+                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                    ShowScoreStatus(JudgementStatus.Perfect);
+                    Manager.scoreData.apparentScore += JudgementStatusScore.PERFECT;
+                    Manager.scoreData.scoreCount[JudgementStatus.Perfect]++;
+                    Manager.scoreData.combo++;
                 }
                 else if (timeLag <= judgementTime[JudgementStatus.Great])
                 {
-                    Manager.seSource.PlayOneShot(hitSE.GreatOrPerfect);
-                    ShowScore(JudgementStatus.Great);
-                    Manager.scoreManager.ratioScore += JudgementStatusScore.GREAT;
-                    Manager.scoreManager.scoreCount["great"]++;
-                    Manager.scoreManager.combo++;
+                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                    ShowScoreStatus(JudgementStatus.Great);
+                    Manager.scoreData.apparentScore += JudgementStatusScore.GREAT;
+                    Manager.scoreData.scoreCount[JudgementStatus.Great]++;
+                    Manager.scoreData.combo++;
                 }
                 else if (timeLag <= judgementTime[JudgementStatus.Good])
                 {
-                    Manager.seSource.PlayOneShot(hitSE.GoodOrBad);
-                    ShowScore(JudgementStatus.Good);
-                    Manager.scoreManager.ratioScore += JudgementStatusScore.GOOD;
-                    Manager.scoreManager.scoreCount["good"]++;
-                    Manager.scoreManager.combo++;
+                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GoodOrBad);
+                    ShowScoreStatus(JudgementStatus.Good);
+                    Manager.scoreData.apparentScore += JudgementStatusScore.GOOD;
+                    Manager.scoreData.scoreCount[JudgementStatus.Good]++;
+                    Manager.scoreData.combo++;
                     // 絶対精度良くないから、Goodまではコンボ許容しないと俺が怒るぜ
                 }
                 else if (timeLag <= judgementTime[JudgementStatus.Bad])
                 {
-                    Manager.seSource.PlayOneShot(hitSE.GoodOrBad);
-                    ShowScore(JudgementStatus.Bad);
-                    Manager.scoreManager.ratioScore += JudgementStatusScore.BAD;
-                    Manager.scoreManager.scoreCount["bad"]++;
-                    Manager.scoreManager.combo = 0;
+                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GoodOrBad);
+                    ShowScoreStatus(JudgementStatus.Bad);
+                    Manager.scoreData.apparentScore += JudgementStatusScore.BAD;
+                    Manager.scoreData.scoreCount[JudgementStatus.Bad]++;
+                    Manager.scoreData.combo = 0;
                 }
 
                 // スコア計算
-                Manager.ScoreCalc();
-                ScoreText.SetText($"{Manager.scoreManager.score}");
-                ComboText.SetText($"{Manager.scoreManager.combo}");
+                Manager.scoreData.CalculateScore();
 
                 // ノーツを消す
                 DeleteNote();
@@ -400,6 +406,8 @@ namespace FRONTIER.Game
             notesGenerator.laneNumbers.RemoveAt(index);
             notesGenerator.notesTypes.RemoveAt(index);
             notesGenerator.notesObjects.RemoveAt(index);
+
+            OnNoteDeleted?.Invoke();
         }
 
         /// <summary>
@@ -415,23 +423,22 @@ namespace FRONTIER.Game
         {
             if (isAuto)
             {
-                Manager.seSource.PlayOneShot(hitSE.GreatOrPerfect);
+                // 同じノーツを二度判定することがないように、ノーツのアクティブ状態を確認する
+                if (notesGenerator.notesObjects[targetIndex].activeSelf)
+                {
+                    // ノーツをリストから削除せずに形だけ消す
+                    notesGenerator.notesObjects[targetIndex].SetActive(false);
+                }
+                else return; 
 
-                // ノーツをリストから削除
-                notesGenerator.notesObjects[^targetIndex].SetActive(notesGenerator.notesObjects[^targetIndex].activeSelf ? false : false);
-                notesGenerator.notesTimes.RemoveAt(^targetIndex);
-                notesGenerator.laneNumbers.RemoveAt(^targetIndex);
-                notesGenerator.notesTypes.RemoveAt(^targetIndex);
-                notesGenerator.notesObjects.RemoveAt(^targetIndex);
+                Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
 
                 // スコア計算
-                ShowScore(JudgementStatus.Perfect);
-                Manager.scoreManager.ratioScore += JudgementStatusScore.PERFECT;
-                Manager.scoreManager.scoreCount["perfect"]++;
-                Manager.scoreManager.combo++;
-                Manager.ScoreCalc();
-                ScoreText.SetText($"{Manager.scoreManager.score}");
-                ComboText.SetText($"{Manager.scoreManager.combo}");
+                ShowScoreStatus(JudgementStatus.Perfect);
+                Manager.scoreData.apparentScore += JudgementStatusScore.PERFECT;
+                Manager.scoreData.scoreCount[JudgementStatus.Perfect]++;
+                Manager.scoreData.combo++;
+                Manager.scoreData.CalculateScore();
             }
             else if (isMissed)
             {
@@ -456,11 +463,12 @@ namespace FRONTIER.Game
                 notesGenerator.notesObjects.RemoveAt(targetIndex);
 
                 // スコア計算
-                ShowScore(JudgementStatus.Miss);
-                Manager.scoreManager.scoreCount["miss"]++;
-                Manager.scoreManager.combo = 0;
-                ComboText.SetText($"{Manager.scoreManager.combo}");
+                ShowScoreStatus(JudgementStatus.Miss);
+                Manager.scoreData.scoreCount[JudgementStatus.Miss]++;
+                Manager.scoreData.combo = 0;
             }
+
+            OnNoteDeleted?.Invoke();
         }
 
         /// <summary>
@@ -476,22 +484,19 @@ namespace FRONTIER.Game
             if (isPressed)
             {
                 // 押されていたまま判定線を超過したら、Perfectで判定をとる
-                Manager.seSource.PlayOneShot(hitSE.GreatOrPerfect);
-                ShowScore(JudgementStatus.Perfect);
-                Manager.scoreManager.ratioScore += JudgementStatusScore.PERFECT;
-                Manager.scoreManager.scoreCount["perfect"]++;
-                Manager.scoreManager.combo++;
-                Manager.ScoreCalc();
-                ScoreText.SetText($"{Manager.scoreManager.score}");
-                ComboText.SetText($"{Manager.scoreManager.combo}");
+                Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                ShowScoreStatus(JudgementStatus.Perfect);
+                Manager.scoreData.apparentScore += JudgementStatusScore.PERFECT;
+                Manager.scoreData.scoreCount[JudgementStatus.Perfect]++;
+                Manager.scoreData.combo++;
+                Manager.scoreData.CalculateScore();
             }
             else
             {
                 // 押されてなかったらミス
-                ShowScore(JudgementStatus.Miss);
-                Manager.scoreManager.scoreCount["miss"]++;
-                Manager.scoreManager.combo = 0;
-                ComboText.SetText($"{Manager.scoreManager.combo}");
+                ShowScoreStatus(JudgementStatus.Miss);
+                Manager.scoreData.scoreCount[JudgementStatus.Miss]++;
+                Manager.scoreData.combo = 0;
             }
 
             // ターゲットとする中間点（終点以外）のインデックスの指定があったとき
@@ -512,6 +517,8 @@ namespace FRONTIER.Game
                 longNotesGenerator.longNoteMeshList.RemoveAt(targetLongNoteListIndex);
                 longNotesGenerator.longNotesList.RemoveAt(targetLongNoteListIndex);
             }
+
+            OnNoteDeleted?.Invoke();
         }
 
         /// <summary>
@@ -520,7 +527,7 @@ namespace FRONTIER.Game
         /// <remarks>
         /// オブジェクトプール(<see cref = "ScoreObjectPool"/>)を利用する
         /// </remarks>
-        private void ShowScore(JudgementStatus status)
+        private void ShowScoreStatus(JudgementStatus status)
         {
             switch (status)
             {
@@ -542,23 +549,7 @@ namespace FRONTIER.Game
             }
             score.Object.transform.SetParent(score.parent);
             score.Object.transform.position = new(0, 0, 0);
-            score.Object.transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
-
-        /// <summary>
-        /// オートプレイ時の自動判定。
-        /// </summary>
-        private void JudgeNote()
-        {
-            if (Mathf.Abs(notesGenerator.notesObjects[^1].transform.position.z - 7.3f) < 1.0f) { DeleteNote(1, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^2].transform.position.z - 7.3f) < 1.0f) { DeleteNote(2, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^3].transform.position.z - 7.3f) < 1.0f) { DeleteNote(3, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^4].transform.position.z - 7.3f) < 1.0f) { DeleteNote(4, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^5].transform.position.z - 7.3f) < 1.0f) { DeleteNote(5, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^6].transform.position.z - 7.3f) < 1.0f) { DeleteNote(6, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^7].transform.position.z - 7.3f) < 1.0f) { DeleteNote(7, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^8].transform.position.z - 7.3f) < 1.0f) { DeleteNote(8, isAuto: true); }
-            if (Mathf.Abs(notesGenerator.notesObjects[^9].transform.position.z - 7.3f) < 1.0f) { DeleteNote(9, isAuto: true); }
+            score.Object.transform.rotation = Quaternion.Euler(60, 0, 0);
         }
 
         /// <summary>
@@ -570,6 +561,5 @@ namespace FRONTIER.Game
         private float CalculateLag(float tapTime, float noteTime) => Mathf.Abs(Manager.startTime + noteTime - tapTime);
 
         #endregion
-    
     }
 }

@@ -34,12 +34,16 @@ namespace FRONTIER.Game.NotesManagement
         /// </summary>
         public event Action OnReachedJudgement;
 
+        /// <summary>
+        /// 判定線を超過したか。
+        /// </summary>
+        protected bool IsReachedJudgement = false;
+
         #endregion
 
         #region MonoBehaviorメソッド
 
         // MonoBehaviorメソッドはオーバーライドできるようにする
-
         protected virtual void Start() { }
 
         protected virtual void Update()
@@ -49,8 +53,16 @@ namespace FRONTIER.Game.NotesManagement
             {
                 transform.position -= new Vector3(0, 0, GameManager.instance.NoteSpeed) * Time.deltaTime;
 
-                if (transform.position.z <= Reference.noteOrigin.z - 3.5f)
+                // 通常プレイ時、画面外に行くとミス判定
+                if (!GameManager.instance.AutoPlay && transform.position.z <= Reference.noteOrigin.z - 3.5f && !IsReachedJudgement)
                 {
+                    IsReachedJudgement = true;
+                    OnReachedJudgement?.Invoke();
+                }
+                // オートプレイ時、判定線通過で判定
+                else if (GameManager.instance.AutoPlay && transform.position.z <= Reference.noteOrigin.z && !IsReachedJudgement)
+                {
+                    IsReachedJudgement = true;
                     OnReachedJudgement?.Invoke();
                 }
             }
