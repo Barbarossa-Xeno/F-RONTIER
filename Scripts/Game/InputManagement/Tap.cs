@@ -47,7 +47,7 @@ namespace FRONTIER.Game.InputManageMent
             tapManager.onInput[laneIndex]?.Invoke(laneIndex, TapTime);
             IsTapped = true;
             alfa = 0.2f;
-            GameManager.instance.seSource.PlayOneShot(se);
+            GameManager.instance.audioManagers.seManager.Source.PlayOneShot(se);
         }
 
         public void OnPointerDown(PointerEventData eventData) => OnTap();
