@@ -5,7 +5,7 @@ using FRONTIER.Utility.Development;
 
 namespace FRONTIER.Menu.Background
 {
-    public class Wave : UtilityClass
+    public class Wave : GameUtility
     {
         /* --フィールド-- */
         /// <summary>
@@ -94,11 +94,6 @@ namespace FRONTIER.Menu.Background
         /// 生成する波形のメッシュの情報を保存する構造体のインスタンス。
         /// </summary>
         private WaveMeshProperties waveMeshProp = new WaveMeshProperties();
-
-        /// <summary>
-        /// ラインレンダラーで描画するオーディオスペクトラム。
-        /// </summary>
-        [SerializeField] private LineWave lineWave;
 
         /// <summary>
         /// Ｙ座標が変化している<see cref = "waveMesh"/>の頂点のみ抽出したもの

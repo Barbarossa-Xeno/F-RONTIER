@@ -21,7 +21,7 @@ namespace FRONTIER.Game.NotesManagement
     /// 通常ノーツを収めるなら１次元を、ロングノーツを収めるなら２次元のリストになるようにする
     /// </typeparam>
     [Serializable]
-    public abstract class NotesManager<LaneNumbersType, NotesTimesType, NotesObjectsType> : UtilityClass
+    public abstract class NotesManager<LaneNumbersType, NotesTimesType, NotesObjectsType> : GameUtility
     {
         #region フィールド
 
@@ -70,6 +70,11 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーツを持っているか。
         /// </summary>
         public virtual bool IsHavingNotes { get; }
+
+        /// <summary>
+        /// ゲームの準備に際して必要な情報。
+        /// </summary>
+        public GameManager.PlayInfo PlayInfo => Manager.info;
 
         #endregion
 

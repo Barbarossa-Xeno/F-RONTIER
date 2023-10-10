@@ -9,7 +9,7 @@ namespace FRONTIER.Title
 
         public void ScreenTaped()
         {
-            GameManager.instance.sceneLoad.menu.Invoke();
+            GameManager.instance.scene.menu.Invoke();
         }
     }
 }

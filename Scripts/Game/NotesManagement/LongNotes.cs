@@ -145,7 +145,7 @@ namespace FRONTIER.Game.NotesManagement
             }
 
             // オート時はずっと押された判定にする
-            if (GameManager.instance.AutoPlay) { OnPressed.Invoke(true); }
+            if (Manager.info.IsAutoPlay) { OnPressed.Invoke(true); }
         }
 
         protected sealed override void Update()
@@ -165,7 +165,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <param name = "flag">押下の有無のフラグ。</param>
         private void Pressing(bool flag)
         {
-            if (!GameManager.instance.AutoPlay) { OnPressed.Invoke(flag); }
+            if (!Manager.info.IsAutoPlay) { OnPressed.Invoke(flag); }
             else { OnPressed.Invoke(true); }
         }
 

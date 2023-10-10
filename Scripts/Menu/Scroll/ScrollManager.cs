@@ -67,6 +67,18 @@ namespace FancyScrollView.FRONTIER
             
             // アイテムデータの全取得と反映
             ItemDatas = GetItemData();
+
+            // アイテムの個数（楽曲数）に応じて、無限スクロールにするかを切り替える
+            if (ItemDatas.Length < 4)
+            {
+                scrollView.Loop = false;
+                scrollView.Scroller.MovementType = MovementType.Elastic;
+            }
+            else
+            {
+                scrollView.Loop = true;
+                scrollView.Scroller.MovementType = MovementType.Unrestricted;
+            }
             scrollView.UpdateData(ItemDatas);
 
             scrollView.SelectCell(MenuInfo.menuInfo.indexInMenu);

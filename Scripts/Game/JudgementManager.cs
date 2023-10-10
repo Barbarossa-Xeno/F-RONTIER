@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using FRONTIER.Game.NotesManagement;
-using FRONTIER.Game.InputManageMent;
+using FRONTIER.Game.InputManagement;
+using FRONTIER.Audio;
 using FRONTIER.Utility;
 using static FRONTIER.Utility.Reference;
 
@@ -13,7 +14,7 @@ namespace FRONTIER.Game
     /// <summary>
     /// ノーツの判定をする。
     /// </summary>
-    public class JudgementManager : UtilityClass
+    public class JudgementManager : GameUtility
     {
         #region フィールド
 
@@ -55,11 +56,6 @@ namespace FRONTIER.Game
         {
             new(), new(), new(), new(), new(), new()
         };
-
-        /// <summary>
-        /// ノーツ関連のSE。
-        /// </summary>
-        private HitSE hitSE;
 
         /// <summary>
         /// 判定ステータスの基準。
@@ -115,36 +111,12 @@ namespace FRONTIER.Game
             public Notes info;
         }
 
-        /// <summary>
-        /// ノーツを判定したり、ミスしたりしたときのSE。
-        /// </summary>
-        private class HitSE
-        {
-            /// <summary>
-            /// 判定「Great」以上のときに再生する。
-            /// </summary>
-            public AudioClip GreatOrPerfect { get; private set; }
-
-            /// <summary>
-            /// 判定「Good」または「Bad」のときに再生する。
-            /// </summary>
-            public AudioClip GoodOrBad { get; private set; }
-
-            public HitSE()
-            {
-                GreatOrPerfect = Resources.Load<AudioClip>(ResourcesPath.NOTE_SINGLE_GREAT_SE_PATH);
-                GoodOrBad = Resources.Load<AudioClip>(ResourcesPath.NOTE_SINGLE_GOOD_SE_PATH);
-            }
-        }
-
         #endregion
 
         #region MonoBehaviorメソッド
 
         void Start()
         {
-            // SEを取得
-            hitSE = new();
 
             // タップしたときのイベントを登録する
             inputManager.onInput.ToList().ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
@@ -155,7 +127,7 @@ namespace FRONTIER.Game
                 note =>
                 {
                     // 通常時
-                    if (!Manager.AutoPlay)
+                    if (!Manager.info.IsAutoPlay)
                     { 
                         Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
                         // 判定線を超過して画面の外に出たらミスにする
@@ -355,40 +327,40 @@ namespace FRONTIER.Game
                 // ラグを判定幅に照応させて判定する
                 if (timeLag <= judgementTime[JudgementStatus.Perfect])
                 {
-                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                    Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
                     ShowScoreStatus(JudgementStatus.Perfect);
-                    Manager.scoreData.apparentScore += JudgementStatusScore.PERFECT;
-                    Manager.scoreData.scoreCount[JudgementStatus.Perfect]++;
-                    Manager.scoreData.combo++;
+                    Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
+                    Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                    Manager.score.combo++;
                 }
                 else if (timeLag <= judgementTime[JudgementStatus.Great])
                 {
-                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                    Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
                     ShowScoreStatus(JudgementStatus.Great);
-                    Manager.scoreData.apparentScore += JudgementStatusScore.GREAT;
-                    Manager.scoreData.scoreCount[JudgementStatus.Great]++;
-                    Manager.scoreData.combo++;
+                    Manager.score.apparentScoreValue += JudgementStatusScore.GREAT;
+                    Manager.score.judgementStatus[JudgementStatus.Great]++;
+                    Manager.score.combo++;
                 }
                 else if (timeLag <= judgementTime[JudgementStatus.Good])
                 {
-                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GoodOrBad);
+                    Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
                     ShowScoreStatus(JudgementStatus.Good);
-                    Manager.scoreData.apparentScore += JudgementStatusScore.GOOD;
-                    Manager.scoreData.scoreCount[JudgementStatus.Good]++;
-                    Manager.scoreData.combo++;
+                    Manager.score.apparentScoreValue += JudgementStatusScore.GOOD;
+                    Manager.score.judgementStatus[JudgementStatus.Good]++;
+                    Manager.score.combo++;
                     // 絶対精度良くないから、Goodまではコンボ許容しないと俺が怒るぜ
                 }
                 else if (timeLag <= judgementTime[JudgementStatus.Bad])
                 {
-                    Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GoodOrBad);
+                    Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
                     ShowScoreStatus(JudgementStatus.Bad);
-                    Manager.scoreData.apparentScore += JudgementStatusScore.BAD;
-                    Manager.scoreData.scoreCount[JudgementStatus.Bad]++;
-                    Manager.scoreData.combo = 0;
+                    Manager.score.apparentScoreValue += JudgementStatusScore.BAD;
+                    Manager.score.judgementStatus[JudgementStatus.Bad]++;
+                    Manager.score.combo = 0;
                 }
 
                 // スコア計算
-                Manager.scoreData.CalculateScore();
+                Manager.score.CalculateScore();
 
                 // ノーツを消す
                 DeleteNote();
@@ -431,14 +403,14 @@ namespace FRONTIER.Game
                 }
                 else return; 
 
-                Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
 
                 // スコア計算
                 ShowScoreStatus(JudgementStatus.Perfect);
-                Manager.scoreData.apparentScore += JudgementStatusScore.PERFECT;
-                Manager.scoreData.scoreCount[JudgementStatus.Perfect]++;
-                Manager.scoreData.combo++;
-                Manager.scoreData.CalculateScore();
+                Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
+                Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                Manager.score.combo++;
+                Manager.score.CalculateScore();
             }
             else if (isMissed)
             {
@@ -464,8 +436,8 @@ namespace FRONTIER.Game
 
                 // スコア計算
                 ShowScoreStatus(JudgementStatus.Miss);
-                Manager.scoreData.scoreCount[JudgementStatus.Miss]++;
-                Manager.scoreData.combo = 0;
+                Manager.score.judgementStatus[JudgementStatus.Miss]++;
+                Manager.score.combo = 0;
             }
 
             OnNoteDeleted?.Invoke();
@@ -484,19 +456,19 @@ namespace FRONTIER.Game
             if (isPressed)
             {
                 // 押されていたまま判定線を超過したら、Perfectで判定をとる
-                Manager.audioManagers.seManager.Source.PlayOneShot(hitSE.GreatOrPerfect);
+                Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
                 ShowScoreStatus(JudgementStatus.Perfect);
-                Manager.scoreData.apparentScore += JudgementStatusScore.PERFECT;
-                Manager.scoreData.scoreCount[JudgementStatus.Perfect]++;
-                Manager.scoreData.combo++;
-                Manager.scoreData.CalculateScore();
+                Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
+                Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                Manager.score.combo++;
+                Manager.score.CalculateScore();
             }
             else
             {
                 // 押されてなかったらミス
                 ShowScoreStatus(JudgementStatus.Miss);
-                Manager.scoreData.scoreCount[JudgementStatus.Miss]++;
-                Manager.scoreData.combo = 0;
+                Manager.score.judgementStatus[JudgementStatus.Miss]++;
+                Manager.score.combo = 0;
             }
 
             // ターゲットとする中間点（終点以外）のインデックスの指定があったとき

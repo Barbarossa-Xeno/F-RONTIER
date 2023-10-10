@@ -83,7 +83,7 @@ namespace FRONTIER.Menu.Background
         void Start()
         {
             // オーディオソースの取得
-            audioSource = GameManager.instance.audioManagers.musicManager.Source;
+            audioSource = GameManager.instance.audios.musicManager.Source;
             spectrumData = new float[(int)FFT_resolution];
 
             // イベントの登録

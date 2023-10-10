@@ -47,8 +47,8 @@ namespace FRONTIER.Utility
     //* 初期化 *//
 
     ///<summary>初期化メソッドを実装したMonoBehaviour。</summary>
-    ///<remarks>継承元：<see cref = "UtilityClass"/></remarks>
-    public class MonoBehaviorWithInit : UtilityClass
+    ///<remarks>継承元：<see cref = "GameUtility"/></remarks>
+    public class MonoBehaviorWithInit : GameUtility
     {
         ///<summary>初期化したか否かのフラグ。</summary>
         ///<remarks>※初期化は一度しか実行されないようにする設計。</remarks>

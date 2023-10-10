@@ -67,11 +67,12 @@ namespace FRONTIER.Game.NotesManagement
 
         void Awake()
         {
-            data = base.LoadNotePattern(Manager.info.ID, Manager.info.DifficultyTo(Manager.info.Difficulty).Item1);
+            data = base.LoadNotePattern(PlayInfo.ID, PlayInfo.DifficultyTo(PlayInfo.Difficulty).Item1);
             GenerateNotes();
             //最大スコアの計算
-            Manager.scoreData.maxScore = notesCount * 5;
-            Manager.info.Bpm = data.BPM;
+            Manager.score.maxScoreValue = notesCount * Reference.JudgementStatusScore.PERFECT;
+            Manager.score.maxCombo = notesCount;
+            PlayInfo.Bpm = data.BPM;
         }
 
         #endregion
@@ -114,7 +115,7 @@ namespace FRONTIER.Game.NotesManagement
                         float _noteTime = CalculateNoteTime(data.notes[i].notes[j].LPB, data.notes[i].notes[j].num);
 
                         // ゲームをオートでプレイするときは、中間点ノーツの情報も通常ノーツのリストに追加する
-                        if (Manager.AutoPlay)
+                        if (PlayInfo.IsAutoPlay)
                         {
                             notesTimes.Add(_noteTime);
                             laneNumbers.Add(data.notes[i].notes[j].block);
@@ -153,7 +154,7 @@ namespace FRONTIER.Game.NotesManagement
                     float positionX = SwitchNoteLane(data.notes[i].block);
 
                     // Z座標の算出
-                    float positionZ = notesTimes[^1] * Manager.NoteSpeed + Reference.noteOrigin.z;
+                    float positionZ = notesTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
 
                     // ノーツをゲームオブジェクトとして生成する
                     notesObjects.Add(Instantiate(notePrefabs.normal, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteObjectParent));
@@ -197,7 +198,7 @@ namespace FRONTIER.Game.NotesManagement
             float minDistance = secPerBeat / (float)lpb;
             // ノーツの判定線への到達時間
             // 小節位置に与えられた小節の通し番号（インデックス）を乗算して実際の再生時間を算出する
-            float noteTime = (float)index * minDistance + Manager.JudgingTiming;
+            float noteTime = (float)index * minDistance + PlayInfo.JudgingTiming;
 
             return noteTime;
         }

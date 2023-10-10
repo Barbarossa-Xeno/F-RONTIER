@@ -1,17 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Video;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
 using FadeTransition;
+using FRONTIER.Audio;
 using FRONTIER.Utility;
 using System;
 
 namespace FRONTIER.Game
 {
-    public class GameMenuManager : UtilityClass
+    public class GameMenuManager : GameUtility
     {
+        #region フィールド
+
         /// <summary>
         /// プレイを開始する前に表示する画面。
         /// </summary>
@@ -32,10 +34,9 @@ namespace FRONTIER.Game
         /// </summary>
         private bool isPaused = false;
 
-        /// <summary>
-        /// 拍の音を収録したオーディオクリップ。
-        /// </summary>
-        private AudioClip beat;
+        #endregion
+
+        #region 構造体
 
         /// <summary>
         /// プレイを開始する前に表示する画面の要素と挙動。
@@ -209,7 +210,7 @@ namespace FRONTIER.Game
                     cover.sprite = Manager.info.Cover;
                     name.Text = Manager.info.Name;
                     level.text = Manager.info.Level;
-                    score.text = $"{Manager.scoreData.Score}";
+                    score.text = $"{Manager.score.ScoreValue}";
                     bpm.text = $"{Manager.info.Bpm}";
                 }
             }
@@ -217,6 +218,9 @@ namespace FRONTIER.Game
             #endregion
         }
 
+        #endregion
+
+        #region MonoBehaviourメソッド
         void Start()
         {
             // ポーズ画面をセットアップ
@@ -228,10 +232,9 @@ namespace FRONTIER.Game
 
             // イントロ画面をセットアップ
             introductionScreen.Open();
-            beat = Resources.Load<AudioClip>(Reference.ResourcesPath.BEAT_WOODBLOCK1_SE_PATH);
             StartCoroutine(StartGame());
 
-            if (Manager.Mv) { mvManager.Construct(); }
+            if (Manager.info.IsMV) { mvManager.Construct(); }
         }
 
         void Update()
@@ -239,13 +242,17 @@ namespace FRONTIER.Game
             // 音楽の再生が最後まで終わったら
             if (Manager.start
                 && Manager.gamePlayState == GameManager.GamePlayState.Playing
-                && Time.time > Manager.audioManagers.musicManager.Source.clip.length + Manager.startTime)
+                && Time.time > Manager.audios.musicManager.Source.clip.length + Manager.startTime)
             {
                 // リザルトシーンをロード。
-                Manager.audioManagers.musicManager.Stop();
-                Manager.sceneLoad.result.Invoke();
+                Manager.audios.musicManager.Stop();
+                Manager.scene.result.Invoke();
             }
         }
+
+        #endregion
+
+        #region メソッド
 
         /// <summary>
         /// ゲームを開始する。
@@ -258,7 +265,7 @@ namespace FRONTIER.Game
             introductionScreen.SetSongInfo();
 
             // 曲のBPMに合わせて拍のSEを４回鳴らす
-            SetInterval(() => Manager.audioManagers.seManager.Source.PlayOneShot(beat), 60f / Manager.info.Bpm, 4);
+            SetInterval(() => Manager.audios.seManager.Play(SEManager.SE.WoodBlockBeat), 60f / Manager.info.Bpm, 4);
 
             // 5秒待機して曲の情報画面を消す
             yield return new WaitForSeconds(5f);
@@ -268,9 +275,9 @@ namespace FRONTIER.Game
             yield return new WaitForSeconds(4f);
             Manager.start = true;
             Manager.startTime = Time.time;
-            Manager.audioManagers.musicManager.Play();
+            Manager.audios.musicManager.Play();
 
-            if (Manager.Mv) { mvManager.Player.Play(); }
+            if (Manager.info.IsMV) { mvManager.Player.Play(); }
 
             Manager.gamePlayState = GameManager.GamePlayState.Playing;
         }
@@ -278,14 +285,13 @@ namespace FRONTIER.Game
         /// <summary>
         /// ゲームをポーズする。
         /// </summary>
-        ///<remarks><see cref = "pauseButton"/>のボタンコンポーネントメソッドに直接登録します。</remarks>
         private void PauseGame()
         {
             if (!isPaused)
             {
                 isPaused = true;
                 Time.timeScale = 0;
-                Manager.audioManagers.musicManager.Source.Pause();
+                Manager.audios.musicManager.Pause();
                 mvManager.Player?.Pause();
                 pauseMenu.Open();
                 Manager.gamePlayState = GameManager.GamePlayState.Pausing;
@@ -297,7 +303,7 @@ namespace FRONTIER.Game
         /// </summary>
         private void RetireGame()
         {
-            Manager.sceneLoad.menu.Invoke();
+            Manager.scene.menu.Invoke();
             Time.timeScale = 1f;
         }
 
@@ -312,8 +318,8 @@ namespace FRONTIER.Game
                 {
                     isPaused = false;
                     Time.timeScale = 1;
-                    Manager.audioManagers.musicManager.Source.Play();
-                    if (Manager.Mv) { mvManager.Player.Play(); }
+                    Manager.audios.musicManager.Source.Play();
+                    if (Manager.info.IsMV) { mvManager.Player.Play(); }
                     Manager.gamePlayState = GameManager.GamePlayState.Playing;
                 }
             ));
@@ -328,6 +334,6 @@ namespace FRONTIER.Game
             SceneNavigator.instance.ChangeScene(SceneManager.GetActiveScene().name, 1.0f, ignoreTimeScale: true);
         }
 
-
+        #endregion
     }
 }

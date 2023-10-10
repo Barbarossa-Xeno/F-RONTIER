@@ -494,7 +494,7 @@ namespace FRONTIER.Game.NotesManagement
                 for (int j = 0; j < laneNumbers[i].Count; j++)
                 {
                     positionX = SwitchNoteLane(laneNumbers[i][j]);
-                    positionZ = notesTimes[i][j] * GameManager.instance.NoteSpeed + Reference.noteOrigin.z;
+                    positionZ = notesTimes[i][j] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
                     _positionX[i, j] = positionX;
                     _positionZ[i, j] = positionZ;
 
@@ -505,8 +505,8 @@ namespace FRONTIER.Game.NotesManagement
                         note.name = $"Note_Long_Only_Linear_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
-                        if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
-                        if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
+                        if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
+                        if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
                             if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
@@ -531,8 +531,8 @@ namespace FRONTIER.Game.NotesManagement
                         note.name = $"Note_Long_Only_Curve_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
-                        if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
-                        if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
+                        if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
+                        if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
                             if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
@@ -557,8 +557,8 @@ namespace FRONTIER.Game.NotesManagement
                         note.name = $"Note_Long_Any_Linear_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
-                        if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
-                        if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
+                        if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
+                        if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
                             if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
@@ -580,8 +580,8 @@ namespace FRONTIER.Game.NotesManagement
                         note.name = $"Note_Long_Any_Curve_{i}";
                         LongNotes prop = note.GetComponent<LongNotes>();
 
-                        if (GameManager.instance.AutoPlay || (!GameManager.instance.AutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
-                        if ((/*!GameManager.instance.AutoPlay &&*/ j > 0))
+                        if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
+                        if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
                             if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }

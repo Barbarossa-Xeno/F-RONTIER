@@ -3,7 +3,7 @@ using UnityEngine.Video;
 
 namespace FRONTIER.Game
 {
-    public class MVManager : Utility.UtilityClass
+    public class MVManager : Utility.GameUtility
     {
         public VideoPlayer Player { get; private set; }
 

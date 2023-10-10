@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using FRONTIER.Audio;
 using FRONTIER.Menu;
 using FRONTIER.Save;
 using FRONTIER.Utility;
-using FRONTIER.Utility.Development;
 using FadeTransition;
 
 
@@ -17,30 +17,12 @@ namespace FRONTIER
     /// </summary>
     public class GameManager : SingletonMonoBehaviour<GameManager>
     {
-        /// <summary>
-        /// ノーツの速度。
-        /// </summary>
-        public float NoteSpeed { get; private set; }
+        #region フィールド
 
         /// <summary>
-        /// 判定ずらしの秒数。
+        /// 楽曲やSEの再生を管理する。
         /// </summary>
-        public float JudgingTiming { get; private set; }
-
-        /// <summary>
-        /// オートプレイが選択されたか。
-        /// </summary>
-        public bool AutoPlay { get; private set; }
-
-        /// <summary>
-        /// MVを再生するか。
-        /// </summary>
-        public bool Mv { get; private set; }
-
-        /// <summary>
-        /// 楽曲やSEの再生を管理するクラスたち。
-        /// </summary>
-        public AudioManagers audioManagers;
+        public AudioManagers audios;
 
         /// <summary>
         /// 音楽の再生が開始したか。
@@ -55,12 +37,26 @@ namespace FRONTIER
         /// <summary>
         /// プレイする楽曲の情報。
         /// </summary>
-        [HideInInspector] public Info info;
+        public PlayInfo info;
+
+        /// <summary>
+        /// スコアのデータ。
+        /// </summary>
+        public ScoreData score = new();
 
         /// <summary>
         /// <see cref="SceneNavigator"/>と連動してシーンのロード時に発火させるイベント。
         /// </summary>
-        [Header("SceneNavigaterと連動してシーンのロード時に発火させるイベント")] public SceneLoad sceneLoad;
+        [Header("SceneNavigaterと連動してシーンのロード時に発火させるイベント")] public SceneEvent scene;
+
+        /// <summary>
+        /// 「ゲーム」のプレイ状況。
+        /// </summary>
+        public GamePlayState gamePlayState = GamePlayState.None;
+
+        #endregion
+
+        #region クラス・列挙型
 
         /// <summary>
         /// 楽曲やSEの再生を管理する。
@@ -82,8 +78,33 @@ namespace FRONTIER
         /// <summary>
         /// プレイする楽曲の情報を記録する。
         /// </summary>
-        public class Info : SongInfo
+        public class PlayInfo : SongInfo
         {
+            /// <summary>
+            /// ノーツの速度。
+            /// </summary>
+            public float NoteSpeed => SettingData.Instance.setting.noteSpeed * Reference.NOTE_SPEED_FACTOR;
+
+            /// <summary>
+            /// 判定ずらしの秒数。
+            /// </summary>
+            public float JudgingTiming => SettingData.Instance.setting.timing;
+
+            /// <summary>
+            /// 楽曲のBPM。
+            /// </summary>
+            public int Bpm { get; set; }
+
+            /// <summary>
+            /// オートプレイするか。
+            /// </summary>
+            public bool IsAutoPlay => MenuInfo.menuInfo.IsAutoPlay;
+
+            /// <summary>
+            /// MVを再生するか。
+            /// </summary>
+            public bool IsMV => MenuInfo.menuInfo.IsMV;
+
             public override int ID => MenuInfo.menuInfo.ID;
             public override string Name => MenuInfo.menuInfo.Name;
             public override string Artist => MenuInfo.menuInfo.Artist;
@@ -91,14 +112,14 @@ namespace FRONTIER
             public override Reference.DifficultyRank Difficulty => MenuInfo.menuInfo.Difficulty;
             public override string Level => MenuInfo.menuInfo.Level;
             public override Sprite Cover => MenuInfo.menuInfo.Cover;
-            public int Bpm { get; set; }
+
         }
 
         /// <summary>
-        /// 各シーンがロードされた際に発火するイベントをまとめたクラス。
+        /// 各シーンのロードを行うイベント。
         /// </summary>
         [Serializable]
-        public class SceneLoad
+        public class SceneEvent
         {
             /// <summary>
             /// タイトルがロードされたとき
@@ -133,9 +154,14 @@ namespace FRONTIER
             public int combo;
 
             /// <summary>
+            /// 最大コンボ数
+            /// </summary>
+            public int maxCombo;
+
+            /// <summary>
             /// 表示するスコア
             /// </summary>
-            public int Score { get; private set; }
+            public int ScoreValue { get; private set; }
 
             /// <summary>
             /// 楽曲の総てのノーツをPerfect判定で叩いたと仮定したときの最大スコア
@@ -143,34 +169,43 @@ namespace FRONTIER
             /// <remarks>
             /// 楽曲の総ノーツ数 × Perfect判定のスコア
             /// </remarks>
-            public float maxScore;
+            public float maxScoreValue;
 
             /// <summary>
             /// 判定ステータスに応じて加算していく、見かけ上のスコア
             /// </summary>
-            public float apparentScore;
+            public float apparentScoreValue;
+
+            /// <summary>
+            /// 各判定ステータスを獲得した回数を記録する
+            /// </summary>
+            public Dictionary<Reference.JudgementStatus, int> judgementStatus;
+
+            public Reference.ClearRank clearRank;
 
             /// <summary>
             /// スコアの理論値
             /// </summary>
-            public const int THEORETICAL_SCORE = 1000000;
+            public const int THEORETICAL_SCORE_VALUE = 1000000;
 
-            public Dictionary<Reference.JudgementStatus, int> scoreCount;
-
+            /// <summary>
+            /// スコアを計算する
+            /// </summary>
             public void CalculateScore()
             {
-                if (maxScore == 0) return;
+                if (maxScoreValue == 0) return;
 
-                Score = Mathf.RoundToInt(THEORETICAL_SCORE * Mathf.Floor(apparentScore / maxScore * THEORETICAL_SCORE) / THEORETICAL_SCORE);
+                ScoreValue = Mathf.RoundToInt(THEORETICAL_SCORE_VALUE * Mathf.Floor(apparentScoreValue / maxScoreValue * THEORETICAL_SCORE_VALUE) / THEORETICAL_SCORE_VALUE);
             }
 
             public ScoreData()
             {
                 combo = 0;
-                Score = 0;
-                maxScore = 0;
-                apparentScore = 0;
-                scoreCount = new()
+                ScoreValue = 0;
+                maxScoreValue = 0;
+                apparentScoreValue = 0;
+                clearRank = Reference.ClearRank.C;
+                judgementStatus = new()
                 {
                     {Reference.JudgementStatus.Perfect, 0},
                     {Reference.JudgementStatus.Great, 0},
@@ -181,28 +216,14 @@ namespace FRONTIER
             }
         }
 
-        public ScoreData scoreData = new();
-
-        public Reference.Scene.GameScenes GameScene
-        {
-            get
-            {
-                if (SceneManager.GetActiveScene().buildIndex == 0) { return Reference.Scene.GameScenes.Title; }
-                if (SceneManager.GetActiveScene().buildIndex == 1) { return Reference.Scene.GameScenes.Menu; }
-                if (SceneManager.GetActiveScene().buildIndex == 2) { return Reference.Scene.GameScenes.Game; }
-                if (SceneManager.GetActiveScene().buildIndex == 3) { return Reference.Scene.GameScenes.Result; }
-                else { return 0; }
-            }
-        }
-
-        [HideInInspector]
         public enum GamePlayState
         {
-            Starting, Playing, Pausing, Finishing
+            Starting, Playing, Pausing, Finishing, None
         }
 
-        public GamePlayState gamePlayState = GamePlayState.Starting;
+        #endregion
 
+        #region メソッド
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void AbsoluteInit()
@@ -221,20 +242,31 @@ namespace FRONTIER
         public override void Construct(int scene)
         {
             Reference.Scene.GameScenes _scene = (Reference.Scene.GameScenes)scene;
-            // シーンナビゲータ側のイベントを初期化する。
+            // シーンナビゲータ側のイベントを初期化する
             SceneNavigator.instance.ResetEvent();
             switch (_scene)
             {
                 case Reference.Scene.GameScenes.Menu:
+                    SceneNavigator.instance.FadeOutFinished += () =>
+                    {
+                        instance.info = new();
+                        instance.gamePlayState = GamePlayState.None;
+                        if (SongSaveData.Instance.saves == null) { SongSaveData.Instance.Save(); }
+                    };
+                    SceneNavigator.instance.FadeOutFinished += SettingData.Instance.Load;
+                    SceneNavigator.instance.FadeOutFinished += SongSaveData.Instance.Load;
                     SceneNavigator.instance.FadeOutFinished += () => instance.info = new();
-                    SceneNavigator.instance.FadeOutFinished += () => instance.audioManagers.musicManager.Construct(_scene);
                     SceneNavigator.instance.FadeInFinished += () => Menu.Background.FFT.OnAudioClipChanged?.Invoke();
                     break;
 
                 case Reference.Scene.GameScenes.Game:
-                    SceneNavigator.instance.FadeOutFinished += InitializeFieldProperty;
-                    SceneNavigator.instance.FadeOutFinished += () => instance.audioManagers.musicManager.Construct(_scene);
-                    SceneNavigator.instance.FadeOutFinished += instance.audioManagers.musicManager.Construct;
+                    SceneNavigator.instance.FadeOutFinished += () =>
+                    {
+                        instance.score = new();
+                        instance.gamePlayState = GamePlayState.Starting;
+                        instance.start = false;
+                        instance.startTime = 0;
+                    };
                     break;
 
                 case Reference.Scene.GameScenes.Result:
@@ -244,27 +276,13 @@ namespace FRONTIER
                         instance.gamePlayState = GamePlayState.Finishing;
                     };
                     break;
-
             }
+            SceneNavigator.instance.FadeOutFinished += () => instance.audios.musicManager.Construct(_scene);
+            SceneNavigator.instance.FadeOutFinished += () => instance.audios.seManager.Construct(_scene);
 
             SceneNavigator.instance.ChangeScene(Reference.Scene.ToString(_scene), _fadeTime: 1f);
         }
 
-        /// <summary>
-        /// ゲームシーンがロードされたときに、フィールドやプロパティを初期化する。
-        /// </summary>
-        private void InitializeFieldProperty()
-        {
-            // プロパティ
-            instance.NoteSpeed = SettingData.Instance.setting.noteSpeed * Reference.NOTE_SPEED_FACTOR;
-            instance.JudgingTiming = SettingData.Instance.setting.timing;
-            instance.AutoPlay = MenuInfo.menuInfo.autoPlay;
-            instance.Mv = MenuInfo.menuInfo.mv;
-            // フィールド
-            instance.scoreData = new();
-            instance.gamePlayState = GamePlayState.Starting;
-            instance.start = false;
-            instance.startTime = 0;
-        }
+        #endregion
     }
 }

@@ -7,7 +7,7 @@ namespace FRONTIER.Game.NotesManagement
     /// <summary>
     /// ノーツの情報を保持し、ノーツを動かす。
     /// </summary>
-    public class Notes : MonoBehaviour
+    public class Notes : GameUtility
     {
         #region フィールド
 
@@ -49,18 +49,18 @@ namespace FRONTIER.Game.NotesManagement
         protected virtual void Update()
         {
             // ゲームプレイ中に実行される
-            if (GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing)
+            if (Manager.gamePlayState == GameManager.GamePlayState.Playing)
             {
-                transform.position -= new Vector3(0, 0, GameManager.instance.NoteSpeed) * Time.deltaTime;
+                transform.position -= new Vector3(0, 0, Manager.info.NoteSpeed) * Time.deltaTime;
 
                 // 通常プレイ時、画面外に行くとミス判定
-                if (!GameManager.instance.AutoPlay && transform.position.z <= Reference.noteOrigin.z - 3.5f && !IsReachedJudgement)
+                if (!Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z - 3.5f && !IsReachedJudgement)
                 {
                     IsReachedJudgement = true;
                     OnReachedJudgement?.Invoke();
                 }
                 // オートプレイ時、判定線通過で判定
-                else if (GameManager.instance.AutoPlay && transform.position.z <= Reference.noteOrigin.z && !IsReachedJudgement)
+                else if (Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z && !IsReachedJudgement)
                 {
                     IsReachedJudgement = true;
                     OnReachedJudgement?.Invoke();

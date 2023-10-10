@@ -111,6 +111,14 @@ namespace FRONTIER.Utility
             Perfect, Great, Good, Bad, Miss
         }
         
+        /// <summary>
+        /// クリアランク。
+        /// </summary>
+        public enum ClearRank
+        {
+            S_Plus, S, A_Plus, A, B_Plus, B, C_Plus, C
+        }
+
         #endregion
 
         #region 定数・参照値
@@ -174,18 +182,6 @@ namespace FRONTIER.Utility
             public const int B = 500000;
             public const int C_PLUS = 400000;
             public const int C = 300000;
-        }
-
-
-        /// <summary>
-        /// 使用するリソースのパス。
-        /// </summary>
-        public static class ResourcesPath
-        {
-            public const string TAP_SE_PATH = "SE/tap";
-            public const string NOTE_SINGLE_GREAT_SE_PATH = "SE/heel_1";
-            public const string NOTE_SINGLE_GOOD_SE_PATH = "SE/heel_2";
-            public const string BEAT_WOODBLOCK1_SE_PATH = "SE/wb1";
         }
         
         #endregion

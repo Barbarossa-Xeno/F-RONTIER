@@ -8,7 +8,7 @@ namespace FRONTIER.Game
     /// <summary>
     /// ゲーム中のUIにスコアを表示する。
     /// </summary>
-    public class ScoreManager : MonoBehaviour
+    public class ScoreManager : GameUtility
     {
         #region フィールド
 
@@ -69,29 +69,49 @@ namespace FRONTIER.Game
         // UnityEventから発火する
         public void UpdateScore()
         {
-            scoreGauge.value = (float)GameManager.instance.scoreData.Score / (float)GameManager.ScoreData.THEORETICAL_SCORE;
-            score.SetText($"{GameManager.instance.scoreData.Score}");
-            combo.SetText($"{GameManager.instance.scoreData.combo}");
+            scoreGauge.value = (float)Manager.score.ScoreValue / (float)GameManager.ScoreData.THEORETICAL_SCORE_VALUE;
+            score.SetText($"{Manager.score.ScoreValue}");
+            combo.SetText($"{Manager.score.combo}");
 
-            if (GameManager.instance.scoreData.Score >= Reference.ClearRankBorder.C)
+            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C)
             {
                 scoreRankTexts.c.color = new(152f / 255f, 94f / 255f, 39f / 255f, 255f / 255f);
                 scoreRankTexts.c.outlineColor = new(255, 255, 255, 255);
+                Manager.score.clearRank = Reference.ClearRank.C;
+                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                {
+                    Manager.score.clearRank = Reference.ClearRank.C_Plus;
+                }
             }
-            if (GameManager.instance.scoreData.Score >= Reference.ClearRankBorder.B)
+            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.B)
             {
                 scoreRankTexts.b.color = new Color(135f / 255f, 135f / 255f, 135f / 255f, 255f / 255f);
                 scoreRankTexts.b.outlineColor = new(255, 255, 255, 255);
+                Manager.score.clearRank = Reference.ClearRank.B;
+                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                {
+                    Manager.score.clearRank = Reference.ClearRank.B_Plus;
+                }
             }
-            if (GameManager.instance.scoreData.Score >= Reference.ClearRankBorder.A)
+            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.A)
             {
                 scoreRankTexts.a.color = new Color(173f / 255f, 146f / 255f, 34f / 255f, 255f / 255f);
                 scoreRankTexts.a.outlineColor = new(255, 255, 255, 255);
+                Manager.score.clearRank = Reference.ClearRank.A;
+                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                {
+                    Manager.score.clearRank = Reference.ClearRank.A_Plus;
+                }
             }
-            if (GameManager.instance.scoreData.Score >= Reference.ClearRankBorder.S)
+            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.S)
             {
                 scoreRankTexts.s.color = new Color(150f / 255f, 206f / 255f, 199f / 255f, 255f / 255f);
                 scoreRankTexts.s.outlineColor = new(255, 255, 255, 255);
+                Manager.score.clearRank = Reference.ClearRank.S;
+                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                {
+                    Manager.score.clearRank = Reference.ClearRank.S_Plus;
+                }
             }
         }
 

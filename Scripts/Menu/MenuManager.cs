@@ -8,12 +8,12 @@ using FRONTIER.Utility;
 
 namespace FRONTIER.Menu
 {
-    ///<summary>
-    ///メニュー画面の総括的な管理を行う。
-    ///</summary>
+    /// <summary>
+    /// メニュー画面の総括的な管理を行う。
+    /// </summary>
     public class MenuManager : MonoBehaviour, IMenu
     {
-        /* フィールド */
+        #region フィールド
 
         /// <summary>
         /// <see cref = "ScrollManager"/>
@@ -36,14 +36,22 @@ namespace FRONTIER.Menu
         private AudioClip[] songHighlights;
 
         /// <summary>
+        /// 楽曲データを表示するときのソートを管理するインスタンス。
+        /// </summary>
+        public SongSort songSort = new();
+
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
         /// 難易度が更新されたときに発火させるアクション。
         /// </summary>
         public Action OnDifficultyChangedAction { get; set; }
 
-        /// <summary>
-        /// 楽曲データを表示するときのソートを管理するインスタンス。
-        /// </summary>
-        public SongSort songSort = new();
+        #endregion
+
+        #region クラス
 
         /// <summary>
         /// 楽曲データを表示するときのソートを管理する。
@@ -68,10 +76,12 @@ namespace FRONTIER.Menu
             }
         }
 
+        #endregion
+
+        #region MonoBehaviourメソッド
 
         void Awake()
         {
-            //初期化処理。後にセーブデータに対応する予定
             LoadData();
 
             // イベントを登録
@@ -82,28 +92,16 @@ namespace FRONTIER.Menu
             slider.OnDifficultyChanged(OnDifficultyChangedAction);
         }
 
+        #endregion
+
         /// <summary>
         /// リソースフォルダーからファイルを読み込む。
         /// </summary>
         private void LoadData()
         {
-            SettingData.Instance.Load();
             NotificationData.Instance.Load();
             SongData.Instance.Load();
             LoadAudio();
-        }
-
-        /// <summary>
-        /// 設定ファイルを保存します。
-        /// </summary>
-        public void SaveSetting(string parentPath)
-        {
-            string serialedSaveData = JsonUtility.ToJson(SettingData.Instance, true);
-            StreamWriter streamWriter = new StreamWriter(parentPath + "/Setting.json");
-            streamWriter.Write(serialedSaveData);
-            streamWriter.Flush();
-            streamWriter.Close();
-            DevelopmentExtentionMethods.LogEditor($"{parentPath}への保存に成功しました。");
         }
 
         /// <summary>
@@ -130,8 +128,8 @@ namespace FRONTIER.Menu
         {
             if (id_tmp == id) { return; }
             id_tmp = id;
-            GameManager.instance.audioManagers.musicManager.Source.clip = songHighlights[id];
-            GameManager.instance.audioManagers.musicManager.Source.Play();
+            GameManager.instance.audios.musicManager.Source.clip = songHighlights[id];
+            GameManager.instance.audios.musicManager.Source.Play();
         }
 
         /// <summary>
@@ -145,7 +143,6 @@ namespace FRONTIER.Menu
             MenuInfo.menuInfo.Name = itemData.name;
             MenuInfo.menuInfo.Artist = itemData.artist;
             MenuInfo.menuInfo.Level = itemData.ChangeLevel(MenuInfo.menuInfo.Difficulty);
-            MenuInfo.menuInfo.DifficultyColor = MenuInfo.menuInfo.DifficultyTo().Item2;
             MenuInfo.menuInfo.Cover = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
         }
 

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using FRONTIER.Utility;
+using FRONTIER.Audio;
 
-namespace FRONTIER.Game.InputManageMent
+namespace FRONTIER.Game.InputManagement
 {
     public class Tap : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -10,7 +10,6 @@ namespace FRONTIER.Game.InputManageMent
         [SerializeField] private int laneIndex;
         private Material material;
         private float alfa;
-        private AudioClip se;
         
         private float TapTime
         {
@@ -28,7 +27,6 @@ namespace FRONTIER.Game.InputManageMent
         {
             tapManager = transform.parent.GetComponent<InputManager>();
             material = GetComponent<Renderer>().material;
-            se = Resources.Load<AudioClip>(Reference.ResourcesPath.TAP_SE_PATH);
         }
 
         void Update()
@@ -47,7 +45,7 @@ namespace FRONTIER.Game.InputManageMent
             tapManager.onInput[laneIndex]?.Invoke(laneIndex, TapTime);
             IsTapped = true;
             alfa = 0.2f;
-            GameManager.instance.audioManagers.seManager.Source.PlayOneShot(se);
+            GameManager.instance.audios.seManager.Play(SEManager.SE.TapedLane);
         }
 
         public void OnPointerDown(PointerEventData eventData) => OnTap();

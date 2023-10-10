@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace FRONTIER.Game.InputManageMent
+namespace FRONTIER.Game.InputManagement
 {
     /// <summary>
     /// 各レーンの入力を管理する。
