@@ -5,7 +5,7 @@
 ## ソースコードについて
 面倒くさくて全部ソースコードを上げました。まるまる全部見ようものなら卒倒すると思うので、以下のファイルを見てくれたらうれしい。全部Scriptsフォルダ内のGameフォルダにあります。
 ### おぬぬめ
-- [JudgementManager.cs](Sctipts/Game/JudgementManager.cs)<br/>音ゲーで一番大事な判定をとるクラス
+- [JudgementManager.cs](Scripts/Game/JudgementManager.cs)<br/>音ゲーで一番大事な判定をとるクラス
 - [Notes.cs](Scripts/Game/NotesManagement/Notes.cs)<br/>ノーツそのものを動かしたり、種類分けしたりするためのクラス
 - [NotesGenerator.cs](Scripts/Game/NotesManagement/NotesGenerator.cs)<br/>ノーツを生成するクラス。なお、[NotesManager.cs](Scripts/Game/NotesManagement/NotesManager.cs)を継承
 ### 注意点
