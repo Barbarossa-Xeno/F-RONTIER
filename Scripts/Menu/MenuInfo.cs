@@ -15,11 +15,6 @@ namespace FRONTIER.Menu
         public static MenuInfo menuInfo = new();
 
         /// <summary>
-        /// 難易度の色（のちのち廃止）
-        /// </summary>
-        public Color32 DifficultyColor;
-
-        /// <summary>
         /// メニューで選択されていた楽曲が表示されていたセルのインデックスを保持する。
         /// </summary>
         public int indexInMenu;
@@ -34,8 +29,15 @@ namespace FRONTIER.Menu
         /// </summary>
         public IMenu.SortOrder SortOrder { get; set; }
 
-        public bool autoPlay;
-        public bool mv;
+        /// <summary>
+        /// オートプレイで開始するかどうか。
+        /// </summary>
+        public virtual bool IsAutoPlay { get; set; }
+
+        /// <summary>
+        /// プレイ時にMVを再生するかどうか。
+        /// </summary>
+        public virtual bool IsMV { get; set; }
 
         /// <summary>
         /// 継承メソッドでインスタンス（<see cref="menuInfo"/>）の難易度を参照する場合の省略用オーバーロード

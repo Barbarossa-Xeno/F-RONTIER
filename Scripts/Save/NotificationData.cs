@@ -4,7 +4,7 @@ namespace FRONTIER.Save
     /// 通知（お知らせやニュース）を読み込んで情報を保持する。
     /// </summary>
     [System.Serializable]
-    public class NotificationData : SaveData<NotificationData>
+    public class NotificationData : SaveManager<NotificationData>
     {
         /// <summary>
         /// 通知内容。
@@ -25,9 +25,8 @@ namespace FRONTIER.Save
             public string p;
         }
 
-        /// <summary>
-        /// 通知の内容を読み込む。
-        /// </summary>
         public override void Load() => base.Load(DataMode.NOTIFICATION);
+
+        public override void Save() => throw new System.Exception("セーブできません");
     }
 }

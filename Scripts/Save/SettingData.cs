@@ -6,7 +6,7 @@ namespace FRONTIER.Save
     /// 設定データを保持するクラス。
     /// </summary>
     [System.Serializable]
-    public class SettingData : SaveData<SettingData>
+    public class SettingData : SaveManager<SettingData>
     {
         /// <summary>
         /// 保存された設定のデータ。
