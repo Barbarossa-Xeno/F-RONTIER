@@ -64,6 +64,11 @@ namespace FancyScrollView
         protected abstract GameObject CellPrefab { get; }
 
         /// <summary>
+        /// セルを循環して配置させるどうか.
+        /// </summary>
+        public abstract bool Loop { get; set; }
+
+        /// <summary>
         /// アイテム一覧のデータ.
         /// </summary>
         protected IList<TItemData> ItemsSource { get; set; } = new List<TItemData>();

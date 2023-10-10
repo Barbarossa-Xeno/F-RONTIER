@@ -8,6 +8,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using FRONTIER;
 using FRONTIER.Menu;
 using FRONTIER.Utility;
 
@@ -101,7 +102,6 @@ namespace FancyScrollView.FRONTIER
 
             animator.speed = 0;
         }
-
 
         /// <summary>
         /// 現在選択中のソートの基準に応じてセルの表示を変更する。

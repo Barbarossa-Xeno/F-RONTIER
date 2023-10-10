@@ -29,6 +29,18 @@ namespace FancyScrollView.FRONTIER
 
         protected override GameObject CellPrefab => cellPrefab;
 
+        public override bool Loop
+        {
+            get => loop;
+            set => loop = value;
+        }
+
+        public Scroller Scroller
+        {
+            get => scroller;
+            set => scroller = value;
+        }
+
         public bool Holding => scroller.hold;
         public bool Scrolling => scroller.scrolling;
         public bool Dragging => scroller.dragging;
