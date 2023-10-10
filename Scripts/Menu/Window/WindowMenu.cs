@@ -109,9 +109,9 @@ namespace FRONTIER.Menu.Window
 
             OpenSetting = settingWindowManager.Open;
             buttons.setting.onClick.AddListener(OpenSetting.Invoke);
-            buttons.start.onClick.AddListener(GameManager.instance.sceneLoad.game.Invoke);
-            buttons.mv.OnToggleChanged += isOn => MenuInfo.menuInfo.mv = isOn;
-            buttons.auto.OnToggleChanged += isOn => MenuInfo.menuInfo.autoPlay = isOn;
+            buttons.start.onClick.AddListener(GameManager.instance.scene.game.Invoke);
+            buttons.mv.OnToggleChanged += isOn => MenuInfo.menuInfo.IsMV = isOn;
+            buttons.auto.OnToggleChanged += isOn => MenuInfo.menuInfo.IsAutoPlay = isOn;
         }
 
         public void OnSongSelected()

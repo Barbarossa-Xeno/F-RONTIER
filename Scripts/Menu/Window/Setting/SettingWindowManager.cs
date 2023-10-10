@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using FRONTIER.Save;
 
 namespace FRONTIER.Menu.Window.Setting
 {
@@ -9,28 +10,17 @@ namespace FRONTIER.Menu.Window.Setting
     /// </summary>
     public class SettingWindowManager : MonoBehaviour
     {
+        #region フィールド
+
         /// <summary>
         /// 設定画面の中に表示するウィンドウの項目。
         /// </summary>
-        [Tooltip("ゲーム設定・オーディオ設定・システム設定")] [SerializeField] private Window window;
-
-        [Serializable]
-        private struct Window
-        {
-            [SerializeField] public GameObject game;
-            [SerializeField] public GameObject audio;
-            [SerializeField] public GameObject system;
-        }
+        [Header("ゲーム設定・オーディオ設定・システム設定"), SerializeField] private Window window;
 
         /// <summary>
-        /// ウィンドウの閉じるボタン。
+        /// ウィンドウを閉じるボタン。
         /// </summary>
         [SerializeField] private Button closeButton;
-
-        /// <summary>
-        /// アイテムバーが押されたとき発火するアクション。
-        /// </summary>
-        public Action<Category> OnClickBar;
 
         /// <summary>
         /// 現在選択されているカテゴリ。
@@ -42,6 +32,46 @@ namespace FRONTIER.Menu.Window.Setting
         /// </summary>
         private Animator animator;
 
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
+        /// アイテムバーが押されたとき発火するイベント。
+        /// </summary>
+        public Action<Category> OnClickBar { get; private set; }
+
+        /// <summary>
+        /// 設定画面が有効（表示されている）かどうか。
+        /// </summary>
+        public bool Enable { private get => gameObject.activeSelf; set => gameObject.SetActive(value); }
+
+        #endregion
+
+        #region 構造体・クラス・列挙型
+
+        [Serializable]
+        private struct Window
+        {
+            /// <summary>
+            /// ゲーム設定のウィンドウ。
+            /// </summary>
+            [SerializeField] public GameObject game;
+
+            /// <summary>
+            /// オーディオ設定のウィンドウ。
+            /// </summary>
+            [SerializeField] public GameObject audio;
+
+            /// <summary>
+            /// システム設定のウィンドウ。
+            /// </summary>
+            [SerializeField] public GameObject system;
+        }
+
+        /// <summary>
+        /// アニメーターのトリガーのハッシュ値。
+        /// </summary>
         private static class AnimatorHash
         {
             public static readonly int _openWindow = Animator.StringToHash("_OpenWindow");
@@ -53,28 +83,30 @@ namespace FRONTIER.Menu.Window.Setting
         /// </summary>
         public enum Category { None, Game, Audio, System }
 
-        /// <summary>
-        /// 設定画面が有効（表示されている）かどうか。
-        /// </summary>
-        public bool Enable { private get => gameObject.activeSelf; set => gameObject.SetActive(value); }
+        #endregion
 
+        #region MonoBehaviourメソッド
         
         void Awake()
         {
-            OnClickBar += OpenEachWindows;
+            OnClickBar += OpenEachCategories;
             OnClickBar += (_category) => currentCategory = _category;
-            OpenEachWindows(Category.Game);
+            OpenEachCategories(Category.Game);
             animator = animator ?? GetComponent<Animator>();
             closeButton.onClick.AddListener(Close);
         }
 
         void OnValidate() => animator = animator ?? GetComponent<Animator>();
 
+        #endregion
+
+        #region メソッド
+
         /// <summary>
         /// 各項目が選択されたときにウィンドウを展開する。
         /// </summary>
         /// <param name="category">項目カテゴリ</param>
-        private void OpenEachWindows(Category category)
+        private void OpenEachCategories(Category category)
         {
             switch (category)
             {
@@ -101,6 +133,7 @@ namespace FRONTIER.Menu.Window.Setting
         /// </summary>
         public void Open()
         {
+            SettingData.Instance.Load();
             animator.SetTrigger(AnimatorHash._openWindow);
         }
 
@@ -109,7 +142,10 @@ namespace FRONTIER.Menu.Window.Setting
         /// </summary>
         public void Close()
         {
+            SettingData.Instance.Save();
             animator.SetTrigger(AnimatorHash._closeWindow);
         }
+
+        #endregion
     }
 }
