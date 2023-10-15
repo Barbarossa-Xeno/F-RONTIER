@@ -6,7 +6,6 @@
 
 using FRONTIER.Utility;
 using FRONTIER.Save;
-using UnityEngine;
 
 namespace FancyScrollView.FRONTIER
 {
@@ -84,11 +83,12 @@ namespace FancyScrollView.FRONTIER
         }
 
         /// <summary>
-        /// <see cref="level"/>を選択中の難易度に合わせて変更させる。
+        /// データに紐づいた<see cref="level"/>を選択中の難易度に合わせて変更する。データに設定された難易度も変更する。
         /// </summary>
         /// <param name="difficulty"></param>
         public string ChangeLevel(Reference.DifficultyRank difficulty)
         {
+            this.difficulty = difficulty;
             switch (difficulty)
             {
                 case Reference.DifficultyRank.Lite:

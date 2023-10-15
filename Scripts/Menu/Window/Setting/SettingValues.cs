@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using FRONTIER.Save;
+using FRONTIER.Utility.Asset;
 
 namespace FRONTIER.Menu.Window.Setting
 {
@@ -226,11 +227,11 @@ namespace FRONTIER.Menu.Window.Setting
                 {
                     case ElementTypes.MusicVolume:
                         UpdateValue(ref SettingData.Instance.setting.musicVolume, increment);
-                        GameManager.instance.audios.musicManager.SetVolume(SettingData.Instance.setting.musicVolume / 10f);
+                        GameManager.instance.audios.musicManager.SetVolume(SettingData.Instance.setting.musicVolume);
                         break;
                     case ElementTypes.SEVolume:
                         UpdateValue(ref SettingData.Instance.setting.seVolume, increment);
-                        GameManager.instance.audios.musicManager.SetVolume(SettingData.Instance.setting.seVolume / 10f);
+                        GameManager.instance.audios.musicManager.SetVolume(SettingData.Instance.setting.seVolume);
                         break;
                     default : break;
                 }

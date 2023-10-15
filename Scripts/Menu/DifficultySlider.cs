@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using System;
 using FRONTIER.Utility;
 using FancyScrollView.FRONTIER;
-using UnityEngine.Events;
+
 
 namespace FRONTIER.Menu
 {
@@ -23,9 +24,14 @@ namespace FRONTIER.Menu
         [SerializeField] private Slider slider;
 
         /// <summary>
+        /// 選択可能な最大難易度。
+        /// </summary>
+        [SerializeField] private Reference.DifficultyRank maxDifficulty;
+
+        /// <summary>
         /// スライダーのハンドルをカスタマイズする要素。
         /// </summary>
-        [Tooltip("スライダーのハンドルをカスタマイズ")][SerializeField] private SliderHandle sliderHandle;
+        [Header("スライダーのハンドルをカスタマイズ"), SerializeField] private SliderHandle sliderHandle;
 
         /// <summary>
         /// スライダーのハンドル部分。
@@ -45,15 +51,14 @@ namespace FRONTIER.Menu
 
         /// <summary>
         /// 外部クラスのメソッドやイベントを<see cref = "slider"/>の値変更時のイベントに登録させるためのメソッド。
-        /// （void型メソッドや引数無しAction型デリゲートを登録しやすいようにしている）
         /// </summary>
-        /// <param name="action">難易度が変更されたときに発火したいイベント</param>
-        // 本当はonValueChangedは、floatを引数に持つUnityAction型をコールバックにとるけど、わざわざparamで捨て引数にしてアクションを発火させるイベントを登録している
-        public void OnDifficultyChanged(Action action) => slider.onValueChanged.AddListener((param) => action.Invoke());
+        /// <param name="callBack">難易度が変更されたときに発火したいイベント</param>
+        public void AddListener(UnityEvent<int> callBack)
+            => slider.onValueChanged.AddListener((value) => callBack?.Invoke((int)value));
 
         void Start()
         {
-            SliderInit();
+            Initialize();
         }
 
         void Update()
@@ -65,11 +70,12 @@ namespace FRONTIER.Menu
         /// <summary>
         /// スライダーを初期化する。
         /// </summary>
-        private void SliderInit()
+        private void Initialize()
         {
             slider.minValue = (int)Reference.DifficultyRank.Lite;
-            slider.maxValue = (int)Reference.DifficultyRank.Restricted;
+            slider.maxValue = (int)maxDifficulty;
             slider.wholeNumbers = true;
+            slider.value = (int)MenuInfo.menuInfo.Difficulty;
         }
 
         /// <summary>

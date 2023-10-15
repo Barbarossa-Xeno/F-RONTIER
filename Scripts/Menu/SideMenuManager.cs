@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using TMPro;
 
 namespace FRONTIER.Menu
@@ -8,12 +9,21 @@ namespace FRONTIER.Menu
     /// <summary>
     /// サイドメニューを管理する。
     /// </summary>
-    public class SideMenuManager : MonoBehaviour, IMenu
+    public class SideMenuManager : MonoBehaviour
     {
         /// <summary>
         /// <see cref="MenuManager"/>
         /// </summary>
         [SerializeField] private MenuManager menuManager;
+
+        /// <summary>
+        /// 設定画面の管理スクリプト
+        /// </summary>
+        [SerializeField] private Window.Setting.SettingWindowManager settingWindowManager;
+
+        [SerializeField] private UnityEvent<int> OnSortOptionChanged;
+
+        [SerializeField] private UnityEvent<int> OnSortOrderChanged;
 
         /// <summary>
         /// サイドメニューを開閉するボタン。
@@ -37,9 +47,6 @@ namespace FRONTIER.Menu
         
         private Animator sideMenuAnimator;
         private Image sideMenuButtonImage;
-
-        public int SortOptionCount => Enum.GetNames(typeof(IMenu.SortOption)).Length;
-        public int SortOrderCount => Enum.GetNames(typeof(IMenu.SortOrder)).Length;
 
         [Serializable]
         private struct SideMenuItems
@@ -78,30 +85,30 @@ namespace FRONTIER.Menu
             /// ソートオプションの変更をテキストに反映する
             /// </summary>
             /// <param name="sortOption">現在のソートのオプション</param>
-            public void UpdateSortCondition(IMenu.SortOption sortOption) => sortOptionText.text = SORT_OPTION_INTRO_TEXT + EnumToString(sortOption);
+            public void UpdateSortCondition(IMenu.Sort.Option sortOption) => sortOptionText.text = SORT_OPTION_INTRO_TEXT + EnumToString(sortOption);
 
             /// <summary>
             /// ソートの並び順の変更をテキストに反映する
             /// </summary>
             /// <param name="sortOrder">現在のソートの並び順</param>
-            public void UpdateSortCondition(IMenu.SortOrder sortOrder) => sortOrderText.text = SORT_ORDER_INTRO_TEXT + EnumToString(sortOrder);
+            public void UpdateSortCondition(IMenu.Sort.Order sortOrder) => sortOrderText.text = SORT_ORDER_INTRO_TEXT + EnumToString(sortOrder);
 
-            private static string EnumToString(IMenu.SortOption sortOption)
+            private static string EnumToString(IMenu.Sort.Option sortOption)
             {
                 string message = "";
 
                 switch (sortOption)
                 {
-                    case IMenu.SortOption.ID:
+                    case IMenu.Sort.Option.ID:
                         message = "ID";
                         break;
-                    case IMenu.SortOption.Name:
+                    case IMenu.Sort.Option.Name:
                         message = "名前";
                         break;
-                    case IMenu.SortOption.Genre:
+                    case IMenu.Sort.Option.Genre:
                         message = "ジャンル";
                         break;
-                    case IMenu.SortOption.Level:
+                    case IMenu.Sort.Option.Level:
                         message = "レベル";
                         break;
                 }
@@ -109,16 +116,16 @@ namespace FRONTIER.Menu
                 return message;
             }
 
-            private static string EnumToString(IMenu.SortOrder sortOrder)
+            private static string EnumToString(IMenu.Sort.Order sortOrder)
             {
                 string message = "";
 
                 switch (sortOrder)
                 {
-                    case IMenu.SortOrder.Ascending:
+                    case IMenu.Sort.Order.Ascending:
                         message = "昇順";
                         break;
-                    case IMenu.SortOrder.Descending:
+                    case IMenu.Sort.Order.Descending:
                         message = "降順";
                         break;
                 }
@@ -183,9 +190,10 @@ namespace FRONTIER.Menu
             // SortOptionのEnumとintを相互変換して、ボタンが押された毎に値を変えていく
             int enumNum = (int)MenuInfo.menuInfo.SortOption + 1;
             
-            if (enumNum < SortOptionCount) { menuManager.songSort.OnSortOptionChanged?.Invoke((IMenu.SortOption)Enum.ToObject(typeof(IMenu.SortOption), enumNum)); }
-            else { menuManager.songSort.OnSortOptionChanged.Invoke(IMenu.SortOption.ID); }
+            if (enumNum < IMenu.Sort.OptionCount) { menuManager.events.OnSortOptionChanged?.Invoke(enumNum); }
+            else { menuManager.events.OnSortOptionChanged?.Invoke((int)IMenu.Sort.Option.ID); }
 
+            Debug.Log(MenuInfo.menuInfo.SortOption);
             sortConditionView.UpdateSortCondition(MenuInfo.menuInfo.SortOption);
         }
 
@@ -196,8 +204,8 @@ namespace FRONTIER.Menu
         {
             int enumNum = (int)MenuInfo.menuInfo.SortOrder + 1;
 
-            if (enumNum < SortOrderCount) { menuManager.songSort.OnSortOrderChanged.Invoke((IMenu.SortOrder)Enum.ToObject(typeof(IMenu.SortOrder), enumNum)); }
-            else { menuManager.songSort.OnSortOrderChanged.Invoke(IMenu.SortOrder.Ascending); }
+            if (enumNum < IMenu.Sort.OrderCount) { menuManager.events.OnSortOrderChanged?.Invoke(enumNum); }
+            else { menuManager.events.OnSortOrderChanged?.Invoke((int)IMenu.Sort.Order.Ascending); }
 
             sortConditionView.UpdateSortCondition(MenuInfo.menuInfo.SortOrder);
         }
@@ -209,7 +217,7 @@ namespace FRONTIER.Menu
         {
             isOpen = false;
             ActWindow(false);
-            menuManager.windowMenu.OpenSetting.Invoke();
+            settingWindowManager.Open();
         }
     }
 }

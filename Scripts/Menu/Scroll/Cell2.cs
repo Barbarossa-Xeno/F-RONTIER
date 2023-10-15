@@ -8,9 +8,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using FRONTIER;
 using FRONTIER.Menu;
 using FRONTIER.Utility;
+using FRONTIER.Utility.Asset;
 
 namespace FancyScrollView.FRONTIER
 {
@@ -68,12 +68,6 @@ namespace FancyScrollView.FRONTIER
         {
             public static readonly int scroll = Animator.StringToHash("scroll");
         }
-        
-        void Update()
-        {
-            // 屈辱ながら、Updateで実行させるしかなかった...
-            UpdateSortInfo();
-        }
 
         void OnEnable()
         {
@@ -83,12 +77,12 @@ namespace FancyScrollView.FRONTIER
         public override void UpdateContent(ItemData itemData)
         {
             // 受け渡されたItemDataの情報がテンポラリーと異なっていたらセルの情報を更新する
-            if (UtilityMethod.IsValueChanged(ref itemData_tmp, itemData))
+            if (Extension.IsValueChanged(ref itemData_tmp, itemData))
             {
                 cover.sprite = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
                 songName.Text = itemData.name;
+                OnSortOptionChanged(MenuInfo.menuInfo.SortOption);
             }
-            UpdateSortInfo(MenuInfo.menuInfo.SortOption);
         }
 
         public override void UpdatePosition(float position)
@@ -107,22 +101,22 @@ namespace FancyScrollView.FRONTIER
         /// 現在選択中のソートの基準に応じてセルの表示を変更する。
         /// </summary>
         /// <param name="sortOption">ソートの基準</param>
-        private void UpdateSortInfo(IMenu.SortOption sortOption)
+        public void OnSortOptionChanged(IMenu.Sort.Option sortOption)
         {
             switch (sortOption)
             {
-                case IMenu.SortOption.ID:
-                case IMenu.SortOption.Genre:
-                case IMenu.SortOption.Level:
-                    sortInfo.SetText(itemData_tmp.level);
+                case IMenu.Sort.Option.ID:
+                case IMenu.Sort.Option.Genre:
+                case IMenu.Sort.Option.Level:
+                    sortInfo.SetText(itemData_tmp.ChangeLevel(MenuInfo.menuInfo.Difficulty));
                     break;
-                case IMenu.SortOption.Name:
+                case IMenu.Sort.Option.Name:
                     sortInfo.SetText(songName.Text.ToCharArray()[0].ToString());
                     break;
             }
             switch (sortOption)
             {
-                case IMenu.SortOption.Genre:
+                case IMenu.Sort.Option.Genre:
                     genre.parent.SetActive(true);
                     switch (itemData_tmp.genre)
                     {
@@ -146,20 +140,17 @@ namespace FancyScrollView.FRONTIER
             }
         }
 
-        /// <summary>
-        /// 現在選択中のソートの基準と難易度に応じてセルの表示を変更する。
-        /// </summary>
-        private void UpdateSortInfo()
-        {
-            switch (MenuInfo.menuInfo.SortOption)
-            {
-                case IMenu.SortOption.ID:
-                case IMenu.SortOption.Genre:
-                case IMenu.SortOption.Level:
-                    sortInfo.SetText(itemData_tmp.level);
-                    break;
-            }
-        }
+        public void OnDifficultyChanged(Reference.DifficultyRank difficulty) => sortInfo.SetText(itemData_tmp.ChangeLevel(difficulty));
+
+        #region 実装しないメソッド
+
+        public void OnSongSelected(int id) { }
+        public void OnDifficultyChanged(int difficulty) { }
+        public void OnSortOptionChanged(int option) { }
+        public void OnSortOrderChanged(int order) { }
+        public void OnSortOrderChanged(IMenu.Sort.Order order) { }
+
+        #endregion
     }
 }
 

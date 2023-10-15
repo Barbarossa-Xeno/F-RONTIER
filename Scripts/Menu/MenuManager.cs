@@ -1,9 +1,8 @@
 using System;
-using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 using FancyScrollView.FRONTIER;
 using FRONTIER.Save;
-using FRONTIER.Utility.Development;
 using FRONTIER.Utility;
 
 namespace FRONTIER.Menu
@@ -16,19 +15,9 @@ namespace FRONTIER.Menu
         #region フィールド
 
         /// <summary>
-        /// <see cref = "ScrollManager"/>
+        /// 難易度を変えるスライダー。
         /// </summary>
-        [SerializeField] private ScrollManager scrollManager;
-
-        /// <summary>
-        /// <see cref = "DifficultySlider"/>
-        /// </summary>
-        [SerializeField] private DifficultySlider slider;
-
-        /// <summary>
-        /// <see cref = "Window.WindowMenu"/>
-        /// </summary>
-        public Window.WindowMenu windowMenu;
+        [SerializeField] private DifficultySlider difficultySlider;
 
         /// <summary>
         /// 曲のハイライトを入れる配列。
@@ -38,42 +27,32 @@ namespace FRONTIER.Menu
         /// <summary>
         /// 楽曲データを表示するときのソートを管理するインスタンス。
         /// </summary>
-        public SongSort songSort = new();
-
-        #endregion
-
-        #region プロパティ
-
-        /// <summary>
-        /// 難易度が更新されたときに発火させるアクション。
-        /// </summary>
-        public Action OnDifficultyChangedAction { get; set; }
+        public Events events = new();
 
         #endregion
 
         #region クラス
 
         /// <summary>
-        /// 楽曲データを表示するときのソートを管理する。
+        /// 楽曲データ更新のイベントを管理する。
         /// </summary>
-        public class SongSort
+        [Serializable]
+        public class Events
         {
+            /// <summary>
+            /// 難易度が更新されたときに発火するイベント。
+            /// </summary>
+            [Header("難易度が更新されたときに発火するイベント")] public UnityEvent<int> OnDifficultyChanged;
+
             /// <summary>
             /// ソートの基準が変更された時に発火するイベント。
             /// </summary>
-            public Action<IMenu.SortOption> OnSortOptionChanged { get; set; }
+            [Header("ソートの基準が変更された時に発火するイベント")] public UnityEvent<int> OnSortOptionChanged;
 
             /// <summary>
             /// ソート順が変更されたときに発火するイベント。
             /// </summary>
-            public Action<IMenu.SortOrder> OnSortOrderChanged { get; set; }
-
-            public SongSort()
-            {
-                // コンストラクタで、ソートが変わった時に値を反映させるイベントを登録させる
-                OnSortOptionChanged += (option) => MenuInfo.menuInfo.SortOption = option;
-                OnSortOrderChanged += (order) => MenuInfo.menuInfo.SortOrder = order;
-            }
+            [Header("ソート順が変更されたときに発火するイベント")] public UnityEvent<int> OnSortOrderChanged;        
         }
 
         #endregion
@@ -83,16 +62,12 @@ namespace FRONTIER.Menu
         void Awake()
         {
             LoadData();
-
-            // イベントを登録
-            OnDifficultyChangedAction += OnDifficultyChanged;
-            OnDifficultyChangedAction += windowMenu.OnDifficultyChanged;
-            OnDifficultyChangedAction += scrollManager.OnDifficultyChanged;
-
-            slider.OnDifficultyChanged(OnDifficultyChangedAction);
+            difficultySlider.AddListener(events.OnDifficultyChanged);
         }
 
         #endregion
+
+        #region メソッド
 
         /// <summary>
         /// リソースフォルダーからファイルを読み込む。
@@ -113,12 +88,6 @@ namespace FRONTIER.Menu
             for (int i = 0; i < songHighlights.Length; i++) { songHighlights[i] = Resources.Load<AudioClip>($"Data/{i}/highlight"); }
         }
 
-        public void OnSongSelected(ItemData itemData)
-        {
-            PlayHighLight(itemData.id);
-            MenuInfoUpdate(itemData);
-        }
-
         private int id_tmp = -1;
         /// <summary>
         /// ハイライトを再生する。
@@ -132,46 +101,28 @@ namespace FRONTIER.Menu
             GameManager.instance.audios.musicManager.Source.Play();
         }
 
-        /// <summary>
-        /// メニューで選択された曲情報を更新する。
-        /// </summary>
-        /// <param name="itemDatas">セルのデータ</param>
-        /// <param name="index">曲のインデックス</param>
-        private void MenuInfoUpdate(ItemData itemData)
-        {
-            MenuInfo.menuInfo.ID = itemData.id;
-            MenuInfo.menuInfo.Name = itemData.name;
-            MenuInfo.menuInfo.Artist = itemData.artist;
-            MenuInfo.menuInfo.Level = itemData.ChangeLevel(MenuInfo.menuInfo.Difficulty);
-            MenuInfo.menuInfo.Cover = Resources.Load<Sprite>($"Data/{itemData.id}/cover");
-        }
+        #endregion
 
-        public void OnDifficultyChanged()
+        #region 実装メソッド
+
+        public void OnSongSelected(int id) => PlayHighLight(id);
+
+        public void OnDifficultyChanged(int difficulty) => OnDifficultyChanged((Reference.DifficultyRank)difficulty);
+
+        public void OnSortOptionChanged(int option) => OnSortOptionChanged((IMenu.Sort.Option)option);
+
+        public void OnSortOrderChanged(int order) => OnSortOrderChanged((IMenu.Sort.Order)order);
+
+        public void OnDifficultyChanged(Reference.DifficultyRank difficulty)
         {
             // メニュー全体の難易度の更新
-            MenuInfo.menuInfo.Difficulty = (Reference.DifficultyRank)Enum.ToObject(typeof(Reference.DifficultyRank), slider.SliderValue);
-            // 難易度に応じてアイテムデータのレベルも更新する
-            MenuInfo.menuInfo.Level = scrollManager.ItemDatas[MenuInfo.menuInfo.indexInMenu].ChangeLevel(MenuInfo.menuInfo.Difficulty);
+            MenuInfo.menuInfo.Update(difficulty);
         }
 
-        /// <summary>
-        /// ソート時、以前選択していた曲が持っていたIDを通じて、メニュー内のセルのインデックスを参照する。
-        /// </summary>
-        /// <param name="datas">項目</param>
-        /// <returns>以前選択されていた曲のソート後のインデックス位置</returns>
-        public int GetIndexInMenu(in ItemData[] datas, out int index)
-        {
-            int _index = 0;
-            for (int i = 0; i < datas.Length; i++)
-            {
-                if (datas[i].id == MenuInfo.menuInfo.ID)
-                {
-                    _index = datas[i].cellIndex;
-                    break;
-                }
-            }
-            index = _index;
-            return _index;
-        }
+        public void OnSortOptionChanged(IMenu.Sort.Option option) => MenuInfo.menuInfo.SortOption = option;
+
+        public void OnSortOrderChanged(IMenu.Sort.Order order) => MenuInfo.menuInfo.SortOrder = order;
+
+        #endregion
     }
 }
