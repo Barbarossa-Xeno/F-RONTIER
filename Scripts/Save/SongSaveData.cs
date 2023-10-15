@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FRONTIER.Utility;
+using static FRONTIER.Utility.Reference;
 
 namespace FRONTIER.Save
 {
@@ -57,7 +57,8 @@ namespace FRONTIER.Save
             public class Record
             {
                 public int highScore;
-                public string highRank;
+                public int highCombo;
+                public string highRank = ClearRank.NoData.ToString();
                 public bool fullCombo;
                 public bool allPerfect;
 
@@ -68,11 +69,12 @@ namespace FRONTIER.Save
                 /// <param name="rank">到達したハイランク</param>
                 /// <param name="isGotfullCombo">フルコンボしたか</param>
                 /// <param name="isGotAllPerfect">オールパーフェクトしたか</param>
-                public void Overwrite(int score = -1, string rank = null, bool isGotfullCombo = false, bool isGotAllPerfect = false)
+                public void Overwrite(int score = -1, int combo = -1, string rank = null, bool isGotfullCombo = false, bool isGotAllPerfect = false)
                 {
                     // スコアが上がらなくてもフルコンボをするなどの場合があるため
                     // 初期値（ふつうでは取り得ない値）との比較で以てフィールドを上書きする
                     highScore = score != -1 ? score : highScore;
+                    highCombo = combo != -1 ? combo : highCombo;
                     highRank = rank ?? highRank;
                     fullCombo = isGotfullCombo;
                     allPerfect = isGotAllPerfect;
@@ -84,16 +86,42 @@ namespace FRONTIER.Save
             /// </summary>
             /// <param name="difficulty">難易度</param>
             /// <returns>難易度ごとのセーブデータ、存在しない場合は新規作成したデータ</returns>
-            public Record DifficultyTo(Reference.DifficultyRank difficulty)
+            public Record DifficultyTo(DifficultyRank difficulty)
             {
                 return difficulty switch
                 {
-                    Reference.DifficultyRank.Lite => lite ?? new(),
-                    Reference.DifficultyRank.Hard => hard ?? new(),
-                    Reference.DifficultyRank.Ecstasy => ecstasy ?? new(),
-                    Reference.DifficultyRank.Restricted => restricted ?? new(),
+                    DifficultyRank.Lite => lite ?? ConstructNewData(DifficultyRank.Lite),
+                    DifficultyRank.Hard => hard ?? ConstructNewData(DifficultyRank.Hard),
+                    DifficultyRank.Ecstasy => ecstasy ?? ConstructNewData(DifficultyRank.Ecstasy),
+                    DifficultyRank.Restricted => restricted ?? ConstructNewData(DifficultyRank.Restricted),
                     _ => null
                 };
+            }
+
+            /// <summary>
+            /// 各難易度の新しいデータを作る。
+            /// </summary>
+            /// <param name="difficulty">難易度</param>
+            /// <returns>指定した難易度の新しいセーブデータ</returns>
+            private Record ConstructNewData(DifficultyRank difficulty)
+            {
+                switch (difficulty)
+                {
+                    case DifficultyRank.Lite:
+                        lite = new();
+                        return lite;
+                    case DifficultyRank.Hard:
+                        hard = new();
+                        return hard;
+                    case DifficultyRank.Ecstasy:
+                        ecstasy = new();
+                        return ecstasy;
+                    case DifficultyRank.Restricted:
+                        restricted = new();
+                        return restricted;
+                    default: break;
+                }
+                return new();
             }
 
             /// <summary>
@@ -160,8 +188,12 @@ namespace FRONTIER.Save
                 streamReader.Close();
                 Instance = JsonUtility.FromJson<SongSaveData>(data);
             }
-            // ファイルがなかったとき、データの配列を１つ確保する
-            else { Instance.saves = new SongSave[1]; }
+            // ファイルがなかったとき、ファイルを作って読み込む（再帰）
+            else
+            {
+                Save();
+                Load();    
+            }
         }
 
         public override void Save()
@@ -169,6 +201,7 @@ namespace FRONTIER.Save
             string serialedData = JsonUtility.ToJson(Instance, true);
             StreamWriter streamWriter = new($"{Application.persistentDataPath}/Save.json");
             streamWriter.Write(serialedData);
+            streamWriter.Flush();
             streamWriter.Close();
         }
 
