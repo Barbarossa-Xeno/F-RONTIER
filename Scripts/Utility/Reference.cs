@@ -116,7 +116,7 @@ namespace FRONTIER.Utility
         /// </summary>
         public enum ClearRank
         {
-            S_Plus, S, A_Plus, A, B_Plus, B, C_Plus, C
+            S_Plus, S, A_Plus, A, B_Plus, B, C_Plus, C, NoData
         }
 
         #endregion
