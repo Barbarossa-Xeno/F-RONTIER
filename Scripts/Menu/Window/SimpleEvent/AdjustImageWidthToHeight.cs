@@ -13,8 +13,8 @@ namespace FRONTIER.Menu.Window
         public void EventMethod()
         {
             RectTransform rectTransform = transform.GetComponent<RectTransform>();
-            float height = rectTransform.rect.height;
-            rectTransform.sizeDelta = new(height, rectTransform.sizeDelta.y);
+            float height = rectTransform.rect.height * 0.9f;
+            rectTransform.sizeDelta = new(height, rectTransform.sizeDelta.y * 0.9f);
         }
     }
 }
