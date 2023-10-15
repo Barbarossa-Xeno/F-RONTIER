@@ -235,7 +235,7 @@ namespace FRONTIER.Result
             /// <summary>
             /// 楽曲名。
             /// </summary>
-            [SerializeField] private Menu.OverflowTextScroll songName;
+            [SerializeField] private Utility.Asset.OverflowTextScroll songName;
 
             /// <summary>
             /// 難易度。
@@ -316,6 +316,11 @@ namespace FRONTIER.Result
             [SerializeField] private Sprite allPerfect;
 
             /// <summary>
+            /// 最大コンボ数を更新したか
+            /// </summary>
+            public bool IsGotNewRecordOfCombo { get; private set; } = false;
+
+            /// <summary>
             /// フルコンボしたか
             /// </summary>
             public bool IsGotFullCombo { get; private set; } = false;
@@ -332,19 +337,22 @@ namespace FRONTIER.Result
             public override void Initialize()
             {
                 count.text = "0";
-                max.text = $"/{Manager.score.maxCombo}";
+                max.text = $"/{Manager.score.maxComboCount}";
                 perfect.text = $"{Manager.score.judgementStatus[Reference.JudgementStatus.Perfect]}";
                 great.text = $"{Manager.score.judgementStatus[Reference.JudgementStatus.Great]}";
                 good.text = $"{Manager.score.judgementStatus[Reference.JudgementStatus.Good]}";
                 bad.text = $"{Manager.score.judgementStatus[Reference.JudgementStatus.Bad]}";
                 miss.text = $"{Manager.score.judgementStatus[Reference.JudgementStatus.Miss]}";
 
+                int highCombo = SongSaveData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty).highCombo;
+                IsGotNewRecordOfCombo = Manager.score.maxCombo > highCombo;
+
                 // フルコンボしているか確認する
-                if (Manager.score.combo == Manager.score.maxCombo)
+                if (Manager.score.combo == Manager.score.maxComboCount)
                 {
                     achivement.sprite = fullCombo;
                     IsGotFullCombo = true;
-                    if (Manager.score.judgementStatus[Reference.JudgementStatus.Perfect] == Manager.score.maxCombo)
+                    if (Manager.score.judgementStatus[Reference.JudgementStatus.Perfect] == Manager.score.maxComboCount)
                     {
                         achivement.sprite = allPerfect;
                         IsGotAllPerfect = true;
@@ -413,7 +421,7 @@ namespace FRONTIER.Result
             /// <returns></returns>
             private IEnumerator BlinkText()
             {
-                float alpha = 0;
+                float alphaAngle = 0;
                 yield return new WaitForSeconds(0.5f);
 
                 while (true)
@@ -421,8 +429,8 @@ namespace FRONTIER.Result
                     yield return new WaitForSeconds(0.05f);
 
                     // sin関数で透明度を0~1の範囲で変化させる
-                    alpha = alpha < Mathf.PI ? alpha + 0.05f : 0f;
-                    text.color = new(1f, 1f, 1f, Mathf.Sin(alpha));
+                    alphaAngle = alphaAngle < Mathf.PI ? alphaAngle + 0.05f : 0f;
+                    text.color = new(1f, 1f, 1f, Mathf.Sin(alphaAngle));
                 }
             }
         
@@ -461,15 +469,18 @@ namespace FRONTIER.Result
         /// </summary>
         private void UpdateSaveData()
         {
-            // プレイデータを参照する
-            var data = SongSaveData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty);
-
-            // スコアの更新があった場合にデータを更新する
-            if (score.IsGotNewRecord)
-            {
-                data.Overwrite(score: Manager.score.ScoreValue, rank: Manager.score.clearRank.ToString());
-            }
-            data.Overwrite(isGotfullCombo: combo.IsGotFullCombo, isGotAllPerfect: combo.IsGotAllPerfect);
+            // プレイデータを参照してスコアの更新があった場合にデータを更新する
+            SongSaveData.Instance
+                .Explore(Manager.info.ID)
+                .DifficultyTo(Manager.info.Difficulty)
+                .Overwrite
+                (
+                    score: score.IsGotNewRecord ? Manager.score.ScoreValue : -1,
+                    combo : combo.IsGotNewRecordOfCombo ? Manager.score.maxCombo : -1,
+                    rank: score.IsGotNewRecord ? Manager.score.clearRank.ToString() : null,
+                    isGotfullCombo: combo.IsGotFullCombo,
+                    isGotAllPerfect: combo.IsGotAllPerfect
+                );
         }
 
         #endregion
