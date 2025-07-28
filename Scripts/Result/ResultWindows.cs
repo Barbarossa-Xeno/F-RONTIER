@@ -461,7 +461,7 @@ namespace FRONTIER.Result
             ResultAnimationManager.Controller.IsGotNewRecord(score.IsGotNewRecord);
             ResultAnimationManager.Controller.IsGotFullCombo(combo.IsGotFullCombo);
             ResultAnimationManager.Controller.IsAutoPlay(Manager.info.IsAutoPlay);
-            ResultAnimationManager.Controller.OnAnimatorFinished(this, footer.StartToBlink, UpdateSaveData, SongSaveData.Instance.Save);
+            ResultAnimationManager.Controller.OnAnimatorFinished(this, footer.StartToBlink, UpdateSaveData, Save);
         }
 
         /// <summary>
@@ -481,6 +481,14 @@ namespace FRONTIER.Result
                     isGotfullCombo: combo.IsGotFullCombo,
                     isGotAllPerfect: combo.IsGotAllPerfect
                 );
+        }
+
+        /// <summary>
+        /// オートプレイの時はセーブしない。
+        /// </summary>
+        private void Save()
+        {
+            if (!Manager.info.IsAutoPlay) SongSaveData.Instance.Save();
         }
 
         #endregion

@@ -46,7 +46,7 @@ namespace FRONTIER.Audio
         /// オーディオソースの音量を変更する。
         /// </summary>
         /// <param name="volume">変更後の音量</param>
-        public virtual void SetVolume(float volume) => Source.volume = Mathf.Clamp01(volume);
+        public virtual void SetVolume(float volume) => Source.volume = Mathf.Clamp01(volume / 10f);
 
         #endregion
     }

@@ -62,8 +62,8 @@ namespace FRONTIER.Game
         /// </summary>
         private static readonly Dictionary<JudgementStatus, float> judgementTime = new()
         {
-            { JudgementStatus.Perfect, 0.08f },
-            { JudgementStatus.Great, 0.12f },
+            { JudgementStatus.Perfect, 0.05f },
+            { JudgementStatus.Great, 0.1f },
             { JudgementStatus.Good, 0.25f },
             { JudgementStatus.Bad, 0.4f },
             { JudgementStatus.Miss, 0.6f }
@@ -117,54 +117,65 @@ namespace FRONTIER.Game
 
         void Start()
         {
+            if (!Manager.info.IsAutoPlay)
+            {
+                // タップしたときのイベントを登録する
+                inputManager.onInput.ToList().ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
 
-            // タップしたときのイベントを登録する
-            inputManager.onInput.ToList().ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
-
-            // ノーツが判定線を越えたときのイベントを登録する
-            notesGenerator.notesObjects.ForEach
-            (
-                note =>
-                {
-                    // 通常時
-                    if (!Manager.info.IsAutoPlay)
-                    { 
-                        Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
-                        // 判定線を超過して画面の外に出たらミスにする
-                        info.OnReachedJudgement += () => DeleteNote(targetIndex: info.indexOfList, isMissed: true);
-                    }
-                    // オート時
-                    else
+                // ノーツが判定線を越えたときのイベントを登録する
+                notesGenerator.notesObjects.ForEach
+                (
+                    note =>
                     {
-                        // 判定線あたりでノーツをPerfect判定する
-                        Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
-                        // ノーツがロングノーツだったら、始点・中間点・終点のノーツだけイベントを登録するようにする
-                        if (info.type == NoteType.LongLinear || info.type == NoteType.LongCurve)
+                        // 通常時
+                        if (!Manager.info.IsAutoPlay)
                         {
-                            // ダウンキャスト
-                            LongNotes _info = info as LongNotes;
-                            if (!(_info.status == LongNoteStatus.Mesh || _info.status == LongNoteStatus.None))
-                            {
-                                _info.OnReachedJudgement += () => DeleteNote(_info.indexOfList, isAuto: true);
-                            }
+                            Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
+                            // 判定線を超過して画面の外に出たらミスにする
+                            info.OnReachedJudgement += () => DeleteNote(targetIndex: info.indexOfList, isMissed: true);
                         }
-                        // 通常ノーツのときは関係なくイベントを登録
+                        // オート時
                         else
                         {
-                            info.OnReachedJudgement += () => DeleteNote(info.indexOfList, isAuto: true);
+                            // 判定線あたりでノーツをPerfect判定する
+                            Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
+                            // ノーツがロングノーツだったら、始点・中間点・終点のノーツだけイベントを登録するようにする
+                            if (info.type == NoteType.LongLinear || info.type == NoteType.LongCurve)
+                            {
+                                // ダウンキャスト
+                                LongNotes _info = info as LongNotes;
+                                if (!(_info.status == LongNoteStatus.Mesh || _info.status == LongNoteStatus.None))
+                                {
+                                    _info.OnReachedJudgement += () => DeleteNote(_info.indexOfList, isAuto: true);
+                                }
+                            }
+                            // 通常ノーツのときは関係なくイベントを登録
+                            else
+                            {
+                                info.OnReachedJudgement += () => DeleteNote(info.indexOfList, isAuto: true);
+                            }
                         }
                     }
-                }
-            );
+                );
 
-            // ロングノーツの判定のイベントを登録する
-            longNotesGenerator.longNoteMeshList.Select(line => line.GetComponent<LongNotes>())
+                // ロングノーツの判定のイベントを登録する
+                longNotesGenerator.longNoteMeshList.Select(line => line.GetComponent<LongNotes>())
                                                .ToList().ForEach
                                                (
                                                     info =>
                                                     info.OnPressedUpdate += isOn =>
                                                     JudgeLongNote(isOn, info.isInner, info.index)
                                                );
+            }
+        }
+
+        void Update()
+        {
+            if (Manager.info.IsAutoPlay)
+            {
+                try { AutoPlay(); }
+                catch (ArgumentOutOfRangeException) { }
+            }
         }
 
         #endregion
@@ -287,7 +298,7 @@ namespace FRONTIER.Game
                 // 中間ノーツがロングノーツのまとまりごとに収まっているリストにおいて、
                 // i番目のロングノーツの中間ノーツのリストの、一番最後の要素が最も近い中間ノーツになる
                 // その中間ノーツが判定線まで近づいたとき (押下判定が外れてしまうタイミングを考慮して、余分に距離を見積もる)
-                if (longNotesGenerator.notesObjects[^i][^1].transform.position.z <= noteOrigin.z + 1f)
+                if (longNotesGenerator.notesObjects[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
                 {
                     // その中間ノーツが終点の場合
                     if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNotes>().status == LongNoteStatus.End)
@@ -305,7 +316,7 @@ namespace FRONTIER.Game
             else
             {
                 // 説明略（中間点を持つ場合の処理と同じ）
-                if (longNotesGenerator.notesObjects[^i][^1].transform.position.z <= noteOrigin.z + 1f)
+                if (longNotesGenerator.notesObjects[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
                 {
                     if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNotes>().status == LongNoteStatus.End)
                     {
@@ -400,17 +411,17 @@ namespace FRONTIER.Game
                 {
                     // ノーツをリストから削除せずに形だけ消す
                     notesGenerator.notesObjects[targetIndex].SetActive(false);
+
+                    Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
+
+                    // スコア計算
+                    ShowScoreStatus(JudgementStatus.Perfect);
+                    Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
+                    Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                    Manager.score.combo++;
+                    Manager.score.CalculateScore();
                 }
-                else return; 
-
-                Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-
-                // スコア計算
-                ShowScoreStatus(JudgementStatus.Perfect);
-                Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
-                Manager.score.judgementStatus[JudgementStatus.Perfect]++;
-                Manager.score.combo++;
-                Manager.score.CalculateScore();
+                else return;
             }
             else if (isMissed)
             {
@@ -521,7 +532,7 @@ namespace FRONTIER.Game
             }
             score.Object.transform.SetParent(score.parent);
             score.Object.transform.position = new(0, 0, 0);
-            score.Object.transform.rotation = Quaternion.Euler(60, 0, 0);
+            score.Object.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
         /// <summary>
@@ -532,6 +543,41 @@ namespace FRONTIER.Game
         /// <returns>タイムラグ</returns>
         private float CalculateLag(float tapTime, float noteTime) => Mathf.Abs(Manager.startTime + noteTime - tapTime);
 
+        /// <summary>
+        /// オートプレイ時の自動判定。
+        /// （仮）
+        /// </summary>
+        private void AutoPlay()
+        {
+            void Judgement(Index index)
+            {
+                // ノーツをリストから削除
+                notesGenerator.notesObjects[index].SetActive(false);
+                notesGenerator.notesTimes.RemoveAt(index);
+                notesGenerator.laneNumbers.RemoveAt(index);
+                notesGenerator.notesTypes.RemoveAt(index);
+                notesGenerator.notesObjects.RemoveAt(index);
+
+                // スコア計算
+                Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
+                ShowScoreStatus(JudgementStatus.Perfect);
+                Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
+                Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                Manager.score.combo++;
+                Manager.score.CalculateScore();
+                OnNoteDeleted?.Invoke();
+            }
+
+            if (Mathf.Abs(notesGenerator.notesObjects[^1].transform.position.z - 7.3f) < 1.0f) { Judgement(^1); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^2].transform.position.z - 7.3f) < 1.0f) { Judgement(^2); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^3].transform.position.z - 7.3f) < 1.0f) { Judgement(^3); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^4].transform.position.z - 7.3f) < 1.0f) { Judgement(^4); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^5].transform.position.z - 7.3f) < 1.0f) { Judgement(^5); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^6].transform.position.z - 7.3f) < 1.0f) { Judgement(^6); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^7].transform.position.z - 7.3f) < 1.0f) { Judgement(^7); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^8].transform.position.z - 7.3f) < 1.0f) { Judgement(^8); }
+            if (Mathf.Abs(notesGenerator.notesObjects[^9].transform.position.z - 7.3f) < 1.0f) { Judgement(^9); }
+        }
         #endregion
     }
 }

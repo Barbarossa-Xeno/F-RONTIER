@@ -71,8 +71,9 @@ namespace FRONTIER.Game.NotesManagement
             GenerateNotes();
             //最大スコアの計算
             Manager.score.maxScoreValue = notesCount * Reference.JudgementStatusScore.PERFECT;
-            Manager.score.maxCombo = notesCount;
+            Manager.score.maxComboCount = notesCount;
             PlayInfo.Bpm = data.BPM;
+            PlayInfo.Offset = (float)data.offset / 50000f;
         }
 
         #endregion
@@ -200,7 +201,7 @@ namespace FRONTIER.Game.NotesManagement
             // 小節位置に与えられた小節の通し番号（インデックス）を乗算して実際の再生時間を算出する
             float noteTime = (float)index * minDistance + PlayInfo.JudgingTiming;
 
-            return noteTime;
+            return noteTime + (float)data.offset / 50000f;
         }
 
         /// <summary>

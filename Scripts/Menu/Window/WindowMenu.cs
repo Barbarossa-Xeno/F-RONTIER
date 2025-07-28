@@ -31,6 +31,11 @@ namespace FRONTIER.Menu.Window
         [SerializeField] Setting.SettingWindowManager settingWindowManager;
 
         /// <summary>
+        /// 譜面が見つからなかったとき、暫定的に表示するテキスト。
+        /// </summary>
+        [SerializeField] private TextMeshProUGUI caution;
+
+        /// <summary>
         /// レベル・難易度の表示部分。
         /// </summary>
         [SerializeField] private LevelAndDifficulty levelAndDifficulty;
@@ -145,9 +150,12 @@ namespace FRONTIER.Menu.Window
             OnDifficultyChanged(MenuInfo.menuInfo.Difficulty);
 
             buttons.setting.onClick.AddListener(settingWindowManager.Open);
-            buttons.start.onClick.AddListener(GameManager.instance.scene.game.Invoke);
+            buttons.start.onClick.AddListener
+            (() => { if (MenuInfo.menuInfo.Level != "0") GameManager.instance.scene.game.Invoke(); });
             buttons.mv.OnToggleChanged += isOn => MenuInfo.menuInfo.IsMV = isOn;
             buttons.auto.OnToggleChanged += isOn => MenuInfo.menuInfo.IsAutoPlay = isOn;
+            buttons.mv.IsOn = MenuInfo.menuInfo.IsMV;
+            buttons.auto.IsOn = MenuInfo.menuInfo.IsAutoPlay;
         }
 
         #endregion
@@ -157,6 +165,8 @@ namespace FRONTIER.Menu.Window
         public void OnSongSelected(int id)
         {
             levelAndDifficulty.level.text = MenuInfo.menuInfo.Level;
+
+            caution.gameObject.SetActive(MenuInfo.menuInfo.Level == "0");
 
             song.name.Text = MenuInfo.menuInfo.Name;
             song.artist.Text = MenuInfo.menuInfo.Artist;
@@ -176,6 +186,8 @@ namespace FRONTIER.Menu.Window
 
         public void OnDifficultyChanged(Reference.DifficultyRank difficulty)
         {
+            caution.gameObject.SetActive(MenuInfo.menuInfo.Level == "0");
+
             // ウィンドウの背景の更新
             windowMesh.SetColorTrigger(difficulty);
             windowBorderCurve.SetColorTrigger(difficulty);

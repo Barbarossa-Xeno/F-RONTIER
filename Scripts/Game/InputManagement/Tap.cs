@@ -25,7 +25,6 @@ namespace FRONTIER.Game.InputManagement
 
         void Start()
         {
-            tapManager = transform.parent.GetComponent<InputManager>();
             material = GetComponent<Renderer>().material;
         }
 
@@ -52,19 +51,8 @@ namespace FRONTIER.Game.InputManagement
 
         public void OnPointerUp(PointerEventData eventData) => IsTapped = false;
 
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            /*
-            GetTap();
-            IsTapped = true;
-            GameManager.instance.seSource.PlayOneShot(se);
-            */
-        }
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            /*
-            IsTapped = false;
-            */
-        }
+        public void OnPointerEnter(PointerEventData eventData) => OnTap();
+
+        public void OnPointerExit(PointerEventData eventData) => IsTapped = false;
     }
 }

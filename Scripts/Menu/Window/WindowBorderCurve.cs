@@ -121,12 +121,8 @@ namespace FRONTIER.Menu.Window
 
         void Update()
         {
-            // デルタタイムをもとに変化量を増やす
-            delta += Time.deltaTime * gradientChangeSpeed;
-            // 0.1のオフセットを設けて、移動の始まりと終わりに余裕を持たす
-            if (delta > 1f + 0.1f) { delta = 0 - 0.1f; }
-            // グラデーションの適用
-            MoveGradient(delta);
+            // 動くグラデーションの適用
+            MoveGradient(Time.time);
         }
 
         /// <summary>
@@ -157,8 +153,16 @@ namespace FRONTIER.Menu.Window
             gradient.SetKeys(gradientOption.colorKey, gradientOption.alphaKey);
         }
 
+        /// <summary>
+        /// ボーダーのグラデーションを動かす。
+        /// </summary>
+        /// <param name="time">経過時間</param>
         private void MoveGradient(float time)
         {
+            // timeは入力された時間に対して速度を掛けたsinをとる
+            // 値がマイナスになった場合は絶対値をとる
+            time = Mathf.Abs(Mathf.Sin(time * gradientChangeSpeed));
+
             // グラデーションをきれいに見せるための振り分け
             // timeが0以下の時、始端をアクティブなカラーと同色にする
             if (time <= 0)
@@ -177,8 +181,8 @@ namespace FRONTIER.Menu.Window
             {
                 gradientOption.colorKey[2].color = gradientColor.activeColor;
             }
-            // 移動するキーにはイージングを適用しながら移動させる（Clamp01で1を超えないように）
-            gradientOption.colorKey[1].time = Mathf.Clamp01(time.EaseInOutCirc());
+            // 移動するキーにはイージングを適用しながら移動させる
+            gradientOption.colorKey[1].time = time.EaseInOutSine();
 
             gradient.SetKeys(gradientOption.colorKey, gradientOption.alphaKey);
             curve.colorGradient = gradient;

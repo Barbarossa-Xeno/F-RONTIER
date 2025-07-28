@@ -111,9 +111,19 @@ namespace FRONTIER.Title
             StartCoroutine(animationElement.FadeInOutLogoShadow());
             StartCoroutine(animationElement.FadeInOutText());
 
-            screen.onClick.AddListener(GameManager.instance.scene.menu.Invoke);
+            StartCoroutine(WaitLoading(1f));
 
             versionInfomation.text = $"ver. {Application.version}";
+        }
+
+        /// <summary>
+        /// メニューのロードを待機させる。
+        /// </summary>
+        private IEnumerator WaitLoading(float waitingTime)
+        {
+            yield return new WaitForSeconds(waitingTime);
+
+            screen.onClick.AddListener(GameManager.instance.scene.menu.Invoke);
         }
     }
 }

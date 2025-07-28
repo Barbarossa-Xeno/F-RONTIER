@@ -78,7 +78,7 @@ namespace FRONTIER
         /// <summary>
         /// プレイする楽曲の情報を記録する。
         /// </summary>
-        public class PlayInfo : SongInfo
+        public class PlayInfo : SongInfoManager
         {
             /// <summary>
             /// ノーツの速度。
@@ -94,6 +94,11 @@ namespace FRONTIER
             /// 楽曲のBPM。
             /// </summary>
             public int Bpm { get; set; }
+
+            /// <summary>
+            /// 譜面のオフセット。
+            /// </summary>
+            public float Offset { get; set; }
 
             /// <summary>
             /// オートプレイするか。
@@ -154,9 +159,14 @@ namespace FRONTIER
             public int combo;
 
             /// <summary>
-            /// 最大コンボ数
+            /// 持続した最大コンボ数
             /// </summary>
             public int maxCombo;
+
+            /// <summary>
+            /// 譜面の最大コンボ数
+            /// </summary>
+            public int maxComboCount;
 
             /// <summary>
             /// 表示するスコア
@@ -193,6 +203,9 @@ namespace FRONTIER
             /// </summary>
             public void CalculateScore()
             {
+                // 最大持続コンボ数を更新
+                maxCombo = combo > maxCombo ? combo : maxCombo;
+
                 if (maxScoreValue == 0) return;
 
                 ScoreValue = Mathf.RoundToInt(THEORETICAL_SCORE_VALUE * Mathf.Floor(apparentScoreValue / maxScoreValue * THEORETICAL_SCORE_VALUE) / THEORETICAL_SCORE_VALUE);
@@ -251,7 +264,6 @@ namespace FRONTIER
                     {
                         instance.info = new();
                         instance.gamePlayState = GamePlayState.None;
-                        if (SongSaveData.Instance.saves == null) { SongSaveData.Instance.Save(); }
                     };
                     SceneNavigator.instance.FadeOutFinished += SettingData.Instance.Load;
                     SceneNavigator.instance.FadeOutFinished += SongSaveData.Instance.Load;

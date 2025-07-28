@@ -111,10 +111,20 @@ namespace FRONTIER.Game
             public void SetBackground()
             {
                 background.gameObject.SetActive(true);
+
+                #if UNITY_EDITOR || UNITY_STANDALON_WIN
+
                 Material material = new(blurScreenWithColor.shader);
                 material.SetColor("_Color", new Color32(90, 90, 90, 255));
                 material.SetFloat("_Blur", 70f);
                 background.material = material;
+
+                #elif UNITY_ANDROID
+
+                background.material = default;
+                background.color = new(0f, 0f, 0f, 0.7f);
+
+                #endif
             }
 
             /// <summary>
@@ -197,7 +207,7 @@ namespace FRONTIER.Game
             public struct PlayInfo
             {
                 public Image cover;
-                public Menu.OverflowTextScroll name;
+                public Utility.Asset.OverflowTextScroll name;
                 public TextMeshProUGUI level;
                 public TextMeshProUGUI score;
                 public TextMeshProUGUI bpm;

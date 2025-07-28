@@ -63,17 +63,22 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// ロングノーツの太さ。
         /// </summary>
-        private const float LANE_WIDTH = 2.0f;
+        private const float LONGNOTE_WIDTH = 2.0f;
 
-        /// 
-        /// <summary>ロングノーツの高さ。
+        /// <summary>
+        /// ロングノーツの高さ。
         /// </summary>
-        private const float LANE_HEIGHT = 0.001f;
+        private const float LONGNOTE_HEIGHT = 0.001f;
 
         /// <summary>
         /// ロングノーツを生成するときに頂点の生成位置をレーンに合わせるための差分。
         /// </summary>
         private const float LANE_GAP = -3f;
+
+        /// <summary>
+        /// ノーツの奥行き。
+        /// </summary>
+        private const float NOTE_DEPTH = 0.6f;
 
         /// <summary>
         /// 曲線ロングノーツを生成するときの、基底の分割数。
@@ -184,10 +189,10 @@ namespace FRONTIER.Game.NotesManagement
             #region メッシュの頂点とUV座標、コライダーの座標を計算
 
             // 面①（ワールド原点からZ座標を正の方向に見たときの、上底 => Y方向）
-            meshParameters.vertices[0] = startPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);     //始点の左端 = 左下
-            meshParameters.vertices[1] = startPosition + new Vector3(LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);      //始点の右端 = 右下
-            meshParameters.vertices[2] = endPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);       //終点の左端 = 左上
-            meshParameters.vertices[3] = endPosition + new Vector3(LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);        //終点の右端 = 右上
+            meshParameters.vertices[0] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);     //始点の左端 = 左下
+            meshParameters.vertices[1] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //始点の右端 = 右下
+            meshParameters.vertices[2] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);       //終点の左端 = 左上
+            meshParameters.vertices[3] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);        //終点の右端 = 右上
             meshParameters.triangles[0] = 0;
             meshParameters.triangles[1] = 2;
             meshParameters.triangles[2] = 1;
@@ -204,10 +209,10 @@ namespace FRONTIER.Game.NotesManagement
             meshColliderParameters.vertices[3] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[3];
 
             // 面②（前側面 => -Z方向）
-            meshParameters.vertices[4] = startPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //左下
-            meshParameters.vertices[5] = startPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);     //右下
-            meshParameters.vertices[6] = startPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);     //左上
-            meshParameters.vertices[7] = startPosition + new Vector3(LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);      //右上
+            meshParameters.vertices[4] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //左下
+            meshParameters.vertices[5] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);     //右下
+            meshParameters.vertices[6] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);     //左上
+            meshParameters.vertices[7] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //右上
             meshParameters.triangles[6] = 4;
             meshParameters.triangles[7] = 6;
             meshParameters.triangles[8] = 5;
@@ -224,10 +229,10 @@ namespace FRONTIER.Game.NotesManagement
             meshColliderParameters.vertices[7] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[7];
 
             // 面③（左側面 => -X方向）
-            meshParameters.vertices[8] = endPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //左下
-            meshParameters.vertices[9] = startPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //右下
-            meshParameters.vertices[10] = endPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);      //左上
-            meshParameters.vertices[11] = startPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);    //右上
+            meshParameters.vertices[8] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //左下
+            meshParameters.vertices[9] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //右下
+            meshParameters.vertices[10] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //左上
+            meshParameters.vertices[11] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);    //右上
             meshParameters.triangles[12] = 8;
             meshParameters.triangles[13] = 10;
             meshParameters.triangles[14] = 9;
@@ -244,10 +249,10 @@ namespace FRONTIER.Game.NotesManagement
             meshColliderParameters.vertices[11] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[11];
 
             // 面④（右側面 => X方向）
-            meshParameters.vertices[12] = startPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //左下
-            meshParameters.vertices[13] = endPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //右下
-            meshParameters.vertices[14] = startPosition + new Vector3(LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);     //左上
-            meshParameters.vertices[15] = endPosition + new Vector3(LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);       //右上
+            meshParameters.vertices[12] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //左下
+            meshParameters.vertices[13] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //右下
+            meshParameters.vertices[14] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);     //左上
+            meshParameters.vertices[15] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);       //右上
             meshParameters.triangles[18] = 12;
             meshParameters.triangles[19] = 14;
             meshParameters.triangles[20] = 13;
@@ -264,10 +269,10 @@ namespace FRONTIER.Game.NotesManagement
             meshColliderParameters.vertices[15] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[15];
 
             //面⑤（後側面 => Z方向）
-            meshParameters.vertices[16] = endPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);     //左下
-            meshParameters.vertices[17] = endPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //右下
-            meshParameters.vertices[18] = endPosition + new Vector3(-LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);      //左上
-            meshParameters.vertices[19] = endPosition + new Vector3(LANE_WIDTH / 2, LANE_HEIGHT / 2, 0);       //右上
+            meshParameters.vertices[16] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);     //左下
+            meshParameters.vertices[17] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //右下
+            meshParameters.vertices[18] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //左上
+            meshParameters.vertices[19] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);       //右上
             meshParameters.triangles[24] = 16;
             meshParameters.triangles[25] = 17;
             meshParameters.triangles[26] = 18;
@@ -284,10 +289,10 @@ namespace FRONTIER.Game.NotesManagement
             meshColliderParameters.vertices[19] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[19];
 
             //面⑥（下底 => -Y方向）
-            meshParameters.vertices[20] = startPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);   //始点の左端
-            meshParameters.vertices[21] = startPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);    //始点の右端
-            meshParameters.vertices[22] = endPosition + new Vector3(-LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);     //終点の左端
-            meshParameters.vertices[23] = endPosition + new Vector3(LANE_WIDTH / 2, -LANE_HEIGHT / 2, 0);      //終点の右端
+            meshParameters.vertices[20] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);   //始点の左端
+            meshParameters.vertices[21] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //始点の右端
+            meshParameters.vertices[22] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);     //終点の左端
+            meshParameters.vertices[23] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //終点の右端
             meshParameters.triangles[30] = 20;
             meshParameters.triangles[31] = 21;
             meshParameters.triangles[32] = 22;
@@ -425,15 +430,15 @@ namespace FRONTIER.Game.NotesManagement
             longNoteMeshList.Add(longNote);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点、曲線型では制御点も計算
-            Vector3 startPositon = new(LANE_GAP * LANE_WIDTH + startLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
-            Vector3 endPosition = new(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
+            Vector3 startPositon = new(LANE_GAP * LONGNOTE_WIDTH + startLane * LONGNOTE_WIDTH + LONGNOTE_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
+            Vector3 endPosition = new(LANE_GAP * LONGNOTE_WIDTH + endLane * LONGNOTE_WIDTH + LONGNOTE_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
             Vector3 controlPositon;
 
             // 曲線型の場合
             if (type == Reference.LongNoteType.NoInnerCurve || type == Reference.LongNoteType.AnyInnerCurve)
             {
                 // 制御点の計算
-                controlPositon = new(LANE_GAP * LANE_WIDTH + endLane * LANE_WIDTH + LANE_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
+                controlPositon = new(LANE_GAP * LONGNOTE_WIDTH + endLane * LONGNOTE_WIDTH + LONGNOTE_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
                 //int variableSplit = SPLIT_SIZE * 3;
 
                 // ベジェ曲線から曲線上の点を計算する。
@@ -521,7 +526,7 @@ namespace FRONTIER.Game.NotesManagement
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            SetNotesLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0], GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1], Reference.LongNoteType.NoInnerLinear, i);
+                            SetNotesLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.NoInnerLinear, i);
                         }
                     }
                     // 曲線型で中間点のないノーツ
@@ -547,7 +552,7 @@ namespace FRONTIER.Game.NotesManagement
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            SetNotesLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0], GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1], Reference.LongNoteType.NoInnerCurve, i);
+                            SetNotesLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.NoInnerCurve, i);
                         }
                     }
                     // 直線型で中間点のあるノーツ
@@ -571,7 +576,7 @@ namespace FRONTIER.Game.NotesManagement
                         prop.type = Reference.NoteType.LongLinear;
                         prop.index = i;
 
-                        if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1], laneNumbers[i][j], _positionZ[i, j], Reference.LongNoteType.AnyInnerLinear, i); }
+                        if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.AnyInnerLinear, i); }
                     }
                     // 曲線型で中間点のあるノーツ
                     else if (innerNotesCounts[i] != 0 && notesTypes[i] == 3)
@@ -593,7 +598,7 @@ namespace FRONTIER.Game.NotesManagement
 
                         prop.type = Reference.NoteType.LongCurve;
                         prop.index = i;
-                        if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1], laneNumbers[i][j], _positionZ[i, j], Reference.LongNoteType.AnyInnerCurve, i); }
+                        if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.AnyInnerCurve, i); }
                     }
                 }
             }
@@ -855,6 +860,7 @@ namespace FRONTIER.Game.NotesManagement
             longNoteMeshList.Reverse();
             foreach (var item in longNoteMeshList)
             {
+                if (item == null) continue;
                 item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteMesh"));
                 longNotesList.Add(item.GetComponent<LongNotes>());
             }

@@ -132,6 +132,10 @@ namespace FancyScrollView.FRONTIER
                             genre.background.color = new Color32(65, 105, 225, 255);
                             genre.genreName.text = "GAME";
                             break;
+                        case "POP":
+                            genre.background.color = new Color32(0, 199, 147, 255);
+                            genre.genreName.text = "POP";
+                            break;
                     }
                     break;
                 default:
