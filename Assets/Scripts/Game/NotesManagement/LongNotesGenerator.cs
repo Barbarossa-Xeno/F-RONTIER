@@ -518,9 +518,7 @@ namespace FRONTIER.Game.NotesManagement
             }
         }
 
-        /// <summary>
-        /// 各ロングノーツの点の座標を計算して設定する。
-        /// </summary>
+        // NotesGenerator 側から実行される！
         public override void GenerateNotes()
         {
             // JSONの譜面データからロングノーツの情報を取得したとき、それらの情報は、ロングノーツ1まとまり単位でリストに格納する仕様にしている
@@ -555,6 +553,8 @@ namespace FRONTIER.Game.NotesManagement
                         note = Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
                         note.name = $"LongNote (DirectLinear) -{i}";
                         LongNote prop = note.GetComponent<LongNote>();
+                        prop.Type = Reference.NoteType.LinearLong;
+                        prop.index = i;
 
                         // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                         // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
@@ -563,88 +563,95 @@ namespace FRONTIER.Game.NotesManagement
                             notesGenerator.notesObjects.Add(note);
                         }
 
-                        // 1番最初以降のノーツは中間点のノーツとして管理
-                        if (j > 0)
-                        {
-                            t_intermediates.Add(note);
-
-                            // 最後のノーツのとき、今までの中間点のノーツをまとめて管理するリストに入れる
-                            if (j == laneNumbers[i].Count - 1)
-                            {
-                                intermediateNotes.Add(i, t_intermediates);
-                            }
-                        }
-
-                        // 計算中のノーツが、始点、終点、制御点なのかを判断して設定する
+                        // ループ回数（中間点の数）で処理する部分
                         if (j == 0)
                         {
+                            // 1番最初のノーツは始点のノーツ
                             prop.status = Reference.LongNoteStatus.Start;
-                        }
-                        else if (j == laneNumbers[i].Count - 1)
-                        {
-                            prop.status = Reference.LongNoteStatus.End;
                         }
                         else
                         {
-                            prop.status = Reference.LongNoteStatus.Intermediate;
-                        }
+                            // 1番最初以降のノーツは中間点のノーツとして管理
+                            t_intermediates.Add(note);
 
-                        prop.Type = Reference.NoteType.LinearLong;
-                        prop.index = i;
+                            // 最後のノーツ
+                            if (j == laneNumbers[i].Count - 1)
+                            {
+                                // 今までの中間点のノーツをまとめて管理するリストに入れる
+                                intermediateNotes.Add(i, t_intermediates);
 
-                        if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
-                        {
-                            var (start, end) = laneNumbers[i].FirstAndLast();
-                            CreateRibbon(start, _positionZ[i, 0] + NOTE_DEPTH / 2, end, _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectLinear, i);
+                                // 終点のノーツに設定
+                                prop.status = Reference.LongNoteStatus.End;
+
+                                // 最後に帯をつくる
+                                var (start, end) = laneNumbers[i].FirstAndLast();
+                                CreateRibbon
+                                (
+                                    start,
+                                    _positionZ[i, 0] + NOTE_DEPTH / 2,
+                                    end,
+                                    _positionZ[i, j] - NOTE_DEPTH / 2,
+                                    Reference.LongNoteType.DirectLinear, 
+                                    i
+                                );
+                            }
+                            else
+                            {
+                                // それ以外はただの中間点とマーク
+                                prop.status = Reference.LongNoteStatus.Intermediate;
+                            }
                         }
                     }
                     // 曲線型で中間点のないノーツ
-                    else if (intermediateNotesCounts[i] == 0 && notesTypes[i] == 3)
+                    else if (intermediateNotesCounts[i] == 0 && notesTypes[i] == (int)Reference.NoteType.CurvedLong)
                     {
                         note = Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
-                        note.name = $"Note_Long_Only_Curve_{i}";
+                        note.name = $"LongNote (DirectCurved) -{i}";
                         LongNote prop = note.GetComponent<LongNote>();
+                        prop.Type = Reference.NoteType.CurvedLong;
+                        prop.index = i;
 
                         if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
                         {
                             notesGenerator.notesObjects.Add(note);
                         }
-                        if (j > 0)
-                        {
-                            t_intermediates.Add(note);
-                            if (j == laneNumbers[i].Count - 1)
-                            {
-                                intermediateNotes.Add(i, t_intermediates);
-                            }
-                        }
 
                         if (j == 0)
                         {
                             prop.status = Reference.LongNoteStatus.Start;
                         }
-                        else if (j == laneNumbers[i].Count - 1)
-                        {
-                            prop.status = Reference.LongNoteStatus.End;
-                        }
                         else
                         {
-                            prop.status = Reference.LongNoteStatus.Intermediate;
-                        }
+                            t_intermediates.Add(note);
 
-                        prop.Type = Reference.NoteType.CurvedLong;
-                        prop.index = i;
+                            if (j == laneNumbers[i].Count - 1)
+                            {
+                                intermediateNotes.Add(i, t_intermediates);
 
-                        if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
-                        {
-                            var (start, end) = laneNumbers[i].FirstAndLast();
-                            CreateRibbon(start, _positionZ[i, 0] + NOTE_DEPTH / 2, end, _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectCurved, i);
+                                prop.status = Reference.LongNoteStatus.End;
+
+                                var (start, end) = laneNumbers[i].FirstAndLast();
+                                CreateRibbon
+                                (
+                                    start,
+                                    _positionZ[i, 0] + NOTE_DEPTH / 2,
+                                    end,
+                                    _positionZ[i, j] - NOTE_DEPTH / 2,
+                                    Reference.LongNoteType.DirectCurved,
+                                    i
+                                );
+                            }
+                            else
+                            {
+                                prop.status = Reference.LongNoteStatus.Intermediate;
+                            }
                         }
                     }
                     // 直線型で中間点のあるノーツ
-                    else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 2)
+                    else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == (int)Reference.NoteType.LinearLong)
                     {
                         note = Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
-                        note.name = $"Note_Long_Any_Linear_{i}";
+                        note.name = $"LongNote (IntermediateLinear) -{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
                         if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
@@ -682,10 +689,10 @@ namespace FRONTIER.Game.NotesManagement
                         }
                     }
                     // 曲線型で中間点のあるノーツ
-                    else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 3)
+                    else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == (int)Reference.NoteType.CurvedLong)
                     {
                         note = Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
-                        note.name = $"Note_Long_Any_Curve_{i}";
+                        note.name = $"LongNote (IntermediateCurved) -{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
                         if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
