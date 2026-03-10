@@ -34,7 +34,7 @@ namespace FRONTIER.Utility.SceneTransition
         private FadeState fadeState = FadeState.None;
 
         /// <summary>実際に使う方のフェードさせるキャンバス。</summary>
-        private CanvasGroup CanvasGroupMain
+        private CanvasGroup MainCanvasGroup
         {
             get
             {
@@ -60,8 +60,8 @@ namespace FRONTIER.Utility.SceneTransition
         /// <summary>キャンバスのアルファ値。</summary>
         public float Alpha
         {
-            get => CanvasGroupMain.alpha;
-            set => CanvasGroupMain.alpha = value;
+            get => MainCanvasGroup.alpha;
+            set => MainCanvasGroup.alpha = value;
         }
 
         #endregion
