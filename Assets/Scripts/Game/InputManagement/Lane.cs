@@ -7,20 +7,42 @@ namespace FRONTIER.Game.InputManagement
     [RequireComponent(typeof(Collider), typeof(MeshFilter), typeof(MeshRenderer))]
     public class Lane : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [SerializeField] private InputManager tapManager;
+
+        /// <summary>
+        /// レーンのインデックス。
+        /// </summary>
         [SerializeField] private int laneIndex;
+
+        /// <summary>
+        /// レーンのマテリアル。MeshRendererから取得する。
+        /// </summary>
         private Material material;
+
+        /// <summary>
+        /// レーンの光る速さに応じて変化させる透明度。マテリアルに適用する。
+        /// </summary>
         private float alfa;
         
-        private float TapTime
+        /// <summary>
+        /// レーンがタップされたときの時間。InputManagerに渡すためのプロパティ。
+        /// </summary>
+        private float TappedTime
         {
-            get => tapManager.inputTime[laneIndex];
-            set => tapManager.inputTime[laneIndex] = value;
+            get => tapManager.tappedTime[laneIndex];
+            set => tapManager.tappedTime[laneIndex] = value;
         }
+
+        /// <summary>
+        /// レーンがタップされたか。InputManagerに渡すためのプロパティ。
+        /// </summary>
         private bool IsTapped
         {
-            get => tapManager.inputFlag[laneIndex];
-            set => tapManager.inputFlag[laneIndex] = value;
+            get => tapManager.tappedLaneFlags[laneIndex];
+            set => tapManager.tappedLaneFlags[laneIndex] = value;
         }
         
 
@@ -32,27 +54,42 @@ namespace FRONTIER.Game.InputManagement
         void Update()
         {
             material.color = new(1f, 1f, 1f, alfa);
+
+            // タップされていないとき、アルファ値を減少させる
             if (alfa > 0 && !IsTapped)
             {
-                alfa -= tapManager.lightSpeed * Time.unscaledDeltaTime;
+                alfa -= tapManager.LightSpeed * Time.unscaledDeltaTime;
             }
+
+            // 0未満にはならないように
             alfa = alfa < 0 ? 0 : alfa;
         }
 
-        public void OnTap()
+        /// <summary>
+        /// レーンがタップされたときの処理。
+        /// </summary>
+        public void OnTapped()
         {
-            TapTime = Time.time;
-            tapManager.onInput[laneIndex]?.Invoke(laneIndex, TapTime);
+            // 時間を記録
+            TappedTime = Time.time;
+            
+            // フラグを立てる
             IsTapped = true;
+            
+            // アルファを最大の値にする
             alfa = 0.2f;
+
+            // イベントを発火させる
+            tapManager.TappedEvent[laneIndex]?.Invoke(laneIndex, TappedTime);
+
             GameManager.Instance.audios.seManager.Play(SEManager.SE.TapedLane);
         }
 
-        public void OnPointerDown(PointerEventData eventData) => OnTap();
+        public void OnPointerDown(PointerEventData eventData) => OnTapped();
 
         public void OnPointerUp(PointerEventData eventData) => IsTapped = false;
 
-        public void OnPointerEnter(PointerEventData eventData) => OnTap();
+        public void OnPointerEnter(PointerEventData eventData) => OnTapped();
 
         public void OnPointerExit(PointerEventData eventData) => IsTapped = false;
     }

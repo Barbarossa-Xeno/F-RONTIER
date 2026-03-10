@@ -120,7 +120,7 @@ namespace FRONTIER.Game
             if (!Manager.info.IsAutoPlay)
             {
                 // タップしたときのイベントを登録する
-                inputManager.onInput.ToList().ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
+                inputManager.TappedEvent.ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
 
                 // ノーツが判定線を越えたときのイベントを登録する
                 notesGenerator.notesObjects.ForEach
