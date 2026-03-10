@@ -127,13 +127,13 @@ namespace FRONTIER.Game.NotesManagement
             // イベントの登録
             OnPressed += isOn => isPressed = isOn;
 
-            if (longNoteType == Reference.LongNoteType.NoInnerLinear || longNoteType == Reference.LongNoteType.NoInnerCurve)
+            if (longNoteType == Reference.LongNoteType.DirectLinear || longNoteType == Reference.LongNoteType.DirectCurved)
             {
                 // 中間点がないLノーツの場合、自分のレンダラーを取得してマテリアルを設定する
                 linearTypeLongNoteMesh = GetComponent<MeshRenderer>();
                 OnPressed += isOn => linearTypeLongNoteMesh.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn));
             }
-            else if (longNoteType == Reference.LongNoteType.AnyInnerLinear || longNoteType == Reference.LongNoteType.AnyInnerCurve)
+            else if (longNoteType == Reference.LongNoteType.IntermediateLinear || longNoteType == Reference.LongNoteType.IntermediateCurved)
             {
                 // 中間点があるLノーツの場合、各種コンポーネントを取得してマテリアルを設定する
                 curveTypeComponent = new(transform, isInner);
@@ -200,13 +200,13 @@ namespace FRONTIER.Game.NotesManagement
             this.isInner = isInner;
             if (isInner)
             {
-                if (noteType == Reference.NoteType.LongLinear) { longNoteType = Reference.LongNoteType.AnyInnerLinear; }
-                else if (noteType == Reference.NoteType.LongCurve) { longNoteType = Reference.LongNoteType.AnyInnerCurve; }
+                if (noteType == Reference.NoteType.LinearLong) { longNoteType = Reference.LongNoteType.IntermediateLinear; }
+                else if (noteType == Reference.NoteType.CurvedLong) { longNoteType = Reference.LongNoteType.IntermediateCurved; }
             }
             else
             {
-                if (noteType == Reference.NoteType.LongLinear) { longNoteType = Reference.LongNoteType.NoInnerLinear; }
-                else if (noteType == Reference.NoteType.LongCurve) { longNoteType = Reference.LongNoteType.NoInnerCurve; }
+                if (noteType == Reference.NoteType.LinearLong) { longNoteType = Reference.LongNoteType.DirectLinear; }
+                else if (noteType == Reference.NoteType.CurvedLong) { longNoteType = Reference.LongNoteType.DirectCurved; }
             }
         }
 

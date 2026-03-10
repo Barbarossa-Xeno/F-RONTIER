@@ -136,7 +136,7 @@ namespace FRONTIER.Game
                             // 判定線あたりでノーツをPerfect判定する
                             Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNote>();
                             // ノーツがロングノーツだったら、始点・中間点・終点のノーツだけイベントを登録するようにする
-                            if (info.Type == NoteType.LongLinear || info.Type == NoteType.LongCurve)
+                            if (info.Type == NoteType.LinearLong || info.Type == NoteType.CurvedLong)
                             {
                                 // ダウンキャスト
                                 LongNote _info = info as LongNote;
@@ -264,7 +264,7 @@ namespace FRONTIER.Game
             {
                 Judge(laneIndex, tapTime);
             }
-            else if (target.info.Type == NoteType.LongLinear || target.info.Type == NoteType.LongCurve)
+            else if (target.info.Type == NoteType.LinearLong || target.info.Type == NoteType.CurvedLong)
             {
                 Judge(laneIndex, tapTime);
             }
@@ -274,9 +274,9 @@ namespace FRONTIER.Game
         /// ロングノーツが押されているかに応じて、その中間点のノーツを判定する
         /// </summary>
         /// <param name="isPressed">ロングノーツが押されているか</param>
-        /// <param name="isInner">ロングノーツが終点以外の中間点を持っているか</param>
+        /// <param name="isIntermediate">ロングノーツが終点以外の中間点を持っているか</param>
         /// <param name="longNoteIndex">ロングノーツに割り振られた順番</param>
-        private void JudgeLongNote(bool isPressed, bool isInner, int longNoteIndex)
+        private void JudgeLongNote(bool isPressed, bool isIntermediate, int longNoteIndex)
         {
             // カウンタ変数をメソッドスコープで宣言して、メソッド内で使いまわす
             int i;
@@ -289,7 +289,7 @@ namespace FRONTIER.Game
             }
 
             // 中間点を持つ場合 -> 中間点と終点のチェック
-            if (isInner)
+            if (isIntermediate)
             {
                 // 中間ノーツがロングノーツのまとまりごとに収まっているリストにおいて、
                 // i番目のロングノーツの中間ノーツのリストの、一番最後の要素が最も近い中間ノーツになる
@@ -302,7 +302,7 @@ namespace FRONTIER.Game
                         DeleteNote(longNotesGenerator.notesObjects, ^i, isPressed);
                     }
                     // その中間ノーツが中間点の場合
-                    else if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.Inner)
+                    else if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.Intermediate)
                     {
                         DeleteNote(longNotesGenerator.notesObjects, ^i, isPressed, ^1);
                     }
@@ -453,11 +453,11 @@ namespace FRONTIER.Game
         /// <summary>
         /// 判定線を超過したロングノーツの中間点・終点を削除する。
         /// </summary>
-        /// <param name="innerNotesList">ロングノーツの中間点が格納されたリスト</param>
+        /// <param name="intermediateNotesList">ロングノーツの中間点が格納されたリスト</param>
         /// <param name="targetLongNoteListIndex">ターゲットにするロングノーツのリストでのインデックス</param>
         /// <param name="isPressed">ロングノーツのラインが押されているか</param>
         /// <param name="targetIndex">消す中間点のインデックス</param>
-        private void DeleteNote(List<List<GameObject>> innerNotesList, Index targetLongNoteListIndex, bool isPressed, Index targetIndex = default)
+        private void DeleteNote(List<List<GameObject>> intermediateNotesList, Index targetLongNoteListIndex, bool isPressed, Index targetIndex = default)
         {
             // 押下の有無を判別
             if (isPressed)
@@ -482,15 +482,15 @@ namespace FRONTIER.Game
             if (targetIndex.Value > 0)
             {
                 // 中間点を隠してリストから消す
-                innerNotesList[targetLongNoteListIndex][targetIndex].SetActive(false);
-                innerNotesList[targetLongNoteListIndex].RemoveAt(targetIndex);
+                intermediateNotesList[targetLongNoteListIndex][targetIndex].SetActive(false);
+                intermediateNotesList[targetLongNoteListIndex].RemoveAt(targetIndex);
             }
             // 終点を消すとき
             else
             {
-                innerNotesList[targetLongNoteListIndex][0].SetActive(false);
-                innerNotesList[targetLongNoteListIndex].RemoveAt(0);
-                innerNotesList.RemoveAt(targetLongNoteListIndex);
+                intermediateNotesList[targetLongNoteListIndex][0].SetActive(false);
+                intermediateNotesList[targetLongNoteListIndex].RemoveAt(0);
+                intermediateNotesList.RemoveAt(targetLongNoteListIndex);
                 // ロングノーツラインのリストからも消す
                 longNotesGenerator.longNoteMeshList[targetLongNoteListIndex].SetActive(false);
                 longNotesGenerator.longNoteMeshList.RemoveAt(targetLongNoteListIndex);

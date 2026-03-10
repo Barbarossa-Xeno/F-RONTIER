@@ -51,14 +51,14 @@ namespace FRONTIER.Game.NotesManagement
             public GameObject normal;
 
             /// <summary>
-            /// 中間点を有する直線型ロングノーツのプレハブ。
+            /// 中間点を有するロングノーツ（節）のプレハブ。
             /// </summary>
-            public GameObject longAny;
+            public GameObject intermediateLong;
 
             /// <summary>
-            /// 中間点を持たない直線型ロングノーツのプレハブ。
+            /// 中間点を持たないロングノーツ（節）のプレハブ。
             /// </summary>
-            public GameObject longOnly;
+            public GameObject directLong;
         }
 
         #endregion
@@ -90,7 +90,7 @@ namespace FRONTIER.Game.NotesManagement
             for (int i = 0; i < data.notes.Length; i++)
             {
                 //もし、ノーツのタイプが「2」または「３」=> いずれかのロングノーツであった時
-                if (data.notes[i].type == (int)Reference.NoteType.LongLinear || data.notes[i].type == (int)Reference.NoteType.LongCurve)
+                if (data.notes[i].type == (int)Reference.NoteType.LinearLong || data.notes[i].type == (int)Reference.NoteType.CurvedLong)
                 {
                     // ロングノーツのプロパティ（レーン番号や到達時間等）だけを格納するリスト
                     List<float> longNoteTimes = new();
@@ -130,7 +130,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 始点・終点以外にいくつかの中間点が存在するノーツは生成時に処理を分岐させたい
                     // そこで、中間点の数を格納するリストを生成側のLongNotesGeneratorに作成しておく
                     // notes[i].notesの長さから1引くと中間点の数になる（終点を除外している。）
-                    longNotesGenerator.innerNotesCounts.Add(data.notes[i].notes.Length - 1);
+                    longNotesGenerator.intermediateNotesCounts.Add(data.notes[i].notes.Length - 1);
                     longNotesGenerator.notesTypes.Add(data.notes[i].type);
 
                     // 各リストへの追加

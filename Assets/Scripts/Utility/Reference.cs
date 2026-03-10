@@ -55,8 +55,8 @@ namespace FRONTIER.Utility
         public enum NoteType
         {
             Normal = 1,
-            LongLinear = 2,
-            LongCurve = 3
+            LinearLong = 2,
+            CurvedLong = 3
         }
 
         /// <summary>
@@ -69,22 +69,22 @@ namespace FRONTIER.Utility
             /// <summary>
             /// 中間点なし直線型
             /// </summary>
-            NoInnerLinear,
+            DirectLinear,
 
             /// <summary>
             /// 中間点あり直線型
             /// </summary>
-            AnyInnerLinear,
+            IntermediateLinear,
 
             /// <summary>
             /// 中間点なし曲線型
             /// </summary>
-            NoInnerCurve,
+            DirectCurved,
 
             /// <summary>
             /// 中間点あり曲線型
             /// </summary>
-            AnyInnerCurve
+            IntermediateCurved
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace FRONTIER.Utility
         /// </summary>
         public enum LongNoteStatus
         {
-            Start, Inner, End, Mesh, None
+            Start, Intermediate, End, Mesh, None
         }
         
         /// <summary>

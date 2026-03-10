@@ -8779,8 +8779,8 @@ MonoBehaviour:
   notesCount: 0
   notePrefabs:
     normal: {fileID: 7652398199858680092, guid: 5d128bac180a7a04ead3704594fbd3e5, type: 3}
-    longAny: {fileID: 7652398199858680092, guid: a015d6a663a79f44fa3d2aa4abd465da, type: 3}
-    longOnly: {fileID: 7652398199858680092, guid: 068c76dfac48bdb4e95ce35d8bb7a4a5, type: 3}
+    intermediateLong: {fileID: 7652398199858680092, guid: a015d6a663a79f44fa3d2aa4abd465da, type: 3}
+    directLong: {fileID: 7652398199858680092, guid: 068c76dfac48bdb4e95ce35d8bb7a4a5, type: 3}
   longNotesGenerator: {fileID: 963748247}
   data:
     name: 
@@ -8818,12 +8818,12 @@ MonoBehaviour:
   noteObjectParent: {fileID: 1415855445}
   notesTypes: 
   notesGenerator: {fileID: 963748245}
-  innerNotesCounts: 
+  intermediateNotesCounts: 
   longNoteMeshList: []
   longNotesList: []
   meshMaterials:
-    noInner: {fileID: 2100000, guid: b7521a052c6412f4fb85fe7fd2743cc6, type: 2}
-    anyInner: {fileID: 2100000, guid: a2e609b9169c33c4e8a8bdeb3000fd7f, type: 2}
+    direct: {fileID: 2100000, guid: b7521a052c6412f4fb85fe7fd2743cc6, type: 2}
+    intermediate: {fileID: 2100000, guid: a2e609b9169c33c4e8a8bdeb3000fd7f, type: 2}
     fadeMaterial: {fileID: 2100000, guid: 87cdb870616cc654d9f1a78f342c381d, type: 2}
     line: {fileID: 2100000, guid: 4aea5070c28275542843780dee93421b, type: 2}
 --- !u!1 &996833549

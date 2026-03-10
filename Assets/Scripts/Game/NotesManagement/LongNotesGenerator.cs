@@ -23,7 +23,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// 各ロングノーツごとの中間点の数をインデックス順に格納するリスト。
         /// </summary>
-        public List<int> innerNotesCounts = new();
+        public List<int> intermediateNotesCounts = new();
 
         /// <summary>
         /// ロングノーツの中間点の辞書。
@@ -31,7 +31,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <remarks>
         /// Keyにロングノーツのインデックス、Valueにそのインデックスのロングノーツが含む中間ノーツのリストを代入して管理する。
         /// </remarks>
-        public Dictionary<int, List<GameObject>> innerNotes = new();
+        public Dictionary<int, List<GameObject>> intermediateNotes = new();
 
         /// <summary>
         /// ロングノーツ線のリスト。
@@ -63,12 +63,12 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// ロングノーツの太さ。
         /// </summary>
-        private const float LONGNOTE_WIDTH = 2.0f;
+        private const float LONG_NOTE_WIDTH = 2.0f;
 
         /// <summary>
         /// ロングノーツの高さ。
         /// </summary>
-        private const float LONGNOTE_HEIGHT = 0.001f;
+        private const float LONG_NOTE_HEIGHT = 0.001f;
 
         /// <summary>
         /// ロングノーツを生成するときに頂点の生成位置をレーンに合わせるための差分。
@@ -103,12 +103,12 @@ namespace FRONTIER.Game.NotesManagement
             /// <summary>
             /// 中間点無し。
             /// </summary>
-            public Material noInner;
+            public Material direct;
 
             /// <summary>
             /// 中間点有り。
             /// </summary>
-            public Material anyInner;
+            public Material intermediate;
 
             /// <summary>
             /// レンダリングモードがFadeのマテリアル。（そうであったらなんでもいい）
@@ -124,7 +124,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// ロングノーツ線のメッシュ生成に用いる要素。
         /// </summary>
-        private struct MeshParameters
+        private struct MeshFilterParameters
         {
             /// <summary>
             /// メッシュの頂点座標。
@@ -163,161 +163,161 @@ namespace FRONTIER.Game.NotesManagement
         #region メソッド
 
         /// <summary>
-        /// ロングノーツ線のメッシュを生成します。
+        /// ロングノーツ線のメッシュを設定します。
         /// </summary>
-        /// <param name = "startPosition">ロングノーツの始点座標。</param>
-        /// <param name = "endPosition">ロングノーツの終点座標。</param>
+        /// <param name = "start">ロングノーツの始点座標。</param>
+        /// <param name = "end">ロングノーツの終点座標。</param>
         /// <param name = "noteLine">ロングノーツ線のゲームオブジェクト。</param>
         /// <param name = "type">ロングノーツの種類。<br/>中間点無しなら0、中間点有りなら1。</param>
-        /// <param name = "curve">曲線を作る点の座標。</param>
+        /// <param name = "anchors">曲線を作る点の座標。</param>
         /// <param name = "split">曲線型ロングノーツの分割数。</param>
         /// <param name = "isLast">分割したロングノーツの生成時、その対象が最後の分割ノーツだったときtrueを指定する。</param>
-        private void GenerateLongNoteMesh(Vector3 startPosition, Vector3 endPosition, GameObject noteLine, Reference.LongNoteType type, Vector3[] curve = null, int split = 10, bool isLast = false)
+        private void SetMesh(Vector3 start, Vector3 end, GameObject noteLine, Reference.LongNoteType type, Vector3[] anchors = null, int split = 10, bool isLast = false)
         {
             // 生成するメッシュ本体
             Mesh mesh = new();
 
-            // メッシュの描画に必要な要素の設定
-            MeshParameters meshParameters = new();
-            meshParameters.vertices = new Vector3[4 * 6];
-            meshParameters.triangles = new int[6 * 6];
-            meshParameters.uvs = new Vector2[4 * 6];
-            MeshColliderParameters meshColliderParameters = new();
-            meshColliderParameters.vertices = new Vector3[4 * 6];
-            meshColliderParameters.triangles = new int[6 * 6];
+            // 最後にメッシュへ設定するパラメータ
+            MeshFilterParameters filterParams = new();
+            filterParams.vertices = new Vector3[4 * 6];
+            filterParams.triangles = new int[6 * 6];
+            filterParams.uvs = new Vector2[4 * 6];
+            MeshColliderParameters colliderParams = new();
+            colliderParams.vertices = new Vector3[4 * 6];
+            colliderParams.triangles = new int[6 * 6];
 
             #region メッシュの頂点とUV座標、コライダーの座標を計算
 
             // 面①（ワールド原点からZ座標を正の方向に見たときの、上底 => Y方向）
-            meshParameters.vertices[0] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);     //始点の左端 = 左下
-            meshParameters.vertices[1] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //始点の右端 = 右下
-            meshParameters.vertices[2] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);       //終点の左端 = 左上
-            meshParameters.vertices[3] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);        //終点の右端 = 右上
-            meshParameters.triangles[0] = 0;
-            meshParameters.triangles[1] = 2;
-            meshParameters.triangles[2] = 1;
-            meshParameters.triangles[3] = 3;
-            meshParameters.triangles[4] = 1;
-            meshParameters.triangles[5] = 2;
-            meshParameters.uvs[0] = new Vector2(0, 0);
-            meshParameters.uvs[1] = new Vector2(1, 0);
-            meshParameters.uvs[2] = new Vector2(0, 1);
-            meshParameters.uvs[3] = new Vector2(1, 1);
-            meshColliderParameters.vertices[0] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[0];
-            meshColliderParameters.vertices[1] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[1];
-            meshColliderParameters.vertices[2] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[2];
-            meshColliderParameters.vertices[3] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[3];
+            filterParams.vertices[0] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     //始点の左端 = 左下
+            filterParams.vertices[1] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //始点の右端 = 右下
+            filterParams.vertices[2] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       //終点の左端 = 左上
+            filterParams.vertices[3] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);        //終点の右端 = 右上
+            filterParams.triangles[0] = 0;
+            filterParams.triangles[1] = 2;
+            filterParams.triangles[2] = 1;
+            filterParams.triangles[3] = 3;
+            filterParams.triangles[4] = 1;
+            filterParams.triangles[5] = 2;
+            filterParams.uvs[0] = new Vector2(0, 0);
+            filterParams.uvs[1] = new Vector2(1, 0);
+            filterParams.uvs[2] = new Vector2(0, 1);
+            filterParams.uvs[3] = new Vector2(1, 1);
+            colliderParams.vertices[0] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[0];
+            colliderParams.vertices[1] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[1];
+            colliderParams.vertices[2] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[2];
+            colliderParams.vertices[3] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[3];
 
             // 面②（前側面 => -Z方向）
-            meshParameters.vertices[4] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //左下
-            meshParameters.vertices[5] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);     //右下
-            meshParameters.vertices[6] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);     //左上
-            meshParameters.vertices[7] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //右上
-            meshParameters.triangles[6] = 4;
-            meshParameters.triangles[7] = 6;
-            meshParameters.triangles[8] = 5;
-            meshParameters.triangles[9] = 7;
-            meshParameters.triangles[10] = 5;
-            meshParameters.triangles[11] = 6;
-            meshParameters.uvs[4] = new Vector2(0, 0);
-            meshParameters.uvs[5] = new Vector2(1, 0);
-            meshParameters.uvs[6] = new Vector2(0, 1);
-            meshParameters.uvs[7] = new Vector2(1, 1);
-            meshColliderParameters.vertices[4] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[4];
-            meshColliderParameters.vertices[5] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[5];
-            meshColliderParameters.vertices[6] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[6];
-            meshColliderParameters.vertices[7] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[7];
+            filterParams.vertices[4] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //左下
+            filterParams.vertices[5] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     //右下
+            filterParams.vertices[6] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     //左上
+            filterParams.vertices[7] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //右上
+            filterParams.triangles[6] = 4;
+            filterParams.triangles[7] = 6;
+            filterParams.triangles[8] = 5;
+            filterParams.triangles[9] = 7;
+            filterParams.triangles[10] = 5;
+            filterParams.triangles[11] = 6;
+            filterParams.uvs[4] = new Vector2(0, 0);
+            filterParams.uvs[5] = new Vector2(1, 0);
+            filterParams.uvs[6] = new Vector2(0, 1);
+            filterParams.uvs[7] = new Vector2(1, 1);
+            colliderParams.vertices[4] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[4];
+            colliderParams.vertices[5] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[5];
+            colliderParams.vertices[6] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[6];
+            colliderParams.vertices[7] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[7];
 
             // 面③（左側面 => -X方向）
-            meshParameters.vertices[8] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //左下
-            meshParameters.vertices[9] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //右下
-            meshParameters.vertices[10] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //左上
-            meshParameters.vertices[11] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);    //右上
-            meshParameters.triangles[12] = 8;
-            meshParameters.triangles[13] = 10;
-            meshParameters.triangles[14] = 9;
-            meshParameters.triangles[15] = 11;
-            meshParameters.triangles[16] = 9;
-            meshParameters.triangles[17] = 10;
-            meshParameters.uvs[8] = new Vector2(0, 0);
-            meshParameters.uvs[9] = new Vector2(1, 0);
-            meshParameters.uvs[10] = new Vector2(0, 1);
-            meshParameters.uvs[11] = new Vector2(1, 1);
-            meshColliderParameters.vertices[8] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[8];
-            meshColliderParameters.vertices[9] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[9];
-            meshColliderParameters.vertices[10] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[10];
-            meshColliderParameters.vertices[11] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[11];
+            filterParams.vertices[8] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //左下
+            filterParams.vertices[9] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //右下
+            filterParams.vertices[10] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //左上
+            filterParams.vertices[11] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);    //右上
+            filterParams.triangles[12] = 8;
+            filterParams.triangles[13] = 10;
+            filterParams.triangles[14] = 9;
+            filterParams.triangles[15] = 11;
+            filterParams.triangles[16] = 9;
+            filterParams.triangles[17] = 10;
+            filterParams.uvs[8] = new Vector2(0, 0);
+            filterParams.uvs[9] = new Vector2(1, 0);
+            filterParams.uvs[10] = new Vector2(0, 1);
+            filterParams.uvs[11] = new Vector2(1, 1);
+            colliderParams.vertices[8] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[8];
+            colliderParams.vertices[9] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[9];
+            colliderParams.vertices[10] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[10];
+            colliderParams.vertices[11] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[11];
 
             // 面④（右側面 => X方向）
-            meshParameters.vertices[12] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //左下
-            meshParameters.vertices[13] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //右下
-            meshParameters.vertices[14] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);     //左上
-            meshParameters.vertices[15] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);       //右上
-            meshParameters.triangles[18] = 12;
-            meshParameters.triangles[19] = 14;
-            meshParameters.triangles[20] = 13;
-            meshParameters.triangles[21] = 15;
-            meshParameters.triangles[22] = 13;
-            meshParameters.triangles[23] = 14;
-            meshParameters.uvs[12] = new Vector2(0, 0);
-            meshParameters.uvs[13] = new Vector2(1, 0);
-            meshParameters.uvs[14] = new Vector2(0, 1);
-            meshParameters.uvs[15] = new Vector2(1, 1);
-            meshColliderParameters.vertices[12] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[12];
-            meshColliderParameters.vertices[13] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[13];
-            meshColliderParameters.vertices[14] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[14];
-            meshColliderParameters.vertices[15] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[15];
+            filterParams.vertices[12] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //左下
+            filterParams.vertices[13] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //右下
+            filterParams.vertices[14] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     //左上
+            filterParams.vertices[15] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       //右上
+            filterParams.triangles[18] = 12;
+            filterParams.triangles[19] = 14;
+            filterParams.triangles[20] = 13;
+            filterParams.triangles[21] = 15;
+            filterParams.triangles[22] = 13;
+            filterParams.triangles[23] = 14;
+            filterParams.uvs[12] = new Vector2(0, 0);
+            filterParams.uvs[13] = new Vector2(1, 0);
+            filterParams.uvs[14] = new Vector2(0, 1);
+            filterParams.uvs[15] = new Vector2(1, 1);
+            colliderParams.vertices[12] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[12];
+            colliderParams.vertices[13] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[13];
+            colliderParams.vertices[14] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[14];
+            colliderParams.vertices[15] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[15];
 
             //面⑤（後側面 => Z方向）
-            meshParameters.vertices[16] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);     //左下
-            meshParameters.vertices[17] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //右下
-            meshParameters.vertices[18] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);      //左上
-            meshParameters.vertices[19] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, LONGNOTE_HEIGHT / 2, 0);       //右上
-            meshParameters.triangles[24] = 16;
-            meshParameters.triangles[25] = 17;
-            meshParameters.triangles[26] = 18;
-            meshParameters.triangles[27] = 19;
-            meshParameters.triangles[28] = 18;
-            meshParameters.triangles[29] = 17;
-            meshParameters.uvs[16] = new Vector2(0, 0);
-            meshParameters.uvs[17] = new Vector2(1, 0);
-            meshParameters.uvs[18] = new Vector2(0, 1);
-            meshParameters.uvs[19] = new Vector2(1, 1);
-            meshColliderParameters.vertices[16] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[16];
-            meshColliderParameters.vertices[17] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[17];
-            meshColliderParameters.vertices[18] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[18];
-            meshColliderParameters.vertices[19] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[19];
+            filterParams.vertices[16] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     //左下
+            filterParams.vertices[17] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //右下
+            filterParams.vertices[18] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //左上
+            filterParams.vertices[19] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       //右上
+            filterParams.triangles[24] = 16;
+            filterParams.triangles[25] = 17;
+            filterParams.triangles[26] = 18;
+            filterParams.triangles[27] = 19;
+            filterParams.triangles[28] = 18;
+            filterParams.triangles[29] = 17;
+            filterParams.uvs[16] = new Vector2(0, 0);
+            filterParams.uvs[17] = new Vector2(1, 0);
+            filterParams.uvs[18] = new Vector2(0, 1);
+            filterParams.uvs[19] = new Vector2(1, 1);
+            colliderParams.vertices[16] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[16];
+            colliderParams.vertices[17] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[17];
+            colliderParams.vertices[18] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[18];
+            colliderParams.vertices[19] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[19];
 
             //面⑥（下底 => -Y方向）
-            meshParameters.vertices[20] = startPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);   //始点の左端
-            meshParameters.vertices[21] = startPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);    //始点の右端
-            meshParameters.vertices[22] = endPosition + new Vector3(-LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);     //終点の左端
-            meshParameters.vertices[23] = endPosition + new Vector3(LONGNOTE_WIDTH / 2, -LONGNOTE_HEIGHT / 2, 0);      //終点の右端
-            meshParameters.triangles[30] = 20;
-            meshParameters.triangles[31] = 21;
-            meshParameters.triangles[32] = 22;
-            meshParameters.triangles[33] = 23;
-            meshParameters.triangles[34] = 22;
-            meshParameters.triangles[35] = 21;
-            meshParameters.uvs[20] = new Vector2(0, 0);
-            meshParameters.uvs[21] = new Vector2(1, 0);
-            meshParameters.uvs[22] = new Vector2(0, 1);
-            meshParameters.uvs[23] = new Vector2(1, 1);
-            meshColliderParameters.vertices[20] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[20];
-            meshColliderParameters.vertices[21] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[21];
-            meshColliderParameters.vertices[22] = new Vector3(-COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[22];
-            meshColliderParameters.vertices[23] = new Vector3(COLLIDER_WIDTH, 0, 0) + meshParameters.vertices[23];
+            filterParams.vertices[20] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);   //始点の左端
+            filterParams.vertices[21] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //始点の右端
+            filterParams.vertices[22] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     //終点の左端
+            filterParams.vertices[23] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //終点の右端
+            filterParams.triangles[30] = 20;
+            filterParams.triangles[31] = 21;
+            filterParams.triangles[32] = 22;
+            filterParams.triangles[33] = 23;
+            filterParams.triangles[34] = 22;
+            filterParams.triangles[35] = 21;
+            filterParams.uvs[20] = new Vector2(0, 0);
+            filterParams.uvs[21] = new Vector2(1, 0);
+            filterParams.uvs[22] = new Vector2(0, 1);
+            filterParams.uvs[23] = new Vector2(1, 1);
+            colliderParams.vertices[20] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[20];
+            colliderParams.vertices[21] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[21];
+            colliderParams.vertices[22] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[22];
+            colliderParams.vertices[23] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[23];
 
-            meshColliderParameters.triangles = meshParameters.triangles;
+            colliderParams.triangles = filterParams.triangles;
 
             #endregion
 
             // 頂点、三角ポリゴンのインデックス、UVを指定し、法線(normal vector)を計算
-            mesh = SetMeshParameters(meshParameters.vertices, meshParameters.triangles, meshParameters.uvs);
+            mesh = CreateMesh(filterParams.vertices, filterParams.triangles, filterParams.uvs);
 
             // 各コンポーネントにメッシュを渡す
             noteLine.GetComponent<MeshFilter>().mesh = mesh;
-            noteLine.GetComponent<MeshCollider>().sharedMesh = SetMeshParameters(meshColliderParameters.vertices, meshColliderParameters.triangles);
+            noteLine.GetComponent<MeshCollider>().sharedMesh = CreateMesh(colliderParams.vertices, colliderParams.triangles);
 
             // コライダーを覆う場合はconvexにチェックを入れる
             // noteLine.GetComponent<MeshCollider>().convex = true;
@@ -325,46 +325,46 @@ namespace FRONTIER.Game.NotesManagement
             // 種類によって処理を分ける。
             switch (type)
             {
-                case Reference.LongNoteType.NoInnerLinear:
-                    noteLine.GetComponent<MeshRenderer>().material = meshMaterials.noInner;
+                case Reference.LongNoteType.DirectLinear:
+                    noteLine.GetComponent<MeshRenderer>().material = meshMaterials.direct;
                     break;
 
-                case Reference.LongNoteType.AnyInnerLinear:
+                case Reference.LongNoteType.IntermediateLinear:
                     // ラインレンダラーで中心線を描画する。
-                    Vector3[] linePositions = new Vector3[2] { startPosition, endPosition };
+                    Vector3[] linePositions = new Vector3[2] { start, end };
                     LineRenderer lineRenderer = longNote.AddComponent<LineRenderer>();
                     lineRenderer.SetPositions(linePositions);
                     lineRenderer.startWidth = lineRenderer.endWidth = 0.1f;
                     lineRenderer.material = meshMaterials.line;
                     lineRenderer.useWorldSpace = false;
-                    noteLine.GetComponent<MeshRenderer>().material = meshMaterials.anyInner;
+                    noteLine.GetComponent<MeshRenderer>().material = meshMaterials.intermediate;
                     noteLine.transform.SetParent(longNote.transform);
                     break;
 
-                case Reference.LongNoteType.NoInnerCurve:
+                case Reference.LongNoteType.DirectCurved:
                     // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
                     if (isLast)
                     {
                         // メッシュの結合とテクスチャの再貼付
                         CombineFragmentMesh(longNote);
-                        ReprintTexure(longNote, split, Reference.LongNoteType.NoInnerCurve);
+                        ReprintTexture(longNote, split, Reference.LongNoteType.DirectCurved);
                     }
                     break;
 
-                case Reference.LongNoteType.AnyInnerCurve:
+                case Reference.LongNoteType.IntermediateCurved:
                     // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
                     // 曲線の座標を収めた配列がnullでないことを確認して
-                    if (isLast && curve != null)
+                    if (isLast && anchors != null)
                     {
                         // メッシュの結合とテクスチャの再貼付
                         CombineFragmentMesh(longNote);
-                        ReprintTexure(longNote, split, Reference.LongNoteType.AnyInnerCurve);
+                        ReprintTexture(longNote, split, Reference.LongNoteType.IntermediateCurved);
 
                         // ラインレンダラーをコンポーネントに追加して中心線を描画する
                         LineRenderer _lineRenderer = longNote.AddComponent<LineRenderer>();
-                        _lineRenderer.positionCount = curve.Length;
+                        _lineRenderer.positionCount = anchors.Length;
                         _lineRenderer.widthMultiplier = 0.1f;
-                        _lineRenderer.SetPositions(curve);
+                        _lineRenderer.SetPositions(anchors);
                         _lineRenderer.useWorldSpace = false;
                         _lineRenderer.material = meshMaterials.line;
                         noteLine.transform.SetParent(longNote.transform);
@@ -382,7 +382,7 @@ namespace FRONTIER.Game.NotesManagement
         ///<param name = "endZ">ロングノーツの終点のZ座標。</param>
         ///<param name = "type">ロングノーツの種類。<br/>中間点無しなら0、中間点有りなら1。</param>
         ///<param name = "index">譜面上で何番目のロングノーツか。</param>
-        private void SetNotesLine(int startLane, float startZ, int endLane, float endZ, Reference.LongNoteType type, int index)
+        private void SetLine(int startLane, float startZ, int endLane, float endZ, Reference.LongNoteType type, int index)
         {
             // ロングノーツの種類が大きく分けて直線型あるいは曲線型か、中間点ありかなしかを分類するローカル関数
             static (Reference.NoteType, bool) SwitchLongNoteInnerType(Reference.LongNoteType type)
@@ -390,25 +390,25 @@ namespace FRONTIER.Game.NotesManagement
                 Reference.NoteType baseNoteType = default;
                 switch (type)
                 {
-                    case Reference.LongNoteType.NoInnerLinear:
-                    case Reference.LongNoteType.AnyInnerLinear:
-                        baseNoteType = Reference.NoteType.LongLinear;
+                    case Reference.LongNoteType.DirectLinear:
+                    case Reference.LongNoteType.IntermediateLinear:
+                        baseNoteType = Reference.NoteType.LinearLong;
                         break;
-                    case Reference.LongNoteType.NoInnerCurve:
-                    case Reference.LongNoteType.AnyInnerCurve:
-                        baseNoteType = Reference.NoteType.LongCurve;
+                    case Reference.LongNoteType.DirectCurved:
+                    case Reference.LongNoteType.IntermediateCurved:
+                        baseNoteType = Reference.NoteType.CurvedLong;
                         break;
                 }
 
                 bool flag = false;
                 switch (type)
                 {
-                    case Reference.LongNoteType.AnyInnerLinear:
-                    case Reference.LongNoteType.AnyInnerCurve:
+                    case Reference.LongNoteType.IntermediateLinear:
+                    case Reference.LongNoteType.IntermediateCurved:
                         flag = true;
                         break;
-                    case Reference.LongNoteType.NoInnerLinear:
-                    case Reference.LongNoteType.NoInnerCurve:
+                    case Reference.LongNoteType.DirectLinear:
+                    case Reference.LongNoteType.DirectCurved:
                         flag = false;
                         break;
                 }
@@ -430,19 +430,19 @@ namespace FRONTIER.Game.NotesManagement
             longNoteMeshList.Add(longNote);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点、曲線型では制御点も計算
-            Vector3 startPositon = new(LANE_GAP * LONGNOTE_WIDTH + startLane * LONGNOTE_WIDTH + LONGNOTE_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
-            Vector3 endPosition = new(LANE_GAP * LONGNOTE_WIDTH + endLane * LONGNOTE_WIDTH + LONGNOTE_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
-            Vector3 controlPositon;
+            Vector3 start = new(LANE_GAP * LONG_NOTE_WIDTH + startLane * LONG_NOTE_WIDTH + LONG_NOTE_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
+            Vector3 end = new(LANE_GAP * LONG_NOTE_WIDTH + endLane * LONG_NOTE_WIDTH + LONG_NOTE_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
+            Vector3 anchor;
 
             // 曲線型の場合
-            if (type == Reference.LongNoteType.NoInnerCurve || type == Reference.LongNoteType.AnyInnerCurve)
+            if (type == Reference.LongNoteType.DirectCurved || type == Reference.LongNoteType.IntermediateCurved)
             {
                 // 制御点の計算
-                controlPositon = new(LANE_GAP * LONGNOTE_WIDTH + endLane * LONGNOTE_WIDTH + LONGNOTE_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
+                anchor = new(LANE_GAP * LONG_NOTE_WIDTH + endLane * LONG_NOTE_WIDTH + LONG_NOTE_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
                 //int variableSplit = SPLIT_SIZE * 3;
 
                 // ベジェ曲線から曲線上の点を計算する。
-                Vector3[] curvePoints = CalculateBezierCurves(startPositon, controlPositon, endPosition, splitSize: SPLIT_SIZE);
+                Vector3[] curvePoints = CalculateBezierCurves(start, anchor, end, splitSize: SPLIT_SIZE);
                 
                 // 曲線を構成するオブジェクトの断片をつくる
                 GameObject[] fragments = new GameObject[curvePoints.Length - 1];
@@ -461,12 +461,12 @@ namespace FRONTIER.Game.NotesManagement
                 for (int i = 0; i < curvePoints.Length - 1; i++)
                 {
                     // ロングノーツ１まとまりにおいて、最後の断片
-                    if (i == curvePoints.Length - 2) { GenerateLongNoteMesh(curvePoints[i], curvePoints[i + 1], fragments[i], type, split: SPLIT_SIZE, curve: curvePoints, isLast: true); }
-                    else { GenerateLongNoteMesh(curvePoints[i], curvePoints[i + 1], fragments[i], type, split: SPLIT_SIZE, curve: curvePoints); }
+                    if (i == curvePoints.Length - 2) { SetMesh(curvePoints[i], curvePoints[i + 1], fragments[i], type, split: SPLIT_SIZE, anchors: curvePoints, isLast: true); }
+                    else { SetMesh(curvePoints[i], curvePoints[i + 1], fragments[i], type, split: SPLIT_SIZE, anchors: curvePoints); }
                 }
             }
             // 直線型の場合（曲線の座標も渡さない）
-            else { GenerateLongNoteMesh(startPositon, endPosition, longNote, type); }
+            else { SetMesh(start, end, longNote, type); }
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace FRONTIER.Game.NotesManagement
             float positionX = 0;
             float positionZ = 0;
 
-            // Instanciateするノー
+            // Instantiate するノーツ
             GameObject note;
 
             // 中間点のリスト
@@ -504,9 +504,9 @@ namespace FRONTIER.Game.NotesManagement
                     _positionZ[i, j] = positionZ;
 
                     // 直線型で中間点のないノーツ
-                    if (innerNotesCounts[i] == 0 && notesTypes[i] == 2)
+                    if (intermediateNotesCounts[i] == 0 && notesTypes[i] == 2)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.directLong, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Linear_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -514,25 +514,25 @@ namespace FRONTIER.Game.NotesManagement
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
-                            if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
+                            if (j == laneNumbers[i].Count - 1) { intermediateNotes.Add(i, inners); }
                         }
 
                         if (j == 0) { prop.status = Reference.LongNoteStatus.Start; }
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
-                        else { prop.status = Reference.LongNoteStatus.Inner; }
+                        else { prop.status = Reference.LongNoteStatus.Intermediate; }
 
-                        prop.Type = Reference.NoteType.LongLinear;
+                        prop.Type = Reference.NoteType.LinearLong;
                         prop.index = i;
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            SetNotesLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.NoInnerLinear, i);
+                            SetLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectLinear, i);
                         }
                     }
                     // 曲線型で中間点のないノーツ
-                    else if (innerNotesCounts[i] == 0 && notesTypes[i] == 3)
+                    else if (intermediateNotesCounts[i] == 0 && notesTypes[i] == 3)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.directLong, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Curve_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -540,25 +540,25 @@ namespace FRONTIER.Game.NotesManagement
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
-                            if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
+                            if (j == laneNumbers[i].Count - 1) { intermediateNotes.Add(i, inners); }
                         }
 
                         if (j == 0) { prop.status = Reference.LongNoteStatus.Start; }
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
-                        else { prop.status = Reference.LongNoteStatus.Inner; }
+                        else { prop.status = Reference.LongNoteStatus.Intermediate; }
 
-                        prop.Type = Reference.NoteType.LongCurve;
+                        prop.Type = Reference.NoteType.CurvedLong;
                         prop.index = i;
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            SetNotesLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.NoInnerCurve, i);
+                            SetLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectCurved, i);
                         }
                     }
                     // 直線型で中間点のあるノーツ
-                    else if (innerNotesCounts[i] != 0 && notesTypes[i] == 2)
+                    else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 2)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.intermediateLong, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Linear_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -566,22 +566,22 @@ namespace FRONTIER.Game.NotesManagement
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
-                            if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
+                            if (j == laneNumbers[i].Count - 1) { intermediateNotes.Add(i, inners); }
                         }
 
                         if (j == 0) { prop.status = Reference.LongNoteStatus.Start; }
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
-                        else { prop.status = Reference.LongNoteStatus.Inner; }
+                        else { prop.status = Reference.LongNoteStatus.Intermediate; }
 
-                        prop.Type = Reference.NoteType.LongLinear;
+                        prop.Type = Reference.NoteType.LinearLong;
                         prop.index = i;
 
-                        if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.AnyInnerLinear, i); }
+                        if (j > 0) { SetLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.IntermediateLinear, i); }
                     }
                     // 曲線型で中間点のあるノーツ
-                    else if (innerNotesCounts[i] != 0 && notesTypes[i] == 3)
+                    else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 3)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(notesGenerator.notePrefabs.intermediateLong, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Curve_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -589,16 +589,16 @@ namespace FRONTIER.Game.NotesManagement
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
                         {
                             inners.Add(note);
-                            if (j == laneNumbers[i].Count - 1) { innerNotes.Add(i, inners); }
+                            if (j == laneNumbers[i].Count - 1) { intermediateNotes.Add(i, inners); }
                         }
 
                         if (j == 0) { prop.status = Reference.LongNoteStatus.Start; }
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
-                        else { prop.status = Reference.LongNoteStatus.Inner; }
+                        else { prop.status = Reference.LongNoteStatus.Intermediate; }
 
-                        prop.Type = Reference.NoteType.LongCurve;
+                        prop.Type = Reference.NoteType.CurvedLong;
                         prop.index = i;
-                        if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.AnyInnerCurve, i); }
+                        if (j > 0) { SetLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.IntermediateCurved, i); }
                     }
                 }
             }
@@ -610,14 +610,14 @@ namespace FRONTIER.Game.NotesManagement
         /// <remarks>
         /// https://iconcreator.hatenablog.com/entry/2021/09/13/190000
         /// </remarks>
-        /// <param name = "startPosition">ロングノーツの始点。</param>
-        /// <param name = "controlPosition">ロングノーツを曲げる制御点。</param>
-        /// <param name = "endPosition">ロングノーツの終点。</param>
+        /// <param name = "start">ロングノーツの始点。</param>
+        /// <param name = "anchor">ロングノーツを曲げる制御点。</param>
+        /// <param name = "end">ロングノーツの終点。</param>
         /// <param name = "splitSize">曲線生成時の分割数。値が多い程滑らかな曲線になります。</param>
         /// <returns>
         /// 曲線をつくる点の座標。
         /// </returns>
-        private Vector3[] CalculateBezierCurves(Vector3 startPositon, Vector3 controlPositon, Vector3 endPositon, int splitSize = 10)
+        private Vector3[] CalculateBezierCurves(Vector3 start, Vector3 anchor, Vector3 end, int splitSize = 10)
         {
             // ベジェ曲線の点を分割するときに値を変化させる比
             float t = 0;
@@ -632,8 +632,8 @@ namespace FRONTIER.Game.NotesManagement
                 t = (float)i / splitSize;
 
                 // 分割した点a, bを線形補間によって繰り返し計算する
-                Vector3 a = Vector3.Lerp(startPositon, controlPositon, t);
-                Vector3 b = Vector3.Lerp(controlPositon, endPositon, t);
+                Vector3 a = Vector3.Lerp(start, anchor, t);
+                Vector3 b = Vector3.Lerp(anchor, end, t);
 
                 // 2つの分割点をもとにさらに分割する
                 curvePoints[i] = Vector3.Lerp(a, b, t);
@@ -678,7 +678,7 @@ namespace FRONTIER.Game.NotesManagement
         /// </summary>
         /// <param name = "longNoteObject">結合させたメッシュを適用したオブジェクト。</param>
         /// <param name = "split">分割数。</param>
-        private void ReprintTexure(GameObject longNoteObject, float split, Reference.LongNoteType type)
+        private void ReprintTexture(GameObject longNoteObject, float split, Reference.LongNoteType type)
         {
             // 結合後のメッシュの頂点数を取得する
             int verticesLength = longNoteObject.GetComponent<MeshFilter>().mesh.vertices.Length;
@@ -741,11 +741,11 @@ namespace FRONTIER.Game.NotesManagement
             // テクスチャを再貼付
             switch (type)
             {
-                case Reference.LongNoteType.NoInnerCurve:
-                    longNoteObject.GetComponent<MeshRenderer>().material = meshMaterials.noInner;
+                case Reference.LongNoteType.DirectCurved:
+                    longNoteObject.GetComponent<MeshRenderer>().material = meshMaterials.direct;
                     break;
-                case Reference.LongNoteType.AnyInnerCurve:
-                    longNoteObject.GetComponent<MeshRenderer>().material = meshMaterials.anyInner;
+                case Reference.LongNoteType.IntermediateCurved:
+                    longNoteObject.GetComponent<MeshRenderer>().material = meshMaterials.intermediate;
                     break;
             }
         }
@@ -754,7 +754,7 @@ namespace FRONTIER.Game.NotesManagement
         /// 中間点有りのロングノーツの生成時、中間点どうしの間で各々生成されてしまうロングノーツの断片を、
         /// 譜面のロングノーツの順番ごとに1つの親オブジェクトに関連付けて、ロングノーツ１まとまりとする。
         /// </summary>
-        private void SetLongNoteTransform()
+        private void SetTransform()
         {
             if (longNoteMeshList.Count == 0) { return; }
 
@@ -784,7 +784,7 @@ namespace FRONTIER.Game.NotesManagement
             for (int j = 0; j < duplicateIndexKeys.Length; j++)
             {
                 // 親にはコンポーネントを新しく設定する
-                parents[j].AddComponent<LongNote>().SetInfo(Reference.NoteType.LongLinear, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
+                parents[j].AddComponent<LongNote>().SetInfo(Reference.NoteType.LinearLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
                 parents[j].AddComponent<MeshCollider>();
                 for (int k = 0; k < meshIndexList.Count; k++)
                 {
@@ -795,7 +795,7 @@ namespace FRONTIER.Game.NotesManagement
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
                         if (longNoteMeshList[k].transform.childCount > 0)
                         {
-                            parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.LongCurve, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
+                            parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
                         }
                         Destroy(longNoteMeshList[k].GetComponent<Note>());
                         Destroy(longNoteMeshList[k].GetComponent<LongNote>());
@@ -854,7 +854,7 @@ namespace FRONTIER.Game.NotesManagement
 
         public override void NotesSort()
         {
-            SetLongNoteTransform();
+            SetTransform();
 
             // インデックスを降順にソートし直したり、リストの中身を求め直す
             longNoteMeshList.Reverse();
@@ -864,7 +864,7 @@ namespace FRONTIER.Game.NotesManagement
                 item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteMesh"));
                 longNotesList.Add(item.GetComponent<LongNote>());
             }
-            notesObjects = innerNotes.Values.ToList();
+            notesObjects = intermediateNotes.Values.ToList();
             notesObjects.Reverse();
             notesObjects.ForEach(notes => notes.Reverse());
         }
@@ -875,7 +875,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <param name="vertices">頂点</param>
         /// <param name="triangles">頂点のインデックス</param>
         /// <returns>パラメータを指定した新しいメッシュ</returns>
-        private Mesh SetMeshParameters(Vector3[] vertices, int[] triangles)
+        private Mesh CreateMesh(Vector3[] vertices, int[] triangles)
         {
             Mesh mesh = new()
             {
@@ -893,7 +893,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <param name="triangles">頂点のインデックス</param>
         /// <param name="uvs">UV座標</param>
         /// <returns>パラメータを指定した新しいメッシュ</returns>
-        private Mesh SetMeshParameters(Vector3[] vertices, int[] triangles, Vector2[] uvs)
+        private Mesh CreateMesh(Vector3[] vertices, int[] triangles, Vector2[] uvs)
         {
             Mesh mesh = new()
             {
