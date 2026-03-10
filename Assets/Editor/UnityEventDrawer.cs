@@ -12,8 +12,9 @@ using Object = UnityEngine.Object;
 
 namespace Banzan.Lib.Editor.Utility
 {
-    // TODO: 使われてないんじゃ？？それによっちゃ消す
     /// <summary>
+    /// UnityEventの引数にEnumを追加できるようにするPropertyDrawer （エディタ拡張） 
+    /// EnumActionAttributeを付与したメソッドをUnityEventの引数に指定すると、Enumのドロップダウンが表示されるようになる 
     /// From https://forum.unity.com/threads/ability-to-add-enum-argument-to-button-functions.270817
     /// </summary>
     [CustomPropertyDrawer(typeof(UnityEvent), true)]
@@ -320,10 +321,10 @@ namespace Banzan.Lib.Editor.Utility
 
             #region Original Code
 
-            var type = Type.GetType(prop.FindPropertyRelative("m_TypeName").stringValue, false);
-            if (type == null)
-                return new UnityEvent();
-            return Activator.CreateInstance(type) as UnityEventBase;
+            // var type = Type.GetType(prop.FindPropertyRelative("m_TypeName").stringValue, false);
+            // if (type == null)
+            //     return new UnityEvent();
+            // return Activator.CreateInstance(type) as UnityEventBase;
 
             #endregion
         }
