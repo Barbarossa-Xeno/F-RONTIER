@@ -6,6 +6,7 @@ namespace FRONTIER.Audio
     /// <summary>
     /// オーディオの再生を管理するための抽象クラス。
     /// </summary>
+    [RequireComponent(typeof(AudioSource))]
     public abstract class AudioManager : GameUtilityBase
     {
         #region プロパティ
@@ -30,17 +31,17 @@ namespace FRONTIER.Audio
         /// <summary>
         /// オーディオを再生する。
         /// </summary>
-        public virtual void Play() => Source?.Play();
+        public virtual void Play() => Source.Play();
 
         /// <summary>
         /// オーディオを一時停止する。
         /// </summary>
-        public virtual void Pause() => Source?.Pause();
+        public virtual void Pause() => Source.Pause();
 
         /// <summary>
         /// オーディオを停止する。
         /// </summary>
-        public virtual void Stop() => Source?.Stop();
+        public virtual void Stop() => Source.Stop();
 
         /// <summary>
         /// オーディオソースの音量を変更する。
