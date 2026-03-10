@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using FRONTIER.Audio;
 using FRONTIER.Menu;
@@ -78,7 +77,7 @@ namespace FRONTIER
         /// <summary>
         /// プレイする楽曲の情報を記録する。
         /// </summary>
-        public class PlayInfo : SongInfoManager
+        public class PlayInfo : SelectedSongInfo
         {
             /// <summary>
             /// ノーツの速度。

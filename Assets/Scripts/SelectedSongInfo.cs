@@ -1,11 +1,12 @@
 using UnityEngine;
+using Reference = FRONTIER.Utility.Reference;
 
-namespace FRONTIER.Utility
+namespace FRONTIER
 {
     /// <summary>
     /// 選択された曲の情報を保持するためのクラス。
     /// </summary>
-    public class SongInfoManager
+    public class SelectedSongInfo
     {
         /// <summary>
         /// 曲のID。
@@ -46,7 +47,7 @@ namespace FRONTIER.Utility
         /// 難易度（<see cref="difficulty"/>）からその難易度の文字列とイメージカラーへ変換する。
         /// </summary>
         /// <param name="_difficulty">難易度</param>
-        /// <returns><c>Item1</c> => <c>string</c><br/><c>Item2</c> => <c>Color32</c></returns>
+        /// <returns><c>Item1</c>: <c>string</c>, <c>Item2</c>: <c>Color32</c> 型になるタプル</returns>
         public (string, Color32) DifficultyTo(Reference.DifficultyRank _difficulty)
         {
             (string, Color32) instance = new();

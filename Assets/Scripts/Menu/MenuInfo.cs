@@ -7,7 +7,7 @@ namespace FRONTIER.Menu
     /// メニューで選択されている様々な情報を保存する。
     /// </summary>
     [System.Serializable]
-    public class MenuInfo : SongInfoManager
+    public class MenuInfo : SelectedSongInfo
     {
         /// <summary>
         /// 外部からアクセスするための静的インスタンス。
