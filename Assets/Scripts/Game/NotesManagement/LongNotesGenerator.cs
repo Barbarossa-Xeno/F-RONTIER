@@ -203,8 +203,11 @@ namespace FRONTIER.Game.NotesManagement
         #region メソッド
 
         /// <summary>
-        /// 指定したロングノーツの帯にメッシュや適切なUV、マテリアルを設定します。指定がない場合 <see cref="ribbon" /> に設定します。
+        /// 指定したロングノーツの帯に対して、適切なメッシュやUV、マテリアルを計算して設定します。指定がない場合 <see cref="ribbon" /> に設定します。
         /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
         /// <param name = "start">ロングノーツの始点座標。</param>
         /// <param name = "end">ロングノーツの終点座標。</param>
         /// <param name = "type">ロングノーツの種類。<br/>中間点無しなら0、中間点有りなら1。</param>
@@ -212,7 +215,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <param name = "anchors">曲線を作る点の座標。</param>
         /// <param name = "split">曲線型ロングノーツの分割数。</param>
         /// <param name = "isLast">分割したロングノーツの生成時、その対象が最後の分割ノーツだったときtrueを指定する。</param>
-        private void SetMesh(Vector3 start, Vector3 end, Reference.LongNoteType type, GameObject target = null, Vector3[] anchors = null, int split = 10, bool isLast = false)
+        private void SetRibbonMesh(Vector3 start, Vector3 end, Reference.LongNoteType type, GameObject target = null, Vector3[] anchors = null, int split = 10, bool isLast = false)
         {
             // ターゲットがない場合デフォルトで ribbon を使用
             if (target == null)
@@ -426,81 +429,65 @@ namespace FRONTIER.Game.NotesManagement
         }
 
         /// <summary>
-        /// ロングノーツ線となるオブジェクトの位置や、最後に <see cref="SetMesh"/> を呼び出してメッシュを設定する。
+        /// 1まとまりごとにロングノーツの帯を作ります。
         /// </summary>
+        /// <remarks>
+        /// ロングノーツの帯となるオブジェクトの位置や、最後に <see cref="SetRibbonMesh"/> を呼び出してメッシュを設定する。
+        /// </remarks>
         ///<param name = "startLane">ロングノーツの始点が置かれるレーン番号。</param>
         ///<param name = "startZ">ロングノーツの始点のZ座標。</param>
         ///<param name = "endLane">ロングノーツの終点が置かれるレーン番号。</param>
         ///<param name = "endZ">ロングノーツの終点のZ座標。</param>
         ///<param name = "type">ロングノーツの種類。<br/>中間点無しなら0、中間点有りなら1。</param>
         ///<param name = "index">譜面上で何番目のロングノーツか。</param>
-        private void SetLine(int startLane, float startZ, int endLane, float endZ, Reference.LongNoteType type, int index)
+        private void CreateRibbon(int startLane, float startZ, int endLane, float endZ, Reference.LongNoteType type, int index)
         {
-            // ロングノーツの種類が大きく分けて直線型あるいは曲線型か、中間点ありかなしかを分類するローカル関数
-            static (Reference.NoteType, bool) SwitchLongNoteInnerType(Reference.LongNoteType type)
+            // ロングノーツの種類を大きく分けて、直線型か曲線型かにカテゴライズ
+            Reference.NoteType categorizedType = type switch
             {
-                Reference.NoteType baseNoteType = default;
-                switch (type)
-                {
-                    case Reference.LongNoteType.DirectLinear:
-                    case Reference.LongNoteType.IntermediateLinear:
-                        baseNoteType = Reference.NoteType.LinearLong;
-                        break;
-                    case Reference.LongNoteType.DirectCurved:
-                    case Reference.LongNoteType.IntermediateCurved:
-                        baseNoteType = Reference.NoteType.CurvedLong;
-                        break;
-                }
+                Reference.LongNoteType.DirectLinear or Reference.LongNoteType.IntermediateLinear
+                => Reference.NoteType.LinearLong,
+                Reference.LongNoteType.DirectCurved or Reference.LongNoteType.IntermediateCurved
+                => Reference.NoteType.CurvedLong,
+                _ => Reference.NoteType.LinearLong
+            };
 
-                bool flag = false;
-                switch (type)
-                {
-                    case Reference.LongNoteType.IntermediateLinear:
-                    case Reference.LongNoteType.IntermediateCurved:
-                        flag = true;
-                        break;
-                    case Reference.LongNoteType.DirectLinear:
-                    case Reference.LongNoteType.DirectCurved:
-                        flag = false;
-                        break;
-                }
-
-                return (baseNoteType, flag);
-            }
-
-            (Reference.NoteType, bool) categorizedType = SwitchLongNoteInnerType(type);
+            // 中間点の有無で true / false
+            // is パターンマッチングで簡素化＋明確化
+            bool hasIntermediate = type is Reference.LongNoteType.IntermediateLinear or Reference.LongNoteType.IntermediateCurved;
 
             // ロングノーツ線にコンポーネントを付与
-            ribbon = new GameObject($"LongNoteMesh-{index}");
+            ribbon = new GameObject($"LongNoteRibbon-{index}");
             ribbon.AddComponent<MeshRenderer>();
             ribbon.AddComponent<MeshFilter>();
             ribbon.AddComponent<MeshCollider>();
-            ribbon.AddComponent<LongNote>().SetInfo(categorizedType.Item1, index, Reference.LongNoteStatus.Mesh, categorizedType.Item2);
-            ribbon.tag = "LongNoteMesh";
-            ribbon.layer = LayerMask.NameToLayer("LongNoteMesh");
+            ribbon.AddComponent<LongNote>().SetInfo(categorizedType, index, Reference.LongNoteStatus.Ribbon, hasIntermediate);
+            ribbon.tag = "LongNoteRibbon";
+            ribbon.layer = LayerMask.NameToLayer("LongNoteRibbon");
 
             ribbonList.Add(ribbon);
 
-            // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点、曲線型では制御点も計算
+            // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点座標を計算
             Vector3 start = new(LANE_GAP * RIBBON_WIDTH + startLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
             Vector3 end = new(LANE_GAP * RIBBON_WIDTH + endLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
+            
+            // 曲線型の場合、制御点も計算
             Vector3 anchor;
 
             // 曲線型の場合
-            if (type == Reference.LongNoteType.DirectCurved || type == Reference.LongNoteType.IntermediateCurved)
+            if (categorizedType == Reference.NoteType.CurvedLong)
             {
                 // 制御点の計算
                 anchor = new(LANE_GAP * RIBBON_WIDTH + endLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
-                //int variableSplit = SPLIT_SIZE * 3;
 
-                // ベジェ曲線から曲線上の点を計算する。
-                Vector3[] curvePoints = CalculateBezierCurves(start, anchor, end, splitSize: SPLIT_SIZE);
+                // ベジェ曲線から計算した曲線上の点
+                Vector3[] curves = CalculateBezierCurves(start, anchor, end, splitSize: SPLIT_SIZE);
                 
                 // 曲線を構成するオブジェクトの断片をつくる
-                GameObject[] fragments = new GameObject[curvePoints.Length - 1];
+                GameObject[] fragments = new GameObject[curves.Length - 1];
                 for (int i = 0; i < fragments.Length; i++)
                 {
-                    fragments[i] = new GameObject("SplittedLongNoteMesh");
+                    fragments[i] = new GameObject($"SplittedRibbon-{i} (LongNoteRibbon-{index})");
                     fragments[i].AddComponent<MeshFilter>();
                     fragments[i].AddComponent<MeshRenderer>();
                     fragments[i].AddComponent<MeshCollider>();
@@ -510,15 +497,17 @@ namespace FRONTIER.Game.NotesManagement
                 }
 
                 // 断片を生成する
-                for (int i = 0; i < curvePoints.Length - 1; i++)
+                for (int i = 0; i < fragments.Length; i++)
                 {
-                    // ロングノーツ１まとまりにおいて、最後の断片
-                    if (i == curvePoints.Length - 2) { SetMesh(curvePoints[i], curvePoints[i + 1], type, fragments[i], split: SPLIT_SIZE, anchors: curvePoints, isLast: true); }
-                    else { SetMesh(curvePoints[i], curvePoints[i + 1], type, fragments[i], split: SPLIT_SIZE, anchors: curvePoints); }
+                    // ロングノーツ１まとまりにおいて、最後の断片のとき isLast = true にすればよいので
+                    SetRibbonMesh(curves[i], curves[i + 1], type, target: fragments[i], split: SPLIT_SIZE, anchors: curves, isLast: i == fragments.Length - 1);
                 }
             }
             // 直線型の場合（曲線の座標も渡さない）
-            else { SetMesh(start, end, type); }
+            else
+            {
+                SetRibbonMesh(start, end, type);
+            }
         }
 
         /// <summary>
@@ -578,7 +567,7 @@ namespace FRONTIER.Game.NotesManagement
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            SetLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectLinear, i);
+                            CreateRibbon(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectLinear, i);
                         }
                     }
                     // 曲線型で中間点のないノーツ
@@ -604,7 +593,7 @@ namespace FRONTIER.Game.NotesManagement
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            SetLine(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectCurved, i);
+                            CreateRibbon(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectCurved, i);
                         }
                     }
                     // 直線型で中間点のあるノーツ
@@ -628,7 +617,7 @@ namespace FRONTIER.Game.NotesManagement
                         prop.Type = Reference.NoteType.LinearLong;
                         prop.index = i;
 
-                        if (j > 0) { SetLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.IntermediateLinear, i); }
+                        if (j > 0) { CreateRibbon(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.IntermediateLinear, i); }
                     }
                     // 曲線型で中間点のあるノーツ
                     else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 3)
@@ -650,7 +639,7 @@ namespace FRONTIER.Game.NotesManagement
 
                         prop.Type = Reference.NoteType.CurvedLong;
                         prop.index = i;
-                        if (j > 0) { SetLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.IntermediateCurved, i); }
+                        if (j > 0) { CreateRibbon(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.IntermediateCurved, i); }
                     }
                 }
             }
@@ -836,7 +825,7 @@ namespace FRONTIER.Game.NotesManagement
             for (int j = 0; j < duplicateIndexKeys.Length; j++)
             {
                 // 親にはコンポーネントを新しく設定する
-                parents[j].AddComponent<LongNote>().SetInfo(Reference.NoteType.LinearLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
+                parents[j].AddComponent<LongNote>().SetInfo(Reference.NoteType.LinearLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Ribbon, true);
                 parents[j].AddComponent<MeshCollider>();
                 for (int k = 0; k < meshIndexList.Count; k++)
                 {
@@ -847,7 +836,7 @@ namespace FRONTIER.Game.NotesManagement
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
                         if (ribbonList[k].transform.childCount > 0)
                         {
-                            parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
+                            parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Ribbon, true);
                         }
                         Destroy(ribbonList[k].GetComponent<Note>());
                         Destroy(ribbonList[k].GetComponent<LongNote>());
@@ -896,7 +885,7 @@ namespace FRONTIER.Game.NotesManagement
             longNoteMeshList.Reverse();
             foreach (GameObject item in longNoteMeshList)
             {
-                item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteMesh"));
+                item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
                 longNotesList.Add(item.GetComponent<LongNotes>());
             }
             notesObjects = innerNotes.Values.ToList();
@@ -913,7 +902,7 @@ namespace FRONTIER.Game.NotesManagement
             foreach (var item in ribbonList)
             {
                 if (item == null) continue;
-                item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteMesh"));
+                item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
                 longNotesList.Add(item.GetComponent<LongNote>());
             }
             notesObjects = intermediateNotes.Values.ToList();

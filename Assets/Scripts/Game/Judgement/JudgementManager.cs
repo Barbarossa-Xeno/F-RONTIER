@@ -140,7 +140,7 @@ namespace FRONTIER.Game
                             {
                                 // ダウンキャスト
                                 LongNote _info = info as LongNote;
-                                if (!(_info.status == LongNoteStatus.Mesh || _info.status == LongNoteStatus.None))
+                                if (!(_info.status == LongNoteStatus.Ribbon || _info.status == LongNoteStatus.None))
                                 {
                                     _info.ReachedLineEvent += () => DeleteNote(_info.noteIndex, isAuto: true);
                                 }

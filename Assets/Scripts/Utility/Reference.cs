@@ -92,7 +92,7 @@ namespace FRONTIER.Utility
         /// </summary>
         public enum LongNoteStatus
         {
-            Start, Intermediate, End, Mesh, None
+            Start, Intermediate, End, Ribbon, None
         }
         
         /// <summary>
