@@ -12,10 +12,13 @@ namespace FRONTIER.Game.NotesManagement
         #region フィールド
 
         /// <summary>
-        /// このノーツの種類。
+        /// このノーツの種類（インスペクタ確認用）。
         /// </summary>
         [SerializeField] private Reference.NoteType type;
 
+        /// <summary>
+        /// このノーツの種類。
+        /// </summary>
         public Reference.NoteType Type
         {
             get => type;
@@ -28,11 +31,8 @@ namespace FRONTIER.Game.NotesManagement
         public int index;
 
         /// <summary>
-        /// このノーツが含まれているリストでのインデックス。
+        /// このノーツが含まれているリスト (<see cref="NotesManager.notesObjects"/> ) でのインデックス。生成順
         /// </summary>
-        /// <remarks>
-        /// リスト => <see cref="NotesManager.notesObjects"/> 
-        /// </remarks>
         public int noteIndex;
 
         /// <summary>
@@ -57,16 +57,15 @@ namespace FRONTIER.Game.NotesManagement
             // ゲームプレイ中に実行される
             if (Manager.gamePlayState == GameManager.GamePlayState.Playing)
             {
+                // Z座標を移動させる
                 transform.position -= new Vector3(0, 0, Manager.info.NoteSpeed) * Time.deltaTime;
 
-                // 通常プレイ時、画面外に行くとミス判定
-                if (!Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z - 3.5f && !isReachedLine)
-                {
-                    isReachedLine = true;
-                    ReachedLineEvent?.Invoke();
-                }
-                // オートプレイ時、判定線通過で判定
-                else if (Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z && !isReachedLine)
+                // 判定線を超過したかチェック
+                if (!isReachedLine &&
+                    // 通常プレイ: 画面外
+                    ((!Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z - 3.5f) ||
+                    // オートプレイ: 判定線通過
+                     (Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z)))
                 {
                     isReachedLine = true;
                     ReachedLineEvent?.Invoke();
