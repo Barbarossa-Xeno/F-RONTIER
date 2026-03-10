@@ -8819,9 +8819,9 @@ MonoBehaviour:
   notesTypes: 
   notesGenerator: {fileID: 963748245}
   intermediateNotesCounts: 
-  longNoteMeshList: []
+  ribbonList: []
   longNotesList: []
-  meshMaterials:
+  ribbonMaterials:
     direct: {fileID: 2100000, guid: b7521a052c6412f4fb85fe7fd2743cc6, type: 2}
     intermediate: {fileID: 2100000, guid: a2e609b9169c33c4e8a8bdeb3000fd7f, type: 2}
     fadeMaterial: {fileID: 2100000, guid: 87cdb870616cc654d9f1a78f342c381d, type: 2}

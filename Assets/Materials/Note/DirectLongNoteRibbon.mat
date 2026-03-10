@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DirectLongNoteMesh
+  m_Name: DirectLongNoteRibbon
   m_Shader: {fileID: -6465566751694194690, guid: b1c72fab03adcf94ea83aab53dc2ade1, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []

@@ -155,7 +155,7 @@ namespace FRONTIER.Game
                 );
 
                 // ロングノーツの判定のイベントを登録する
-                longNotesGenerator.longNoteMeshList.Select(line => line.GetComponent<LongNote>())
+                longNotesGenerator.ribbonList.Select(line => line.GetComponent<LongNote>())
                                                .ToList().ForEach
                                                (
                                                     info =>
@@ -492,8 +492,8 @@ namespace FRONTIER.Game
                 intermediateNotesList[targetLongNoteListIndex].RemoveAt(0);
                 intermediateNotesList.RemoveAt(targetLongNoteListIndex);
                 // ロングノーツラインのリストからも消す
-                longNotesGenerator.longNoteMeshList[targetLongNoteListIndex].SetActive(false);
-                longNotesGenerator.longNoteMeshList.RemoveAt(targetLongNoteListIndex);
+                longNotesGenerator.ribbonList[targetLongNoteListIndex].SetActive(false);
+                longNotesGenerator.ribbonList.RemoveAt(targetLongNoteListIndex);
                 longNotesGenerator.longNotesList.RemoveAt(targetLongNoteListIndex);
             }
 

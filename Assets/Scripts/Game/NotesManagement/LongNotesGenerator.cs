@@ -7,6 +7,8 @@ using FRONTIER.Utility;
 
 namespace FRONTIER.Game.NotesManagement
 {
+    // このクラスでの ribbon はロングノーツ間に生成する「帯」状のメッシュのことを指します。
+
     /// <summary>
     /// ロングノーツ生成を行うクラス。
     /// </summary>
@@ -26,7 +28,7 @@ namespace FRONTIER.Game.NotesManagement
         public List<int> intermediateNotesCounts = new();
 
         /// <summary>
-        /// ロングノーツの中間点の辞書。
+        /// 生成したロングノーツの中間点を管理しておく辞書。
         /// </summary>
         /// <remarks>
         /// Keyにロングノーツのインデックス、Valueにそのインデックスのロングノーツが含む中間ノーツのリストを代入して管理する。
@@ -34,12 +36,13 @@ namespace FRONTIER.Game.NotesManagement
         public Dictionary<int, List<GameObject>> intermediateNotes = new();
 
         /// <summary>
-        /// ロングノーツ線のリスト。
+        /// 生成したロングノーツの帯を格納したリスト。
         /// </summary>
-        public List<GameObject> longNoteMeshList = new();
+        public List<GameObject> ribbonList = new();
 
+        // TODO: 親のNoteともどもジェネリックにできるかも
         /// <summary>
-        /// ロングノーツ線に紐づいた<see cref = "LongNote"/>コンポーネントのリスト。
+        /// 生成したロングノーツ帯に紐づけた<see cref = "LongNote"/>コンポーネントのリスト。
         /// </summary>
         /// <remarks>
         /// ロングノーツの長押し判定をEventSystemでとってくれる。
@@ -47,14 +50,20 @@ namespace FRONTIER.Game.NotesManagement
         public List<LongNote> longNotesList = new();
 
         /// <summary>
-        /// ロングノーツ線に適用するマテリアル。
+        /// ロングノーツの帯に適用するマテリアル。
         /// </summary>
-        [SerializeField] private MeshMaterials meshMaterials = new();
+        [SerializeField] private RibbonMaterials ribbonMaterials = new();
 
         /// <summary>
-        /// 生成するロングノーツ線のゲームオブジェクト。
+        /// 生成するロングノーツの帯のゲームオブジェクト。
+        /// 曲線型で、多数の分割メッシュから作られているような帯に対しては
+        /// 常にこのオブジェクトが親になるように設定する。
         /// </summary>
-        private GameObject longNote;
+        /// <remarks>
+        /// 子に多数の分割メッシュがある場合、1まとまりで最後の分割メッシュが入力されたときに <c><see cref="CombineFragmentMesh"/></c> や
+        //  <c><see cref="ReprintTexture"/><c/> によってメッシュとUVを適用しなおす。
+        /// </remarks>
+        private GameObject ribbon;
 
         #endregion
 
@@ -63,12 +72,12 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// ロングノーツの太さ。
         /// </summary>
-        private const float LONG_NOTE_WIDTH = 2.0f;
+        private const float RIBBON_WIDTH = 2.0f;
 
         /// <summary>
         /// ロングノーツの高さ。
         /// </summary>
-        private const float LONG_NOTE_HEIGHT = 0.001f;
+        private const float RIBBON_HEIGHT = 0.001f;
 
         /// <summary>
         /// ロングノーツを生成するときに頂点の生成位置をレーンに合わせるための差分。
@@ -81,7 +90,7 @@ namespace FRONTIER.Game.NotesManagement
         private const float NOTE_DEPTH = 0.6f;
 
         /// <summary>
-        /// 曲線ロングノーツを生成するときの、基底の分割数。
+        /// 曲線ロングノーツを生成するときのデフォルトの分割数。
         /// </summary>
         private const int SPLIT_SIZE = 10;
 
@@ -95,18 +104,18 @@ namespace FRONTIER.Game.NotesManagement
         #region 構造体・列挙型
 
         /// <summary>
-        /// ロングノーツ線のメッシュに適用する色々なマテリアル。
+        /// ロングノーツの帯のメッシュに適用する色々なマテリアルを保持する。
         /// </summary>
         [System.Serializable]
-        private struct MeshMaterials
+        private struct RibbonMaterials
         {
             /// <summary>
-            /// 中間点無し。
+            /// 中間点無しのもの。
             /// </summary>
             public Material direct;
 
             /// <summary>
-            /// 中間点有り。
+            /// 中間点有りのもの。
             /// </summary>
             public Material intermediate;
 
@@ -116,13 +125,13 @@ namespace FRONTIER.Game.NotesManagement
             public Material fadeMaterial;
 
             /// <summary>
-            /// 中間点有りノーツに描画する中間線のマテリアル。
+            /// 中間点有りのものの、帯中央に描画する中間線のマテリアル。
             /// </summary>
             public Material line;
         }
 
         /// <summary>
-        /// ロングノーツ線のメッシュ生成に用いる要素。
+        /// ロングノーツの帯のメッシュ生成に用いる要素。
         /// </summary>
         private struct MeshFilterParameters
         {
@@ -194,17 +203,23 @@ namespace FRONTIER.Game.NotesManagement
         #region メソッド
 
         /// <summary>
-        /// ロングノーツ線のメッシュを設定します。
+        /// 指定したロングノーツの帯にメッシュや適切なUV、マテリアルを設定します。指定がない場合 <see cref="ribbon" /> に設定します。
         /// </summary>
         /// <param name = "start">ロングノーツの始点座標。</param>
         /// <param name = "end">ロングノーツの終点座標。</param>
-        /// <param name = "noteLine">ロングノーツ線のゲームオブジェクト。</param>
         /// <param name = "type">ロングノーツの種類。<br/>中間点無しなら0、中間点有りなら1。</param>
+        /// <param name = "target">指定したロングノーツの帯のゲームオブジェクト。</param>
         /// <param name = "anchors">曲線を作る点の座標。</param>
         /// <param name = "split">曲線型ロングノーツの分割数。</param>
         /// <param name = "isLast">分割したロングノーツの生成時、その対象が最後の分割ノーツだったときtrueを指定する。</param>
-        private void SetMesh(Vector3 start, Vector3 end, GameObject noteLine, Reference.LongNoteType type, Vector3[] anchors = null, int split = 10, bool isLast = false)
+        private void SetMesh(Vector3 start, Vector3 end, Reference.LongNoteType type, GameObject target = null, Vector3[] anchors = null, int split = 10, bool isLast = false)
         {
+            // ターゲットがない場合デフォルトで ribbon を使用
+            if (target == null)
+            {
+                target = ribbon;
+            }
+
             // MeshFilter のパラメータ
             MeshFilterParameters filterParams = new()
             {
@@ -222,10 +237,10 @@ namespace FRONTIER.Game.NotesManagement
 
             // メッシュの頂点とUV座標、コライダーの座標を計算
             // 面1（ワールド原点からZ座標を正の方向に見たときの、上底 => Y方向）
-            filterParams.vertices[0] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     // 始点の左端 = 左下
-            filterParams.vertices[1] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 始点の右端 = 右下
-            filterParams.vertices[2] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       // 終点の左端 = 左上
-            filterParams.vertices[3] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);        // 終点の右端 = 右上
+            filterParams.vertices[0] = start + new Vector3(-RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);     // 始点の左端 = 左下
+            filterParams.vertices[1] = start + new Vector3(RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);      // 始点の右端 = 右下
+            filterParams.vertices[2] = end + new Vector3(-RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);       // 終点の左端 = 左上
+            filterParams.vertices[3] = end + new Vector3(RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);        // 終点の右端 = 右上
             filterParams.triangles[0] = 0;
             filterParams.triangles[1] = 2;
             filterParams.triangles[2] = 1;
@@ -242,10 +257,10 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[3] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[3];
 
             // 面2（前側面 => -Z方向）
-            filterParams.vertices[4] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 左下
-            filterParams.vertices[5] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     // 右下
-            filterParams.vertices[6] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     // 左上
-            filterParams.vertices[7] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 右上
+            filterParams.vertices[4] = start + new Vector3(-RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);    // 左下
+            filterParams.vertices[5] = start + new Vector3(RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);     // 右下
+            filterParams.vertices[6] = start + new Vector3(-RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);     // 左上
+            filterParams.vertices[7] = start + new Vector3(RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);      // 右上
             filterParams.triangles[6] = 4;
             filterParams.triangles[7] = 6;
             filterParams.triangles[8] = 5;
@@ -262,10 +277,10 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[7] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[7];
 
             // 面3（左側面 => -X方向）
-            filterParams.vertices[8] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 左下
-            filterParams.vertices[9] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 右下
-            filterParams.vertices[10] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 左上
-            filterParams.vertices[11] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);    // 右上
+            filterParams.vertices[8] = end + new Vector3(-RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);      // 左下
+            filterParams.vertices[9] = start + new Vector3(-RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);    // 右下
+            filterParams.vertices[10] = end + new Vector3(-RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);      // 左上
+            filterParams.vertices[11] = start + new Vector3(-RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);    // 右上
             filterParams.triangles[12] = 8;
             filterParams.triangles[13] = 10;
             filterParams.triangles[14] = 9;
@@ -282,10 +297,10 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[11] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[11];
 
             // 面4（右側面 => X方向）
-            filterParams.vertices[12] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 左下
-            filterParams.vertices[13] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 右下
-            filterParams.vertices[14] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     // 左上
-            filterParams.vertices[15] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       // 右上
+            filterParams.vertices[12] = start + new Vector3(RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);    // 左下
+            filterParams.vertices[13] = end + new Vector3(RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);      // 右下
+            filterParams.vertices[14] = start + new Vector3(RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);     // 左上
+            filterParams.vertices[15] = end + new Vector3(RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);       // 右上
             filterParams.triangles[18] = 12;
             filterParams.triangles[19] = 14;
             filterParams.triangles[20] = 13;
@@ -302,10 +317,10 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[15] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[15];
 
             // 面5（後側面 => Z方向）
-            filterParams.vertices[16] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     // 左下
-            filterParams.vertices[17] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 右下
-            filterParams.vertices[18] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 左上
-            filterParams.vertices[19] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       // 右上
+            filterParams.vertices[16] = end + new Vector3(-RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);     // 左下
+            filterParams.vertices[17] = end + new Vector3(RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);      // 右下
+            filterParams.vertices[18] = end + new Vector3(-RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);      // 左上
+            filterParams.vertices[19] = end + new Vector3(RIBBON_WIDTH / 2, RIBBON_HEIGHT / 2, 0);       // 右上
             filterParams.triangles[24] = 16;
             filterParams.triangles[25] = 17;
             filterParams.triangles[26] = 18;
@@ -322,10 +337,10 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[19] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[19];
 
             // 面6（下底 => -Y方向）
-            filterParams.vertices[20] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);   // 始点の左端
-            filterParams.vertices[21] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 始点の右端
-            filterParams.vertices[22] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     // 終点の左端
-            filterParams.vertices[23] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 終点の右端
+            filterParams.vertices[20] = start + new Vector3(-RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);   // 始点の左端
+            filterParams.vertices[21] = start + new Vector3(RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);    // 始点の右端
+            filterParams.vertices[22] = end + new Vector3(-RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);     // 終点の左端
+            filterParams.vertices[23] = end + new Vector3(RIBBON_WIDTH / 2, -RIBBON_HEIGHT / 2, 0);      // 終点の右端
             filterParams.triangles[30] = 20;
             filterParams.triangles[31] = 21;
             filterParams.triangles[32] = 22;
@@ -344,65 +359,74 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.triangles = filterParams.triangles;
 
             // 各コンポーネントに計算したメッシュを渡す
-            noteLine.GetComponent<MeshFilter>().mesh = filterParams.CreateMesh();;
-            noteLine.GetComponent<MeshCollider>().sharedMesh = colliderParams.CreateMesh();
+            target.GetComponent<MeshFilter>().mesh = filterParams.CreateMesh();;
+            target.GetComponent<MeshCollider>().sharedMesh = colliderParams.CreateMesh();
 
             // コライダーを覆う場合は convex にチェックを入れる
-            // noteLine.GetComponent<MeshCollider>().convex = true;
+            // target.GetComponent<MeshCollider>().convex = true;
 
             // 種類によって処理を分ける。
             switch (type)
             {
                 case Reference.LongNoteType.DirectLinear:
-                    noteLine.GetComponent<MeshRenderer>().material = meshMaterials.direct;
+                {
+                    target.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
                     break;
-
+                }
+                // 中間点があればラインレンダラーで中心線を描画する
                 case Reference.LongNoteType.IntermediateLinear:
-                    // ラインレンダラーで中心線を描画する。
+                {
                     Vector3[] linePositions = new Vector3[2] { start, end };
-                    LineRenderer lineRenderer = longNote.AddComponent<LineRenderer>();
+
+                    // ribbon に中心線描画のための LineRenderer を追加
+                    LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
                     lineRenderer.SetPositions(linePositions);
                     lineRenderer.startWidth = lineRenderer.endWidth = 0.1f;
-                    lineRenderer.material = meshMaterials.line;
+                    lineRenderer.material = ribbonMaterials.line;
                     lineRenderer.useWorldSpace = false;
-                    noteLine.GetComponent<MeshRenderer>().material = meshMaterials.intermediate;
-                    noteLine.transform.SetParent(longNote.transform);
-                    break;
 
+                    target.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
+                    target.transform.SetParent(ribbon.transform);
+                    break;
+                }
                 case Reference.LongNoteType.DirectCurved:
+                {
                     // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
                     if (isLast)
                     {
                         // メッシュの結合とテクスチャの再貼付
-                        CombineFragmentMesh(longNote);
-                        ReprintTexture(longNote, split, Reference.LongNoteType.DirectCurved);
+                        CombineFragmentMesh(ribbon);
+                        ReprintTexture(ribbon, split, Reference.LongNoteType.DirectCurved);
                     }
                     break;
-
+                }
                 case Reference.LongNoteType.IntermediateCurved:
+                {
                     // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
                     // 曲線の座標を収めた配列がnullでないことを確認して
                     if (isLast && anchors != null)
                     {
                         // メッシュの結合とテクスチャの再貼付
-                        CombineFragmentMesh(longNote);
-                        ReprintTexture(longNote, split, Reference.LongNoteType.IntermediateCurved);
+                        CombineFragmentMesh(ribbon);
+                        ReprintTexture(ribbon, split, Reference.LongNoteType.IntermediateCurved);
 
-                        // ラインレンダラーをコンポーネントに追加して中心線を描画する
-                        LineRenderer _lineRenderer = longNote.AddComponent<LineRenderer>();
-                        _lineRenderer.positionCount = anchors.Length;
-                        _lineRenderer.widthMultiplier = 0.1f;
-                        _lineRenderer.SetPositions(anchors);
-                        _lineRenderer.useWorldSpace = false;
-                        _lineRenderer.material = meshMaterials.line;
-                        noteLine.transform.SetParent(longNote.transform);
+                        // ribbon に中心線描画のための LineRenderer を追加
+                        LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
+                        lineRenderer.positionCount = anchors.Length;
+                        lineRenderer.widthMultiplier = 0.1f;
+                        lineRenderer.SetPositions(anchors);
+                        lineRenderer.useWorldSpace = false;
+
+                        lineRenderer.material = ribbonMaterials.line;
+                        target.transform.SetParent(ribbon.transform);
                     }
                     break;
+                }
             }
         }
 
         /// <summary>
-        /// ロングノーツの線を生成するためのパラメーターを計算して設定する。
+        /// ロングノーツ線となるオブジェクトの位置や、最後に <see cref="SetMesh"/> を呼び出してメッシュを設定する。
         /// </summary>
         ///<param name = "startLane">ロングノーツの始点が置かれるレーン番号。</param>
         ///<param name = "startZ">ロングノーツの始点のZ座標。</param>
@@ -447,26 +471,26 @@ namespace FRONTIER.Game.NotesManagement
             (Reference.NoteType, bool) categorizedType = SwitchLongNoteInnerType(type);
 
             // ロングノーツ線にコンポーネントを付与
-            longNote = new GameObject($"LongNoteMesh-{index}");
-            longNote.AddComponent<MeshRenderer>();
-            longNote.AddComponent<MeshFilter>();
-            longNote.AddComponent<MeshCollider>();
-            longNote.AddComponent<LongNote>().SetInfo(categorizedType.Item1, index, Reference.LongNoteStatus.Mesh, categorizedType.Item2);
-            longNote.tag = "LongNoteMesh";
-            longNote.layer = LayerMask.NameToLayer("LongNoteMesh");
+            ribbon = new GameObject($"LongNoteMesh-{index}");
+            ribbon.AddComponent<MeshRenderer>();
+            ribbon.AddComponent<MeshFilter>();
+            ribbon.AddComponent<MeshCollider>();
+            ribbon.AddComponent<LongNote>().SetInfo(categorizedType.Item1, index, Reference.LongNoteStatus.Mesh, categorizedType.Item2);
+            ribbon.tag = "LongNoteMesh";
+            ribbon.layer = LayerMask.NameToLayer("LongNoteMesh");
 
-            longNoteMeshList.Add(longNote);
+            ribbonList.Add(ribbon);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点、曲線型では制御点も計算
-            Vector3 start = new(LANE_GAP * LONG_NOTE_WIDTH + startLane * LONG_NOTE_WIDTH + LONG_NOTE_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
-            Vector3 end = new(LANE_GAP * LONG_NOTE_WIDTH + endLane * LONG_NOTE_WIDTH + LONG_NOTE_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
+            Vector3 start = new(LANE_GAP * RIBBON_WIDTH + startLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
+            Vector3 end = new(LANE_GAP * RIBBON_WIDTH + endLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
             Vector3 anchor;
 
             // 曲線型の場合
             if (type == Reference.LongNoteType.DirectCurved || type == Reference.LongNoteType.IntermediateCurved)
             {
                 // 制御点の計算
-                anchor = new(LANE_GAP * LONG_NOTE_WIDTH + endLane * LONG_NOTE_WIDTH + LONG_NOTE_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
+                anchor = new(LANE_GAP * RIBBON_WIDTH + endLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, (startZ + endZ) / 2);
                 //int variableSplit = SPLIT_SIZE * 3;
 
                 // ベジェ曲線から曲線上の点を計算する。
@@ -482,19 +506,19 @@ namespace FRONTIER.Game.NotesManagement
                     fragments[i].AddComponent<MeshCollider>();
 
                     // ロングノーツ１まとまりを、1つのゲームオブジェクトとして扱うために、ロングノーツ線オブジェクトの子とする
-                    fragments[i].transform.SetParent(longNote.transform);
+                    fragments[i].transform.SetParent(ribbon.transform);
                 }
 
                 // 断片を生成する
                 for (int i = 0; i < curvePoints.Length - 1; i++)
                 {
                     // ロングノーツ１まとまりにおいて、最後の断片
-                    if (i == curvePoints.Length - 2) { SetMesh(curvePoints[i], curvePoints[i + 1], fragments[i], type, split: SPLIT_SIZE, anchors: curvePoints, isLast: true); }
-                    else { SetMesh(curvePoints[i], curvePoints[i + 1], fragments[i], type, split: SPLIT_SIZE, anchors: curvePoints); }
+                    if (i == curvePoints.Length - 2) { SetMesh(curvePoints[i], curvePoints[i + 1], type, fragments[i], split: SPLIT_SIZE, anchors: curvePoints, isLast: true); }
+                    else { SetMesh(curvePoints[i], curvePoints[i + 1], type, fragments[i], split: SPLIT_SIZE, anchors: curvePoints); }
                 }
             }
             // 直線型の場合（曲線の座標も渡さない）
-            else { SetMesh(start, end, longNote, type); }
+            else { SetMesh(start, end, type); }
         }
 
         /// <summary>
@@ -698,7 +722,7 @@ namespace FRONTIER.Game.NotesManagement
 
             // 結合後の子オブジェクト（断片）の処理
             // マテリアルで透明にしておくにとどめる(Destroyしたらコライダーが結合できていないままなので当たり判定が消える)
-            meshFilters.ForEach(fragment => fragment.gameObject.GetComponent<MeshRenderer>().material = meshMaterials.fadeMaterial);
+            meshFilters.ForEach(fragment => fragment.gameObject.GetComponent<MeshRenderer>().material = ribbonMaterials.fadeMaterial);
         }
 
         /// <summary>
@@ -770,10 +794,10 @@ namespace FRONTIER.Game.NotesManagement
             switch (type)
             {
                 case Reference.LongNoteType.DirectCurved:
-                    longNoteObject.GetComponent<MeshRenderer>().material = meshMaterials.direct;
+                    longNoteObject.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
                     break;
                 case Reference.LongNoteType.IntermediateCurved:
-                    longNoteObject.GetComponent<MeshRenderer>().material = meshMaterials.intermediate;
+                    longNoteObject.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
                     break;
             }
         }
@@ -784,10 +808,10 @@ namespace FRONTIER.Game.NotesManagement
         /// </summary>
         private void SetTransform()
         {
-            if (longNoteMeshList.Count == 0) { return; }
+            if (ribbonList.Count == 0) { return; }
 
             // 各ロングノーツに設定された、流れてくる順番を入れるリストをつくり、各Ｌノーツから参照する
-            List<int> meshIndexList = longNoteMeshList.Select(mesh => mesh.GetComponent<LongNote>().index).ToList();
+            List<int> meshIndexList = ribbonList.Select(mesh => mesh.GetComponent<LongNote>().index).ToList();
 
             //ロングノーツのまとまりの個数を取得するために、Ｌノーツの最後のインデックスを取得する。(これは0から始まるインデックス番号なので実際はこれに+1した個数)
             int maxNumberOfLongNotes = meshIndexList.Max();
@@ -816,17 +840,17 @@ namespace FRONTIER.Game.NotesManagement
                 parents[j].AddComponent<MeshCollider>();
                 for (int k = 0; k < meshIndexList.Count; k++)
                 {
-                    if (longNoteMeshList[k].GetComponent<LongNote>().index == duplicateIndexKeys[j])
+                    if (ribbonList[k].GetComponent<LongNote>().index == duplicateIndexKeys[j])
                     {
                         // 入れ子にする欠片の方はコンポーネントを削除する
-                        longNoteMeshList[k].transform.SetParent(parents[j].transform);
+                        ribbonList[k].transform.SetParent(parents[j].transform);
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
-                        if (longNoteMeshList[k].transform.childCount > 0)
+                        if (ribbonList[k].transform.childCount > 0)
                         {
                             parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
                         }
-                        Destroy(longNoteMeshList[k].GetComponent<Note>());
-                        Destroy(longNoteMeshList[k].GetComponent<LongNote>());
+                        Destroy(ribbonList[k].GetComponent<Note>());
+                        Destroy(ribbonList[k].GetComponent<LongNote>());
                     }
                 }
             }
@@ -842,7 +866,7 @@ namespace FRONTIER.Game.NotesManagement
             int[] uniqueKeys = uniquesIndex.Keys.ToArray();
 
             //新しいリスト（配列）に、Lノーツインデックス順にメッシュを追加。
-            for (int l = 0, n = 0, m = 0; l < longNoteMeshList.Count; l++)
+            for (int l = 0, n = 0, m = 0; l < ribbonList.Count; l++)
             {
                 try
                 {
@@ -858,7 +882,7 @@ namespace FRONTIER.Game.NotesManagement
                 {
                     if (l == uniqueValues[m])
                     {
-                        newMeshArray[uniqueKeys[m]] = longNoteMeshList[uniqueValues[m]];
+                        newMeshArray[uniqueKeys[m]] = ribbonList[uniqueValues[m]];
                         if (m < uniqueValues.Length - 1) { m++; }
                     }
                 }
@@ -866,8 +890,8 @@ namespace FRONTIER.Game.NotesManagement
             }
 
             // 新しいリストへ変更を反映する
-            longNoteMeshList.Clear();
-            longNoteMeshList = newMeshArray.ToList();
+            ribbonList.Clear();
+            ribbonList = newMeshArray.ToList();
             /*
             longNoteMeshList.Reverse();
             foreach (GameObject item in longNoteMeshList)
@@ -885,8 +909,8 @@ namespace FRONTIER.Game.NotesManagement
             SetTransform();
 
             // インデックスを降順にソートし直したり、リストの中身を求め直す
-            longNoteMeshList.Reverse();
-            foreach (var item in longNoteMeshList)
+            ribbonList.Reverse();
+            foreach (var item in ribbonList)
             {
                 if (item == null) continue;
                 item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteMesh"));
