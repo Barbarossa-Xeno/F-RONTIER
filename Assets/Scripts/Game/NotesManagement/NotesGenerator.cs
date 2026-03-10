@@ -177,7 +177,7 @@ namespace FRONTIER.Game.NotesManagement
             // 各ノーツにリスト内でのインデックスの情報を渡す
             for (int i = 0; i < notesObjects.Count; i++)
             {
-                Note info = notesObjects[i].GetComponent<Note>() ?? notesObjects[i].GetComponent<LongNotes>();
+                Note info = notesObjects[i].GetComponent<Note>() ?? notesObjects[i].GetComponent<LongNote>();
                 info.noteIndex = i;
             }
 

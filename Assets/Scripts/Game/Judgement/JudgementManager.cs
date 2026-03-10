@@ -126,7 +126,7 @@ namespace FRONTIER.Game
                         // 通常時
                         if (!Manager.info.IsAutoPlay)
                         {
-                            Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNotes>();
+                            Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNote>();
                             // 判定線を超過して画面の外に出たらミスにする
                             info.ReachedLineEvent += () => DeleteNote(targetIndex: info.noteIndex, isMissed: true);
                         }
@@ -134,12 +134,12 @@ namespace FRONTIER.Game
                         else
                         {
                             // 判定線あたりでノーツをPerfect判定する
-                            Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNotes>();
+                            Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNote>();
                             // ノーツがロングノーツだったら、始点・中間点・終点のノーツだけイベントを登録するようにする
                             if (info.Type == NoteType.LongLinear || info.Type == NoteType.LongCurve)
                             {
                                 // ダウンキャスト
-                                LongNotes _info = info as LongNotes;
+                                LongNote _info = info as LongNote;
                                 if (!(_info.status == LongNoteStatus.Mesh || _info.status == LongNoteStatus.None))
                                 {
                                     _info.ReachedLineEvent += () => DeleteNote(_info.noteIndex, isAuto: true);
@@ -155,7 +155,7 @@ namespace FRONTIER.Game
                 );
 
                 // ロングノーツの判定のイベントを登録する
-                longNotesGenerator.longNoteMeshList.Select(line => line.GetComponent<LongNotes>())
+                longNotesGenerator.longNoteMeshList.Select(line => line.GetComponent<LongNote>())
                                                .ToList().ForEach
                                                (
                                                     info =>
@@ -257,7 +257,7 @@ namespace FRONTIER.Game
             }
             // 抽出できたものをターゲットノーツとする
             target.note = EachLanesNotes[laneIndex][targetIndex];
-            target.info = target.note.GetComponent<Note>() ?? target.note.GetComponent<LongNotes>();
+            target.info = target.note.GetComponent<Note>() ?? target.note.GetComponent<LongNote>();
 
             // 便宜上、ノーツの種類のよって処理を分ける
             if (target.info.Type == NoteType.Normal)
@@ -297,12 +297,12 @@ namespace FRONTIER.Game
                 if (longNotesGenerator.notesObjects[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
                 {
                     // その中間ノーツが終点の場合
-                    if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNotes>().status == LongNoteStatus.End)
+                    if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.End)
                     {
                         DeleteNote(longNotesGenerator.notesObjects, ^i, isPressed);
                     }
                     // その中間ノーツが中間点の場合
-                    else if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNotes>().status == LongNoteStatus.Inner)
+                    else if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.Inner)
                     {
                         DeleteNote(longNotesGenerator.notesObjects, ^i, isPressed, ^1);
                     }
@@ -314,7 +314,7 @@ namespace FRONTIER.Game
                 // 説明略（中間点を持つ場合の処理と同じ）
                 if (longNotesGenerator.notesObjects[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
                 {
-                    if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNotes>().status == LongNoteStatus.End)
+                    if (longNotesGenerator.notesObjects[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.End)
                     {
                         DeleteNote(longNotesGenerator.notesObjects, ^i, isPressed);
                     }

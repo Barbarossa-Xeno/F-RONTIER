@@ -10,7 +10,7 @@ namespace FRONTIER.Game.NotesManagement
     /// <summary>
     /// ロングノーツの情報を保持し、押下の判定を制御する。
     /// </summary>
-    public class LongNotes : Note, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+    public class LongNote : Note, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
     {
         #region フィールド
 

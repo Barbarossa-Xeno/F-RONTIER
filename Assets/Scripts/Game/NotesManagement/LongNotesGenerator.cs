@@ -39,12 +39,12 @@ namespace FRONTIER.Game.NotesManagement
         public List<GameObject> longNoteMeshList = new();
 
         /// <summary>
-        /// ロングノーツ線に紐づいた<see cref = "LongNotes"/>コンポーネントのリスト。
+        /// ロングノーツ線に紐づいた<see cref = "LongNote"/>コンポーネントのリスト。
         /// </summary>
         /// <remarks>
         /// ロングノーツの長押し判定をEventSystemでとってくれる。
         /// </remarks>
-        public List<LongNotes> longNotesList = new();
+        public List<LongNote> longNotesList = new();
 
         /// <summary>
         /// ロングノーツ線に適用するマテリアル。
@@ -423,7 +423,7 @@ namespace FRONTIER.Game.NotesManagement
             longNote.AddComponent<MeshRenderer>();
             longNote.AddComponent<MeshFilter>();
             longNote.AddComponent<MeshCollider>();
-            longNote.AddComponent<LongNotes>().SetInfo(categorizedType.Item1, index, Reference.LongNoteStatus.Mesh, categorizedType.Item2);
+            longNote.AddComponent<LongNote>().SetInfo(categorizedType.Item1, index, Reference.LongNoteStatus.Mesh, categorizedType.Item2);
             longNote.tag = "LongNoteMesh";
             longNote.layer = LayerMask.NameToLayer("LongNoteMesh");
 
@@ -508,7 +508,7 @@ namespace FRONTIER.Game.NotesManagement
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Linear_{i}";
-                        LongNotes prop = note.GetComponent<LongNotes>();
+                        LongNote prop = note.GetComponent<LongNote>();
 
                         if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
@@ -534,7 +534,7 @@ namespace FRONTIER.Game.NotesManagement
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longOnly, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Curve_{i}";
-                        LongNotes prop = note.GetComponent<LongNotes>();
+                        LongNote prop = note.GetComponent<LongNote>();
 
                         if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
@@ -560,7 +560,7 @@ namespace FRONTIER.Game.NotesManagement
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Linear_{i}";
-                        LongNotes prop = note.GetComponent<LongNotes>();
+                        LongNote prop = note.GetComponent<LongNote>();
 
                         if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
@@ -583,7 +583,7 @@ namespace FRONTIER.Game.NotesManagement
                     {
                         note = Instantiate(notesGenerator.notePrefabs.longAny, new(positionX, Reference.specialNoteOrigin.y, positionZ), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Curve_{i}";
-                        LongNotes prop = note.GetComponent<LongNotes>();
+                        LongNote prop = note.GetComponent<LongNote>();
 
                         if (PlayInfo.IsAutoPlay || (!PlayInfo.IsAutoPlay && j == 0)) { notesGenerator.notesObjects.Add(note); }
                         if ((/*!PlayInfo.AutoPlay &&*/ j > 0))
@@ -759,7 +759,7 @@ namespace FRONTIER.Game.NotesManagement
             if (longNoteMeshList.Count == 0) { return; }
 
             // 各ロングノーツに設定された、流れてくる順番を入れるリストをつくり、各Ｌノーツから参照する
-            List<int> meshIndexList = longNoteMeshList.Select(mesh => mesh.GetComponent<LongNotes>().index).ToList();
+            List<int> meshIndexList = longNoteMeshList.Select(mesh => mesh.GetComponent<LongNote>().index).ToList();
 
             //ロングノーツのまとまりの個数を取得するために、Ｌノーツの最後のインデックスを取得する。(これは0から始まるインデックス番号なので実際はこれに+1した個数)
             int maxNumberOfLongNotes = meshIndexList.Max();
@@ -784,21 +784,21 @@ namespace FRONTIER.Game.NotesManagement
             for (int j = 0; j < duplicateIndexKeys.Length; j++)
             {
                 // 親にはコンポーネントを新しく設定する
-                parents[j].AddComponent<LongNotes>().SetInfo(Reference.NoteType.LongLinear, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
+                parents[j].AddComponent<LongNote>().SetInfo(Reference.NoteType.LongLinear, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
                 parents[j].AddComponent<MeshCollider>();
                 for (int k = 0; k < meshIndexList.Count; k++)
                 {
-                    if (longNoteMeshList[k].GetComponent<LongNotes>().index == duplicateIndexKeys[j])
+                    if (longNoteMeshList[k].GetComponent<LongNote>().index == duplicateIndexKeys[j])
                     {
                         // 入れ子にする欠片の方はコンポーネントを削除する
                         longNoteMeshList[k].transform.SetParent(parents[j].transform);
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
                         if (longNoteMeshList[k].transform.childCount > 0)
                         {
-                            parents[j].GetComponent<LongNotes>().SetInfo(Reference.NoteType.LongCurve, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
+                            parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.LongCurve, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
                         }
                         Destroy(longNoteMeshList[k].GetComponent<Note>());
-                        Destroy(longNoteMeshList[k].GetComponent<LongNotes>());
+                        Destroy(longNoteMeshList[k].GetComponent<LongNote>());
                     }
                 }
             }
@@ -862,7 +862,7 @@ namespace FRONTIER.Game.NotesManagement
             {
                 if (item == null) continue;
                 item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteMesh"));
-                longNotesList.Add(item.GetComponent<LongNotes>());
+                longNotesList.Add(item.GetComponent<LongNote>());
             }
             notesObjects = innerNotes.Values.ToList();
             notesObjects.Reverse();
