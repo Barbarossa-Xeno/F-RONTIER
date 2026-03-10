@@ -104,7 +104,7 @@ namespace FRONTIER.Game
             /// <summary>
             /// 判定の対象とするノーツの情報。
             /// </summary>
-            public Notes info;
+            public Note info;
         }
 
         #endregion
@@ -126,29 +126,29 @@ namespace FRONTIER.Game
                         // 通常時
                         if (!Manager.info.IsAutoPlay)
                         {
-                            Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
+                            Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNotes>();
                             // 判定線を超過して画面の外に出たらミスにする
-                            info.OnReachedJudgement += () => DeleteNote(targetIndex: info.indexOfList, isMissed: true);
+                            info.ReachedLineEvent += () => DeleteNote(targetIndex: info.noteIndex, isMissed: true);
                         }
                         // オート時
                         else
                         {
                             // 判定線あたりでノーツをPerfect判定する
-                            Notes info = note.GetComponent<Notes>() ?? note.GetComponent<LongNotes>();
+                            Note info = note.GetComponent<Note>() ?? note.GetComponent<LongNotes>();
                             // ノーツがロングノーツだったら、始点・中間点・終点のノーツだけイベントを登録するようにする
-                            if (info.type == NoteType.LongLinear || info.type == NoteType.LongCurve)
+                            if (info.Type == NoteType.LongLinear || info.Type == NoteType.LongCurve)
                             {
                                 // ダウンキャスト
                                 LongNotes _info = info as LongNotes;
                                 if (!(_info.status == LongNoteStatus.Mesh || _info.status == LongNoteStatus.None))
                                 {
-                                    _info.OnReachedJudgement += () => DeleteNote(_info.indexOfList, isAuto: true);
+                                    _info.ReachedLineEvent += () => DeleteNote(_info.noteIndex, isAuto: true);
                                 }
                             }
                             // 通常ノーツのときは関係なくイベントを登録
                             else
                             {
-                                info.OnReachedJudgement += () => DeleteNote(info.indexOfList, isAuto: true);
+                                info.ReachedLineEvent += () => DeleteNote(info.noteIndex, isAuto: true);
                             }
                         }
                     }
@@ -257,14 +257,14 @@ namespace FRONTIER.Game
             }
             // 抽出できたものをターゲットノーツとする
             target.note = EachLanesNotes[laneIndex][targetIndex];
-            target.info = target.note.GetComponent<Notes>() ?? target.note.GetComponent<LongNotes>();
+            target.info = target.note.GetComponent<Note>() ?? target.note.GetComponent<LongNotes>();
 
             // 便宜上、ノーツの種類のよって処理を分ける
-            if (target.info.type == NoteType.Normal)
+            if (target.info.Type == NoteType.Normal)
             {
                 Judge(laneIndex, tapTime);
             }
-            else if (target.info.type == NoteType.LongLinear || target.info.type == NoteType.LongCurve)
+            else if (target.info.Type == NoteType.LongLinear || target.info.Type == NoteType.LongCurve)
             {
                 Judge(laneIndex, tapTime);
             }

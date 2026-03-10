@@ -161,8 +161,8 @@ namespace FRONTIER.Game.NotesManagement
                     notesObjects.Add(Instantiate(notePrefabs.normal, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteObjectParent));
 
                     // プロパティを渡す
-                    notesObjects[^1].GetComponent<Notes>().type = Reference.NoteType.Normal;
-                    notesObjects[^1].GetComponent<Notes>().index = i;
+                    notesObjects[^1].GetComponent<Note>().Type = Reference.NoteType.Normal;
+                    notesObjects[^1].GetComponent<Note>().index = i;
                     notesObjects[^1].name = $"Note_{i}";
                 }
             }
@@ -177,8 +177,8 @@ namespace FRONTIER.Game.NotesManagement
             // 各ノーツにリスト内でのインデックスの情報を渡す
             for (int i = 0; i < notesObjects.Count; i++)
             {
-                Notes info = notesObjects[i].GetComponent<Notes>() ?? notesObjects[i].GetComponent<LongNotes>();
-                info.indexOfList = i;
+                Note info = notesObjects[i].GetComponent<Note>() ?? notesObjects[i].GetComponent<LongNotes>();
+                info.noteIndex = i;
             }
 
             // ロングノーツの整理

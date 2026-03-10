@@ -521,7 +521,7 @@ namespace FRONTIER.Game.NotesManagement
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
                         else { prop.status = Reference.LongNoteStatus.Inner; }
 
-                        prop.type = Reference.NoteType.LongLinear;
+                        prop.Type = Reference.NoteType.LongLinear;
                         prop.index = i;
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
@@ -547,7 +547,7 @@ namespace FRONTIER.Game.NotesManagement
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
                         else { prop.status = Reference.LongNoteStatus.Inner; }
 
-                        prop.type = Reference.NoteType.LongCurve;
+                        prop.Type = Reference.NoteType.LongCurve;
                         prop.index = i;
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
@@ -573,7 +573,7 @@ namespace FRONTIER.Game.NotesManagement
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
                         else { prop.status = Reference.LongNoteStatus.Inner; }
 
-                        prop.type = Reference.NoteType.LongLinear;
+                        prop.Type = Reference.NoteType.LongLinear;
                         prop.index = i;
 
                         if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.AnyInnerLinear, i); }
@@ -596,7 +596,7 @@ namespace FRONTIER.Game.NotesManagement
                         else if (j == laneNumbers[i].Count - 1) { prop.status = Reference.LongNoteStatus.End; }
                         else { prop.status = Reference.LongNoteStatus.Inner; }
 
-                        prop.type = Reference.NoteType.LongCurve;
+                        prop.Type = Reference.NoteType.LongCurve;
                         prop.index = i;
                         if (j > 0) { SetNotesLine(laneNumbers[i][j - 1], _positionZ[i, j - 1] + NOTE_DEPTH / 2, laneNumbers[i][j], _positionZ[i, j] - NOTE_DEPTH / 2, Reference.LongNoteType.AnyInnerCurve, i); }
                     }
@@ -797,7 +797,7 @@ namespace FRONTIER.Game.NotesManagement
                         {
                             parents[j].GetComponent<LongNotes>().SetInfo(Reference.NoteType.LongCurve, duplicateIndexKeys[j], Reference.LongNoteStatus.Mesh, true);
                         }
-                        Destroy(longNoteMeshList[k].GetComponent<Notes>());
+                        Destroy(longNoteMeshList[k].GetComponent<Note>());
                         Destroy(longNoteMeshList[k].GetComponent<LongNotes>());
                     }
                 }
