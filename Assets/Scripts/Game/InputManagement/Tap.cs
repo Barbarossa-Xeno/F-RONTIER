@@ -44,7 +44,7 @@ namespace FRONTIER.Game.InputManagement
             tapManager.onInput[laneIndex]?.Invoke(laneIndex, TapTime);
             IsTapped = true;
             alfa = 0.2f;
-            GameManager.instance.audios.seManager.Play(SEManager.SE.TapedLane);
+            GameManager.Instance.audios.seManager.Play(SEManager.SE.TapedLane);
         }
 
         public void OnPointerDown(PointerEventData eventData) => OnTap();

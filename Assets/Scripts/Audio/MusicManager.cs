@@ -32,7 +32,7 @@ namespace FRONTIER.Audio
                     break;
                 case Reference.Scene.GameScenes.Game:
                     Source.loop = false;
-                    song = Resources.Load<AudioClip>($"Data/{GameManager.instance.info.ID}/song");
+                    song = Resources.Load<AudioClip>($"Data/{GameManager.Instance.info.ID}/song");
                     Source.clip = song;
                     break;
             }

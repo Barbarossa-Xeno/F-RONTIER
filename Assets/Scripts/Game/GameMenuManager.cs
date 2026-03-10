@@ -341,7 +341,7 @@ namespace FRONTIER.Game
         private void RetryGame()
         {
             Time.timeScale = 1;
-            SceneNavigator.instance.ChangeScene(SceneManager.GetActiveScene().name, 1.0f, ignoreTimeScale: true);
+            SceneNavigator.Instance.ChangeScene(SceneManager.GetActiveScene().name, 1.0f, ignoreTimeScale: true);
         }
 
         #endregion

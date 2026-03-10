@@ -151,7 +151,7 @@ namespace FRONTIER.Menu.Window
 
             buttons.setting.onClick.AddListener(settingWindowManager.Open);
             buttons.start.onClick.AddListener
-            (() => { if (MenuInfo.menuInfo.Level != "0") GameManager.instance.scene.game.Invoke(); });
+            (() => { if (MenuInfo.menuInfo.Level != "0") GameManager.Instance.scene.game.Invoke(); });
             buttons.mv.OnToggleChanged += isOn => MenuInfo.menuInfo.IsMV = isOn;
             buttons.auto.OnToggleChanged += isOn => MenuInfo.menuInfo.IsAutoPlay = isOn;
             buttons.mv.IsOn = MenuInfo.menuInfo.IsMV;

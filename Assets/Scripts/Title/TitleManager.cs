@@ -123,7 +123,7 @@ namespace FRONTIER.Title
         {
             yield return new WaitForSeconds(waitingTime);
 
-            screen.onClick.AddListener(GameManager.instance.scene.menu.Invoke);
+            screen.onClick.AddListener(GameManager.Instance.scene.menu.Invoke);
         }
     }
 }

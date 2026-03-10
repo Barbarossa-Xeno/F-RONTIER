@@ -175,12 +175,12 @@ namespace FRONTIER.Game.NotesManagement
         private void Pressing()
         {
             // ゲーム中に押されていた時
-            if (isPressed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing)
+            if (isPressed && GameManager.Instance.gamePlayState == GameManager.GamePlayState.Playing)
             {
                 OnPressedUpdate?.Invoke(true);
             }
             // ゲーム中に押されていない時
-            else if (!isPressed && GameManager.instance.gamePlayState == GameManager.GamePlayState.Playing)
+            else if (!isPressed && GameManager.Instance.gamePlayState == GameManager.GamePlayState.Playing)
             {
                 OnPressedUpdate?.Invoke(false);
             }

@@ -9,7 +9,7 @@ namespace FRONTIER.Utility
     public abstract class GameUtilityBase : MonoBehaviour
     {
         
-        protected static GameManager Manager => GameManager.instance;
+        protected static GameManager Manager => GameManager.Instance;
 
         /// <summary>シーンがロードされた時などに実行するクラスの初期化処理。</summary>
         /// <param name = "scene">現在のシーン。</param>

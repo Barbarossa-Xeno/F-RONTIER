@@ -97,8 +97,8 @@ namespace FRONTIER.Menu
         {
             if (id_tmp == id) { return; }
             id_tmp = id;
-            GameManager.instance.audios.musicManager.Source.clip = songHighlights[id];
-            GameManager.instance.audios.musicManager.Source.Play();
+            GameManager.Instance.audios.musicManager.Source.clip = songHighlights[id];
+            GameManager.Instance.audios.musicManager.Source.Play();
         }
 
         #endregion

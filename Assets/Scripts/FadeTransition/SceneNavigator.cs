@@ -94,7 +94,7 @@ namespace FadeTransition
         ///<summary>シーン遷移を行います。</summary>
         public void ChangeScene(string sceneName, float _fadeTime = FADETIME, bool ignoreTimeScale = false)
         {
-            if(instance.IsFading)
+            if(Instance.IsFading)
             {
                 Debug.LogError("フェード中です！");
                 return;

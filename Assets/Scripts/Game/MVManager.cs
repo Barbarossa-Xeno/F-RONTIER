@@ -11,7 +11,7 @@ namespace FRONTIER.Game
         {
             Player = GetComponent<VideoPlayer>();
             Player.source = VideoSource.VideoClip;
-            Player.clip = Resources.Load<VideoClip>($"Data/{GameManager.instance.info.ID}/mv");
+            Player.clip = Resources.Load<VideoClip>($"Data/{GameManager.Instance.info.ID}/mv");
         }
     }
 }

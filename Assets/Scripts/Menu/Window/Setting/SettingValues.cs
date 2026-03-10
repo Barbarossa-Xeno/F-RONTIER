@@ -227,11 +227,11 @@ namespace FRONTIER.Menu.Window.Setting
                 {
                     case ElementTypes.MusicVolume:
                         UpdateValue(ref SettingData.Instance.setting.musicVolume, increment);
-                        GameManager.instance.audios.musicManager.SetVolume(SettingData.Instance.setting.musicVolume);
+                        GameManager.Instance.audios.musicManager.SetVolume(SettingData.Instance.setting.musicVolume);
                         break;
                     case ElementTypes.SEVolume:
                         UpdateValue(ref SettingData.Instance.setting.seVolume, increment);
-                        GameManager.instance.audios.musicManager.SetVolume(SettingData.Instance.setting.seVolume);
+                        GameManager.Instance.audios.musicManager.SetVolume(SettingData.Instance.setting.seVolume);
                         break;
                     default : break;
                 }

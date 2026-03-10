@@ -256,43 +256,43 @@ namespace FRONTIER
         {
             Reference.Scene.GameScenes _scene = (Reference.Scene.GameScenes)scene;
             // シーンナビゲータ側のイベントを初期化する
-            SceneNavigator.instance.ResetEvent();
+            SceneNavigator.Instance.ResetEvent();
             switch (_scene)
             {
                 case Reference.Scene.GameScenes.Menu:
-                    SceneNavigator.instance.FadeOutFinished += () =>
+                    SceneNavigator.Instance.FadeOutFinished += () =>
                     {
-                        instance.info = new();
-                        instance.gamePlayState = GamePlayState.None;
+                        Instance.info = new();
+                        Instance.gamePlayState = GamePlayState.None;
                     };
-                    SceneNavigator.instance.FadeOutFinished += SettingData.Instance.Load;
-                    SceneNavigator.instance.FadeOutFinished += SongSaveData.Instance.Load;
-                    SceneNavigator.instance.FadeOutFinished += () => instance.info = new();
-                    SceneNavigator.instance.FadeInFinished += () => Menu.Background.FFT.OnAudioClipChanged?.Invoke();
+                    SceneNavigator.Instance.FadeOutFinished += SettingData.Instance.Load;
+                    SceneNavigator.Instance.FadeOutFinished += SongSaveData.Instance.Load;
+                    SceneNavigator.Instance.FadeOutFinished += () => Instance.info = new();
+                    SceneNavigator.Instance.FadeInFinished += () => Menu.Background.FFT.OnAudioClipChanged?.Invoke();
                     break;
 
                 case Reference.Scene.GameScenes.Game:
-                    SceneNavigator.instance.FadeOutFinished += () =>
+                    SceneNavigator.Instance.FadeOutFinished += () =>
                     {
-                        instance.score = new();
-                        instance.gamePlayState = GamePlayState.Starting;
-                        instance.start = false;
-                        instance.startTime = 0;
+                        Instance.score = new();
+                        Instance.gamePlayState = GamePlayState.Starting;
+                        Instance.start = false;
+                        Instance.startTime = 0;
                     };
                     break;
 
                 case Reference.Scene.GameScenes.Result:
-                    SceneNavigator.instance.FadeOutFinished += () =>
+                    SceneNavigator.Instance.FadeOutFinished += () =>
                     {
-                        instance.start = false;
-                        instance.gamePlayState = GamePlayState.Finishing;
+                        Instance.start = false;
+                        Instance.gamePlayState = GamePlayState.Finishing;
                     };
                     break;
             }
-            SceneNavigator.instance.FadeOutFinished += () => instance.audios.musicManager.Construct(_scene);
-            SceneNavigator.instance.FadeOutFinished += () => instance.audios.seManager.Construct(_scene);
+            SceneNavigator.Instance.FadeOutFinished += () => Instance.audios.musicManager.Construct(_scene);
+            SceneNavigator.Instance.FadeOutFinished += () => Instance.audios.seManager.Construct(_scene);
 
-            SceneNavigator.instance.ChangeScene(Reference.Scene.ToString(_scene), _fadeTime: 1f);
+            SceneNavigator.Instance.ChangeScene(Reference.Scene.ToString(_scene), _fadeTime: 1f);
         }
 
         #endregion

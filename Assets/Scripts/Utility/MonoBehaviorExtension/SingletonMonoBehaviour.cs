@@ -17,13 +17,13 @@ namespace FRONTIER.Utility
 
         /// <summary>外部から参照するインスタンス。</summary>
         /// <remarks>ゲッターを使って予め初期化したインスタンスを保持します。</remarks>
-        public static T instance
+        public static T Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = (T)FindObjectOfType(typeof(T));
+                    _instance = FindFirstObjectByType<T>();
                     if (_instance == null)
                     {
                         Debug.LogError($"{typeof(T)}は定義されていないか、無効な型です。");
@@ -39,7 +39,7 @@ namespace FRONTIER.Utility
 
         protected sealed override void Awake()
         {
-            if (this == instance) return;
+            if (this == Instance) return;
             Debug.LogError($"{typeof(T)}は重複して存在しています。");
         }
     }
