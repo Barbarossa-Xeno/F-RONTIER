@@ -8,7 +8,8 @@ namespace FRONTIER.Utility
     /// <summary>
     /// シングルトンなMonoBehaviorを実装するクラス。
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T"><see cref="MonoBehaviorWithInit"/></typeparam>
+    /// <remarks>MonoBehavior 拡張</remarks> /// 
     public class SingletonMonoBehaviour<T> : MonoBehaviorWithInit where T : MonoBehaviorWithInit
     {
         /// <summary>このクラスのインスタンス。</summary>

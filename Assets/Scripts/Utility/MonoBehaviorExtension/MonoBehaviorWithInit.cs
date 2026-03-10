@@ -3,7 +3,7 @@ using UnityEngine;
 namespace FRONTIER.Utility
 {
     /// <summary>初期化メソッドを実装したMonoBehaviour。</summary>
-    /// <remarks>継承元：<see cref = "GameUtilityBase"/></remarks>
+    /// <remarks>MonoBehavior 拡張</remarks> 
     public class MonoBehaviorWithInit : GameUtilityBase
     {
         /// <summary>初期化したか否かのフラグ。</summary>

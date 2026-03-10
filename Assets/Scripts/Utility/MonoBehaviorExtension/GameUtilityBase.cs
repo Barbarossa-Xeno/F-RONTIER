@@ -4,36 +4,37 @@ using System.Collections;
 
 namespace FRONTIER.Utility
 {
-    ///<summary>ゲーム内の処理で頻繁に使用するメソッドをまとめた抽象基底クラス。</summary>
+    /// <summary>ゲーム内の処理で頻繁に使用するメソッドをまとめた抽象基底クラス。</summary>
+    /// <remarks>MonoBehavior 拡張</remarks> 
     public abstract class GameUtilityBase : MonoBehaviour
     {
         
         protected static GameManager Manager => GameManager.instance;
 
-        ///<summary>シーンがロードされた時などに実行するクラスの初期化処理。</summary>
-        ///<param name = "scene">現在のシーン。</param>
+        /// <summary>シーンがロードされた時などに実行するクラスの初期化処理。</summary>
+        /// <param name = "scene">現在のシーン。</param>
         public virtual void Construct() { }
 
-        ///<summary>シーンがロードされた時に実行するクラスの初期化処理。</summary>
-        ///<param name = "scene">現在のシーン。</param>
+        /// <summary>シーンがロードされた時に実行するクラスの初期化処理。</summary>
+        /// <param name = "scene">現在のシーン。</param>
         [Banzan.Lib.Utility.EnumAction(typeof(Reference.Scene.GameScenes))]
         public virtual void Construct(int scene) { }
 
-        ///<summary>シーンがロードされた時に実行するクラスの初期化処理。</summary>
-        ///<param name = "scene">現在のシーン。</param>
+        /// <summary>シーンがロードされた時に実行するクラスの初期化処理。</summary>
+        /// <param name = "scene">現在のシーン。</param>
         public virtual void Construct(Reference.Scene.GameScenes scene) { }
 
-        ///<summary>シーンがアンロードされた時に実行する処理。</summary>
-        ///<param name = "scene">現在のシーン。</param>
+        /// <summary>シーンがアンロードされた時に実行する処理。</summary>
+        /// <param name = "scene">現在のシーン。</param>
         public virtual void Destruct() { }
 
-        ///<summary>シーンがアンロードされた時に実行する処理。</summary>
-        ///<param name = "scene">現在のシーン。</param>
+        /// <summary>シーンがアンロードされた時に実行する処理。</summary>
+        /// <param name = "scene">現在のシーン。</param>
         public virtual void Destruct(Reference.Scene.GameScenes scene) { }
         
-        ///<summary>レーン番号に応じてノーツのX座標を設定します。</summary>
-        ///<param name = "laneIndex">レーン番号。</param>
-        ///<param name = "useSplitLane">レーン数を細分するか。</param>
+        /// <summary>レーン番号に応じてノーツのX座標を設定します。</summary>
+        /// <param name = "laneIndex">レーン番号。</param>
+        /// <param name = "useSplitLane">レーン数を細分するか。</param>
         protected virtual float SwitchNoteLane(int laneIndex, bool useSplitLane = false)
         {
             float x = 0;
