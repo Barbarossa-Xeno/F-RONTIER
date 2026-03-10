@@ -34,9 +34,9 @@ namespace FRONTIER.Game
         [SerializeField] private LongNotesGenerator longNotesGenerator;
 
         /// <summary>
-        /// <see cref = "InputManager"/>
+        /// <see cref = "LaneManager"/>
         /// </summary>
-        [SerializeField] private InputManager inputManager;
+        [SerializeField] private LaneManager laneManager;
 
         /// <summary>
         /// ノーツが削除されたタイミングで発火するイベント。
@@ -120,7 +120,7 @@ namespace FRONTIER.Game
             if (!Manager.info.IsAutoPlay)
             {
                 // タップしたときのイベントを登録する
-                inputManager.TappedEvent.ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
+                laneManager.TappedEvents.ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
 
                 // ノーツが判定線を越えたときのイベントを登録する
                 notesGenerator.notesObjects.ForEach

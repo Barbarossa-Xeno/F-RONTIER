@@ -10,7 +10,7 @@ namespace FRONTIER.Game.InputManagement
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField] private InputManager tapManager;
+        [SerializeField] private LaneManager laneManager;
 
         /// <summary>
         /// レーンのインデックス。
@@ -32,8 +32,8 @@ namespace FRONTIER.Game.InputManagement
         /// </summary>
         private float TappedTime
         {
-            get => tapManager.tappedTime[laneIndex];
-            set => tapManager.tappedTime[laneIndex] = value;
+            get => laneManager.tappedTime[laneIndex];
+            set => laneManager.tappedTime[laneIndex] = value;
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace FRONTIER.Game.InputManagement
         /// </summary>
         private bool IsTapped
         {
-            get => tapManager.tappedLaneFlags[laneIndex];
-            set => tapManager.tappedLaneFlags[laneIndex] = value;
+            get => laneManager.tappedLaneFlags[laneIndex];
+            set => laneManager.tappedLaneFlags[laneIndex] = value;
         }
         
 
@@ -58,7 +58,7 @@ namespace FRONTIER.Game.InputManagement
             // タップされていないとき、アルファ値を減少させる
             if (alfa > 0 && !IsTapped)
             {
-                alfa -= tapManager.LightSpeed * Time.unscaledDeltaTime;
+                alfa -= laneManager.LightSpeed * Time.unscaledDeltaTime;
             }
 
             // 0未満にはならないように
@@ -80,7 +80,7 @@ namespace FRONTIER.Game.InputManagement
             alfa = 0.2f;
 
             // イベントを発火させる
-            tapManager.TappedEvent[laneIndex]?.Invoke(laneIndex, TappedTime);
+            laneManager.TappedEvents[laneIndex]?.Invoke(laneIndex, TappedTime);
 
             GameManager.Instance.audios.seManager.Play(SEManager.SE.TapedLane);
         }

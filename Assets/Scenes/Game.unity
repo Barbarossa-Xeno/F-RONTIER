@@ -908,7 +908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tapManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   laneIndex: 0
 --- !u!1 &138461503
 GameObject:
@@ -1251,7 +1251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tapManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   laneIndex: 3
 --- !u!1 &184248306
 GameObject:
@@ -1338,8 +1338,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 229032931}
+  - component: {fileID: 229032932}
   m_Layer: 2
-  m_Name: Lanes
+  m_Name: LaneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1366,6 +1367,27 @@ Transform:
   - {fileID: 1797241839}
   m_Father: {fileID: 461476168}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &229032932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229032930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc3e9d076dd5564398c494f230e9907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightSpeed: 1
+  tappedLaneFlags: 000000000000
+  tappedTime:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
 --- !u!1 &270896656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1687,7 +1709,7 @@ MonoBehaviour:
     parent: {fileID: 2106285031}
   notesGenerator: {fileID: 963748245}
   longNotesGenerator: {fileID: 963748247}
-  inputManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   OnNoteDeleted:
     m_PersistentCalls:
       m_Calls:
@@ -1940,7 +1962,7 @@ GameObject:
   m_Component:
   - component: {fileID: 461476168}
   m_Layer: 2
-  m_Name: Lane
+  m_Name: Lanes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2817,7 +2839,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tapManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   laneIndex: 2
 --- !u!65 &719621251
 BoxCollider:
@@ -3022,7 +3044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tapManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   laneIndex: 1
 --- !u!1 &862620398
 GameObject:
@@ -8593,7 +8615,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tapManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   laneIndex: 4
 --- !u!1 &963194225
 GameObject:
@@ -10226,72 +10248,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1236503550}
   m_CullTransparentMesh: 1
---- !u!1 &1258166291
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1258166295}
-  - component: {fileID: 1258166296}
-  m_Layer: 0
-  m_Name: TapManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1258166295
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1258166291}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1258166296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1258166291}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdc3e9d076dd5564398c494f230e9907, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lightSpeed: 1
-  inputFlag: 000000000000
-  inputTime:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  onInput:
-  - m_PersistentCalls:
-      m_Calls: []
-  - m_PersistentCalls:
-      m_Calls: []
-  - m_PersistentCalls:
-      m_Calls: []
-  - m_PersistentCalls:
-      m_Calls: []
-  - m_PersistentCalls:
-      m_Calls: []
-  - m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1263567197
 GameObject:
   m_ObjectHideFlags: 0
@@ -12038,7 +11994,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tapManager: {fileID: 1258166296}
+  laneManager: {fileID: 229032932}
   laneIndex: 5
 --- !u!65 &1797241842
 BoxCollider:
@@ -12817,7 +12773,6 @@ SceneRoots:
   - {fileID: 1493081520}
   - {fileID: 963748246}
   - {fileID: 336479141}
-  - {fileID: 1258166295}
   - {fileID: 1908174220}
   - {fileID: 461476168}
   - {fileID: 1331748794}
