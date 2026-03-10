@@ -18,9 +18,9 @@ namespace FRONTIER.Game.NotesManagement
         public int notesCount;
 
         /// <summary>
-        /// ノーツのプレハブ。
+        /// 通常ノーツのプレハブ。
         /// </summary>
-        public NotePrefabs notePrefabs = new();
+        [SerializeField] private GameObject notePrefab;
 
         /// <summary>
         /// ロングノーツを管理するスクリプト。
@@ -37,29 +37,6 @@ namespace FRONTIER.Game.NotesManagement
         /// ソートするためにソートの基底にするリスト
         /// </summary>
         private List<float> notePositionZBase;
-
-        #endregion
-
-        #region 構造体
-
-        [System.Serializable]
-        public struct NotePrefabs
-        {
-            /// <summary>
-            /// 通常ノーツのプレハブ。
-            /// </summary>
-            public GameObject normal;
-
-            /// <summary>
-            /// 中間点を有するロングノーツ（節）のプレハブ。
-            /// </summary>
-            public GameObject intermediateLong;
-
-            /// <summary>
-            /// 中間点を持たないロングノーツ（節）のプレハブ。
-            /// </summary>
-            public GameObject directLong;
-        }
 
         #endregion
 
@@ -158,7 +135,7 @@ namespace FRONTIER.Game.NotesManagement
                     float positionZ = notesTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
 
                     // ノーツをゲームオブジェクトとして生成する
-                    notesObjects.Add(Instantiate(notePrefabs.normal, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteObjectParent));
+                    notesObjects.Add(Instantiate(notePrefab, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteObjectParent));
 
                     // プロパティを渡す
                     notesObjects[^1].GetComponent<Note>().Type = Reference.NoteType.Normal;

@@ -18,6 +18,16 @@ namespace FRONTIER.Game.NotesManagement
         #region フィールド
 
         /// <summary>
+        /// 中間点を有するロングノーツ（節）のプレハブ。
+        /// </summary>
+        [SerializeField] private GameObject intermediateNotePrefab;
+
+        /// <summary>
+        /// 中間点を持たないロングノーツ（節）のプレハブ。
+        /// </summary>
+        [SerializeField] private GameObject directNotePrefab;
+
+        /// <summary>
         /// <see cref = "NotesGenerator"/>
         /// </summary>
         [SerializeField] private NotesGenerator notesGenerator;
@@ -544,7 +554,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 直線型で中間点のないノーツ
                     if (intermediateNotesCounts[i] == 0 && notesTypes[i] == (int)Reference.NoteType.LinearLong)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.directLong, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
                         note.name = $"LongNote (DirectLinear) -{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -592,7 +602,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 曲線型で中間点のないノーツ
                     else if (intermediateNotesCounts[i] == 0 && notesTypes[i] == 3)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.directLong, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Only_Curve_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -633,7 +643,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 直線型で中間点のあるノーツ
                     else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 2)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.intermediateLong, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Linear_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 
@@ -674,7 +684,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 曲線型で中間点のあるノーツ
                     else if (intermediateNotesCounts[i] != 0 && notesTypes[i] == 3)
                     {
-                        note = Instantiate(notesGenerator.notePrefabs.intermediateLong, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
+                        note = Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
                         note.name = $"Note_Long_Any_Curve_{i}";
                         LongNote prop = note.GetComponent<LongNote>();
 

@@ -8777,10 +8777,7 @@ MonoBehaviour:
   notesTypes: 
   notesObjects: []
   notesCount: 0
-  notePrefabs:
-    normal: {fileID: 7652398199858680092, guid: 5d128bac180a7a04ead3704594fbd3e5, type: 3}
-    intermediateLong: {fileID: 7652398199858680092, guid: a015d6a663a79f44fa3d2aa4abd465da, type: 3}
-    directLong: {fileID: 7652398199858680092, guid: 068c76dfac48bdb4e95ce35d8bb7a4a5, type: 3}
+  notePrefab: {fileID: 7652398199858680092, guid: 5d128bac180a7a04ead3704594fbd3e5, type: 3}
   longNotesGenerator: {fileID: 963748247}
   data:
     name: 
@@ -8817,6 +8814,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noteObjectParent: {fileID: 1415855445}
   notesTypes: 
+  intermediateNotePrefab: {fileID: 7652398199858680092, guid: a015d6a663a79f44fa3d2aa4abd465da, type: 3}
+  directNotePrefab: {fileID: 7652398199858680092, guid: 068c76dfac48bdb4e95ce35d8bb7a4a5, type: 3}
   notesGenerator: {fileID: 963748245}
   intermediateNotesCounts: 
   ribbonList: []
