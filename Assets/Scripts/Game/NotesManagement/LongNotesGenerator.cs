@@ -140,6 +140,22 @@ namespace FRONTIER.Game.NotesManagement
             /// テクスチャのUV座標。
             /// </summary>
             public Vector2[] uvs;
+
+            /// <summary>
+            /// パラメータからメッシュを生成して法線を計算する。
+            /// </summary>
+            /// <returns>パラメータを指定した新しいメッシュ</returns>
+            public readonly Mesh CreateMesh()
+            {
+                Mesh mesh = new()
+                {
+                    vertices = this.vertices,
+                    triangles = this.triangles,
+                    uv = this.uvs
+                };
+                mesh.RecalculateNormals();
+                return mesh;
+            }
         }
 
         /// <summary>
@@ -156,6 +172,21 @@ namespace FRONTIER.Game.NotesManagement
             /// 三角ポリゴンの頂点の数。
             /// </summary>
             public int[] triangles;
+
+            /// <summary>
+            /// パラメータからメッシュを生成して法線を計算する。
+            /// </summary>
+            /// <returns>パラメータを指定した新しいメッシュ</returns>
+            public readonly Mesh CreateMesh()
+            {
+                Mesh mesh = new()
+                {
+                    vertices = this.vertices,
+                    triangles = this.triangles
+                };
+                mesh.RecalculateNormals();
+                return mesh;
+            }
         }
 
         #endregion
@@ -174,25 +205,27 @@ namespace FRONTIER.Game.NotesManagement
         /// <param name = "isLast">分割したロングノーツの生成時、その対象が最後の分割ノーツだったときtrueを指定する。</param>
         private void SetMesh(Vector3 start, Vector3 end, GameObject noteLine, Reference.LongNoteType type, Vector3[] anchors = null, int split = 10, bool isLast = false)
         {
-            // 生成するメッシュ本体
-            Mesh mesh = new();
+            // MeshFilter のパラメータ
+            MeshFilterParameters filterParams = new()
+            {
+                vertices = new Vector3[4 * 6],
+                triangles = new int[6 * 6],
+                uvs = new Vector2[4 * 6]
+            };
 
-            // 最後にメッシュへ設定するパラメータ
-            MeshFilterParameters filterParams = new();
-            filterParams.vertices = new Vector3[4 * 6];
-            filterParams.triangles = new int[6 * 6];
-            filterParams.uvs = new Vector2[4 * 6];
-            MeshColliderParameters colliderParams = new();
-            colliderParams.vertices = new Vector3[4 * 6];
-            colliderParams.triangles = new int[6 * 6];
+            // MeshColliderのパラメータ
+            MeshColliderParameters colliderParams = new()
+            {
+                vertices = new Vector3[4 * 6],
+                triangles = new int[6 * 6]
+            };
 
-            #region メッシュの頂点とUV座標、コライダーの座標を計算
-
-            // 面①（ワールド原点からZ座標を正の方向に見たときの、上底 => Y方向）
-            filterParams.vertices[0] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     //始点の左端 = 左下
-            filterParams.vertices[1] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //始点の右端 = 右下
-            filterParams.vertices[2] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       //終点の左端 = 左上
-            filterParams.vertices[3] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);        //終点の右端 = 右上
+            // メッシュの頂点とUV座標、コライダーの座標を計算
+            // 面1（ワールド原点からZ座標を正の方向に見たときの、上底 => Y方向）
+            filterParams.vertices[0] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     // 始点の左端 = 左下
+            filterParams.vertices[1] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 始点の右端 = 右下
+            filterParams.vertices[2] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       // 終点の左端 = 左上
+            filterParams.vertices[3] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);        // 終点の右端 = 右上
             filterParams.triangles[0] = 0;
             filterParams.triangles[1] = 2;
             filterParams.triangles[2] = 1;
@@ -208,11 +241,11 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[2] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[2];
             colliderParams.vertices[3] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[3];
 
-            // 面②（前側面 => -Z方向）
-            filterParams.vertices[4] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //左下
-            filterParams.vertices[5] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     //右下
-            filterParams.vertices[6] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     //左上
-            filterParams.vertices[7] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //右上
+            // 面2（前側面 => -Z方向）
+            filterParams.vertices[4] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 左下
+            filterParams.vertices[5] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     // 右下
+            filterParams.vertices[6] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     // 左上
+            filterParams.vertices[7] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 右上
             filterParams.triangles[6] = 4;
             filterParams.triangles[7] = 6;
             filterParams.triangles[8] = 5;
@@ -228,11 +261,11 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[6] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[6];
             colliderParams.vertices[7] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[7];
 
-            // 面③（左側面 => -X方向）
-            filterParams.vertices[8] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //左下
-            filterParams.vertices[9] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //右下
-            filterParams.vertices[10] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //左上
-            filterParams.vertices[11] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);    //右上
+            // 面3（左側面 => -X方向）
+            filterParams.vertices[8] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 左下
+            filterParams.vertices[9] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 右下
+            filterParams.vertices[10] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 左上
+            filterParams.vertices[11] = start + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);    // 右上
             filterParams.triangles[12] = 8;
             filterParams.triangles[13] = 10;
             filterParams.triangles[14] = 9;
@@ -248,11 +281,11 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[10] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[10];
             colliderParams.vertices[11] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[11];
 
-            // 面④（右側面 => X方向）
-            filterParams.vertices[12] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //左下
-            filterParams.vertices[13] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //右下
-            filterParams.vertices[14] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     //左上
-            filterParams.vertices[15] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       //右上
+            // 面4（右側面 => X方向）
+            filterParams.vertices[12] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 左下
+            filterParams.vertices[13] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 右下
+            filterParams.vertices[14] = start + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);     // 左上
+            filterParams.vertices[15] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       // 右上
             filterParams.triangles[18] = 12;
             filterParams.triangles[19] = 14;
             filterParams.triangles[20] = 13;
@@ -268,11 +301,11 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[14] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[14];
             colliderParams.vertices[15] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[15];
 
-            //面⑤（後側面 => Z方向）
-            filterParams.vertices[16] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     //左下
-            filterParams.vertices[17] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //右下
-            filterParams.vertices[18] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      //左上
-            filterParams.vertices[19] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       //右上
+            // 面5（後側面 => Z方向）
+            filterParams.vertices[16] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     // 左下
+            filterParams.vertices[17] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 右下
+            filterParams.vertices[18] = end + new Vector3(-LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);      // 左上
+            filterParams.vertices[19] = end + new Vector3(LONG_NOTE_WIDTH / 2, LONG_NOTE_HEIGHT / 2, 0);       // 右上
             filterParams.triangles[24] = 16;
             filterParams.triangles[25] = 17;
             filterParams.triangles[26] = 18;
@@ -288,11 +321,11 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.vertices[18] = new Vector3(-COLLIDER_WIDTH, 0, 0) + filterParams.vertices[18];
             colliderParams.vertices[19] = new Vector3(COLLIDER_WIDTH, 0, 0) + filterParams.vertices[19];
 
-            //面⑥（下底 => -Y方向）
-            filterParams.vertices[20] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);   //始点の左端
-            filterParams.vertices[21] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    //始点の右端
-            filterParams.vertices[22] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     //終点の左端
-            filterParams.vertices[23] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      //終点の右端
+            // 面6（下底 => -Y方向）
+            filterParams.vertices[20] = start + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);   // 始点の左端
+            filterParams.vertices[21] = start + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);    // 始点の右端
+            filterParams.vertices[22] = end + new Vector3(-LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);     // 終点の左端
+            filterParams.vertices[23] = end + new Vector3(LONG_NOTE_WIDTH / 2, -LONG_NOTE_HEIGHT / 2, 0);      // 終点の右端
             filterParams.triangles[30] = 20;
             filterParams.triangles[31] = 21;
             filterParams.triangles[32] = 22;
@@ -310,16 +343,11 @@ namespace FRONTIER.Game.NotesManagement
 
             colliderParams.triangles = filterParams.triangles;
 
-            #endregion
+            // 各コンポーネントに計算したメッシュを渡す
+            noteLine.GetComponent<MeshFilter>().mesh = filterParams.CreateMesh();;
+            noteLine.GetComponent<MeshCollider>().sharedMesh = colliderParams.CreateMesh();
 
-            // 頂点、三角ポリゴンのインデックス、UVを指定し、法線(normal vector)を計算
-            mesh = CreateMesh(filterParams.vertices, filterParams.triangles, filterParams.uvs);
-
-            // 各コンポーネントにメッシュを渡す
-            noteLine.GetComponent<MeshFilter>().mesh = mesh;
-            noteLine.GetComponent<MeshCollider>().sharedMesh = CreateMesh(colliderParams.vertices, colliderParams.triangles);
-
-            // コライダーを覆う場合はconvexにチェックを入れる
+            // コライダーを覆う場合は convex にチェックを入れる
             // noteLine.GetComponent<MeshCollider>().convex = true;
 
             // 種類によって処理を分ける。
@@ -869,41 +897,7 @@ namespace FRONTIER.Game.NotesManagement
             notesObjects.ForEach(notes => notes.Reverse());
         }
 
-        /// <summary>
-        /// メッシュにポリゴンの頂点と、そのインデックスを指定して法線を計算する。
-        /// </summary>
-        /// <param name="vertices">頂点</param>
-        /// <param name="triangles">頂点のインデックス</param>
-        /// <returns>パラメータを指定した新しいメッシュ</returns>
-        private Mesh CreateMesh(Vector3[] vertices, int[] triangles)
-        {
-            Mesh mesh = new()
-            {
-                vertices = vertices,
-                triangles = triangles
-            };
-            mesh.RecalculateNormals();
-            return mesh;
-        }
 
-        /// <summary>
-        /// メッシュにポリゴンの頂点と、そのインデックスと、UV座標を指定して法線を計算する。
-        /// </summary>
-        /// <param name="vertices">頂点</param>
-        /// <param name="triangles">頂点のインデックス</param>
-        /// <param name="uvs">UV座標</param>
-        /// <returns>パラメータを指定した新しいメッシュ</returns>
-        private Mesh CreateMesh(Vector3[] vertices, int[] triangles, Vector2[] uvs)
-        {
-            Mesh mesh = new()
-            {
-                vertices = vertices,
-                triangles = triangles,
-                uv = uvs
-            };
-            mesh.RecalculateNormals();
-            return mesh;
-        }
 
         /// <summary>
         /// リストの最初と最後の要素を抽出する。
