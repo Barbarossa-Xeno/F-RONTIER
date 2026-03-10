@@ -6,8 +6,7 @@ using FRONTIER.Audio;
 using FRONTIER.Menu;
 using FRONTIER.Save;
 using FRONTIER.Utility;
-using FadeTransition;
-
+using FRONTIER.Utility.SceneTransition;
 
 namespace FRONTIER
 {
@@ -46,7 +45,7 @@ namespace FRONTIER
         /// <summary>
         /// <see cref="SceneNavigator"/>と連動してシーンのロード時に発火させるイベント。
         /// </summary>
-        [Header("SceneNavigaterと連動してシーンのロード時に発火させるイベント")] public SceneEvent scene;
+        [Header("SceneNavigatorと連動してシーンのロード時に発火させるイベント")] public SceneEvent scene;
 
         /// <summary>
         /// 「ゲーム」のプレイ状況。
@@ -291,7 +290,7 @@ namespace FRONTIER
             SceneNavigator.Instance.FadeOutFinished += () => Instance.audios.musicManager.Construct(_scene);
             SceneNavigator.Instance.FadeOutFinished += () => Instance.audios.seManager.Construct(_scene);
 
-            SceneNavigator.Instance.ChangeScene(Reference.Scene.ToString(_scene), _fadeTime: 1f);
+            SceneNavigator.Instance.ChangeScene(Reference.Scene.ToString(_scene), fadeTime: 1f);
         }
 
         #endregion

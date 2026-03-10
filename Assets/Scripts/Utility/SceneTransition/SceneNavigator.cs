@@ -5,11 +5,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using FRONTIER.Utility;
 
-namespace FadeTransition
+namespace FRONTIER.Utility.SceneTransition
 {
-    ///<summary>シーン遷移の実行と総括的な管理・カスタイマイズを行うことができます。</summary>
+    /// <summary>シーン遷移の実行と総括的な管理・カスタイマイズを行うことができます。</summary>
     public class SceneNavigator : SingletonMonoBehaviour<SceneNavigator>
     {
         /* フィールド */
@@ -21,26 +20,23 @@ namespace FadeTransition
         /// <summary>
         /// フェードにかける時間。
         /// </summary>
-        public const float FADETIME = 0.5f;
+        public const float FADE_TIME = 0.5f;
 
-        private float fadeTime = FADETIME;
+        private float fadeTime = FADE_TIME;
         /// <summary>
         /// フェード中か否かを示すフラグ。
         /// </summary>
         /// <returns>
-        /// <see cref = "CanvasFader.isFading"/>の<c>bool</c>値か、
-        /// <see cref = "CanvasFader.alpha"/>が0でないかどうか。
+        /// <see cref = "CanvasFader.IsFading"/>の<c>bool</c>値か、
+        /// <see cref = "CanvasFader.Alpha"/>が0でないかどうか。
         /// </returns>
-        public bool IsFading => canvasFader.isFading || canvasFader.alpha != 0;        
+        public bool IsFading => canvasFader.IsFading || canvasFader.Alpha != 0;        
 
-        private string _currentSceneName = "";
-        public string CurrentSceneName => _currentSceneName;
+        public string CurrentSceneName { get; private set; } = "";
 
-        private string _beforeSceneName = "";
-        public string BeforeSceneName => _beforeSceneName;
+        public string BeforeSceneName { get; private set; } = "";
 
-        private string _nextSceneName = "";
-        public string NextSceneName => _nextSceneName;
+        public string NextSceneName { get; private set; } = "";
 
         /// <summary>
         /// フェードアウト後のイベント。
@@ -53,74 +49,75 @@ namespace FadeTransition
         public event Action FadeInFinished = delegate { };
 
         /* メソッド */
-        ///<summary>初期化します。</summary>
-        ///<remarks>Awake時か、それ以前の初アクセス時の、どちらか一度しか実行されません。</remarks>
+        /// <summary>初期化します。</summary>
+        /// <remarks>Awake時か、それ以前の初アクセス時の、どちらか一度しか実行されません。</remarks>
         protected override void Init()
         {
             base.Init();
             if (canvasFader == null) { Reset(); }
             //*
-            _currentSceneName = SceneManager.GetActiveScene().name;
+            CurrentSceneName = SceneManager.GetActiveScene().name;
 
             DontDestroyOnLoad(gameObject);
             canvasFader.gameObject.SetActive(false);
         }
-        ///<summary>コンポーネント追加時に自動で実行されるリセットメソッドです。</summary>
-        ///<remarks>実機上やエディタ上では動作しません。</remarks>
+        /// <summary>コンポーネント追加時に自動で実行されるリセットメソッドです。</summary>
+        /// <remarks>実機上やエディタ上では動作しません。</remarks>
         private void Reset()
         {
             gameObject.name = "SceneNavigator";
 
-            //フェード用キャンバスを作成します。
-            GameObject fadeCanvas = new GameObject("FadeCanvas");
+            // フェード用キャンバスのオブジェクトを作成
+            GameObject fadeCanvas = new("FadeCanvas");
             fadeCanvas.transform.SetParent(transform);
             fadeCanvas.SetActive(false);
 
+            // それに Canvas に必要なコンポーネント群をアタッチ、値の設定
             Canvas canvas = fadeCanvas.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 999;
-
             fadeCanvas.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             fadeCanvas.AddComponent<GraphicRaycaster>();
             canvasFader = fadeCanvas.AddComponent<CanvasFader>();
-            canvasFader.alpha = 0;
+            canvasFader.Alpha = 0;
 
-            //フェード用の画像作成
-            GameObject imageObject = new GameObject("Image");
+            // フェード用の Image 作成
+            GameObject imageObject = new("Image");
             imageObject.transform.SetParent(fadeCanvas.transform, false);
             imageObject.AddComponent<Image>().color = Color.black;
-            imageObject.GetComponent<RectTransform>().sizeDelta = new Vector2(2000, 2000);
+            imageObject.GetComponent<RectTransform>().sizeDelta = new(2000, 2000);
         }
-        ///<summary>シーン遷移を行います。</summary>
-        public void ChangeScene(string sceneName, float _fadeTime = FADETIME, bool ignoreTimeScale = false)
+
+        /// <summary>シーン遷移を行います。</summary>
+        public void ChangeScene(string sceneName, float fadeTime = FADE_TIME, bool isIgnoreTimeScale = false)
         {
             if(Instance.IsFading)
             {
-                Debug.LogError("フェード中です！");
+                Debug.LogWarning("フェード中です！");
                 return;
             }
 
-            _nextSceneName = sceneName;
-            fadeTime = _fadeTime;
+            NextSceneName = sceneName;
+            this.fadeTime = fadeTime;
 
-            //フェードアウト処理
+            // フェードアウト処理
             canvasFader.gameObject.SetActive(true);
-            canvasFader.Play(_isFadeOut: false, _duration: fadeTime, _ignoreTimeScale: ignoreTimeScale, _onFinished: OnFadeOutFinish);
+            canvasFader.Play(isFadeOut: false, duration: this.fadeTime, ignoreTimeScale: isIgnoreTimeScale, onFinished: OnFadeOutFinish);
         }
 
         private void OnFadeOutFinish()
         {
             FadeOutFinished?.Invoke();
 
-            SceneManager.LoadScene(_nextSceneName);
+            SceneManager.LoadScene(NextSceneName);
             
-            _beforeSceneName = _currentSceneName;
-            _currentSceneName = _nextSceneName;
+            BeforeSceneName = CurrentSceneName;
+            CurrentSceneName = NextSceneName;
 
-            //フェードイン処理
+            // フェードイン処理
             canvasFader.gameObject.SetActive(true);
-            canvasFader.alpha = 1;
-            canvasFader.Play(_isFadeOut: true, _duration: fadeTime, _ignoreTimeScale: true, _onFinished: OnFadeInFinish);
+            canvasFader.Alpha = 1;
+            canvasFader.Play(isFadeOut: true, duration: fadeTime, ignoreTimeScale: true, onFinished: OnFadeInFinish);
 
         }
 

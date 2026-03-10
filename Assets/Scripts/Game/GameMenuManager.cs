@@ -1,12 +1,12 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Collections;
 using TMPro;
-using FadeTransition;
 using FRONTIER.Audio;
 using FRONTIER.Utility;
-using System;
+using FRONTIER.Utility.SceneTransition;
 
 namespace FRONTIER.Game
 {
@@ -341,7 +341,7 @@ namespace FRONTIER.Game
         private void RetryGame()
         {
             Time.timeScale = 1;
-            SceneNavigator.Instance.ChangeScene(SceneManager.GetActiveScene().name, 1.0f, ignoreTimeScale: true);
+            SceneNavigator.Instance.ChangeScene(SceneManager.GetActiveScene().name, 1.0f, isIgnoreTimeScale: true);
         }
 
         #endregion
