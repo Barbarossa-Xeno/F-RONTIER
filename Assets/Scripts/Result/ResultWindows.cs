@@ -8,7 +8,7 @@ using FRONTIER.Utility;
 
 namespace FRONTIER.Result
 {
-    public class ResultWindows : GameUtility
+    public class ResultWindows : GameUtilityBase
     {
         #region フィールド
 

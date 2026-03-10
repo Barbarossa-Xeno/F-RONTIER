@@ -8,7 +8,7 @@ namespace FRONTIER.Game
     /// <summary>
     /// ゲーム中のUIにスコアを表示する。
     /// </summary>
-    public class ScoreManager : GameUtility
+    public class ScoreManager : GameUtilityBase
     {
         #region フィールド
 

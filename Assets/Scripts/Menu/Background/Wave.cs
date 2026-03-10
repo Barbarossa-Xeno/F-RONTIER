@@ -5,7 +5,7 @@ using FRONTIER.Utility.Development;
 
 namespace FRONTIER.Menu.Background
 {
-    public class Wave : GameUtility
+    public class Wave : GameUtilityBase
     {
         /* --フィールド-- */
         /// <summary>

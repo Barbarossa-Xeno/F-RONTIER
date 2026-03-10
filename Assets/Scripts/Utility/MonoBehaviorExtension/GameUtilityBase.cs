@@ -4,8 +4,8 @@ using System.Collections;
 
 namespace FRONTIER.Utility
 {
-    ///<summary>ゲーム内の処理で頻繁に使用するメソッドをまとめた抽象クラス。</summary>
-    public abstract class GameUtility : MonoBehaviour
+    ///<summary>ゲーム内の処理で頻繁に使用するメソッドをまとめた抽象基底クラス。</summary>
+    public abstract class GameUtilityBase : MonoBehaviour
     {
         
         protected static GameManager Manager => GameManager.instance;

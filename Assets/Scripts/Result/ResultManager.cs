@@ -8,7 +8,7 @@ namespace FRONTIER.Result
     /// <summary>
     /// リザルトシーンを管理する。
     /// </summary>
-    public class ResultManager : GameUtility
+    public class ResultManager : GameUtilityBase
     {
         [SerializeField] private ResultWindows resultWindows;
         [SerializeField] private Button screen;

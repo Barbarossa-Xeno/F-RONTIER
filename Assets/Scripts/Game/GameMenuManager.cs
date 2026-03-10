@@ -10,7 +10,7 @@ using System;
 
 namespace FRONTIER.Game
 {
-    public class GameMenuManager : GameUtility
+    public class GameMenuManager : GameUtilityBase
     {
         #region フィールド
 

@@ -6,7 +6,7 @@ namespace FRONTIER.Audio
     /// <summary>
     /// オーディオの再生を管理するための抽象クラス。
     /// </summary>
-    public abstract class AudioManager : GameUtility
+    public abstract class AudioManager : GameUtilityBase
     {
         #region プロパティ
 

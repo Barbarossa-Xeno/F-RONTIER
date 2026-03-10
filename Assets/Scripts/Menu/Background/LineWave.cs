@@ -6,7 +6,7 @@ namespace FRONTIER.Menu.Background
 {/// <summary>
  /// ラインレンダラーを使って波状のビジュアライザーをつくる。
  /// </summary>
-    public class LineWave : GameUtility
+    public class LineWave : GameUtilityBase
     {
         [SerializeField] private Wave wave;
 

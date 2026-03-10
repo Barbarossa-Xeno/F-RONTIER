@@ -7,7 +7,7 @@ namespace FRONTIER.Game.NotesManagement
     /// <summary>
     /// ノーツの情報を保持し、ノーツを動かす。
     /// </summary>
-    public class Notes : GameUtility
+    public class Notes : GameUtilityBase
     {
         #region フィールド
 

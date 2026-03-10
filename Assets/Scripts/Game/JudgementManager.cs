@@ -14,7 +14,7 @@ namespace FRONTIER.Game
     /// <summary>
     /// ノーツの判定をする。
     /// </summary>
-    public class JudgementManager : GameUtility
+    public class JudgementManager : GameUtilityBase
     {
         #region フィールド
 

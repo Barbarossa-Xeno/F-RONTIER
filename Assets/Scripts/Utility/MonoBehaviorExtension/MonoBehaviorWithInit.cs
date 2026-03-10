@@ -3,8 +3,8 @@ using UnityEngine;
 namespace FRONTIER.Utility
 {
     /// <summary>初期化メソッドを実装したMonoBehaviour。</summary>
-    /// <remarks>継承元：<see cref = "GameUtility"/></remarks>
-    public class MonoBehaviorWithInit : GameUtility
+    /// <remarks>継承元：<see cref = "GameUtilityBase"/></remarks>
+    public class MonoBehaviorWithInit : GameUtilityBase
     {
         /// <summary>初期化したか否かのフラグ。</summary>
         /// <remarks>※初期化は一度しか実行されないようにする設計。</remarks>
