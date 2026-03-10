@@ -249,6 +249,7 @@ namespace FRONTIER.Game
 
         void Update()
         {
+            // FIXME: ここの条件が1回きりになってないせいで何回も呼ばれてしまってるのを修正したい
             // 音楽の再生が最後まで終わったら
             if (Manager.start
                 && Manager.gamePlayState == GameManager.GamePlayState.Playing

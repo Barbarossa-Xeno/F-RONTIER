@@ -4,7 +4,8 @@ using FRONTIER.Audio;
 
 namespace FRONTIER.Game.InputManagement
 {
-    public class Tap : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
+    [RequireComponent(typeof(Collider), typeof(MeshFilter), typeof(MeshRenderer))]
+    public class Lane : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private InputManager tapManager;
         [SerializeField] private int laneIndex;
@@ -25,7 +26,7 @@ namespace FRONTIER.Game.InputManagement
 
         void Start()
         {
-            material = GetComponent<Renderer>().material;
+            material = GetComponent<MeshRenderer>().material;
         }
 
         void Update()
