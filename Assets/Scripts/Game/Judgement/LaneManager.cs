@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -41,17 +42,9 @@ namespace FRONTIER.Game.InputManagement
         /// 各レーンに入力があったとき、発火するイベントのリスト。
         /// 各要素が各レーンに対応する。
         /// </summary>
-        public List<UnityEvent<int, float>> TappedEvents { get; private set; }
+        public List<UnityEvent<int, float>> TappedEvents { get; } = Enumerable.Range(0, 6)
+            .Select(_ => new UnityEvent<int, float>())
+            .ToList();
         #endregion
-
-        void Awake()
-        {
-            TappedEvents = new(6);
-            // イベントリストを初期化
-            for (int i = 0; i < TappedEvents.Capacity; i++)
-            {
-                TappedEvents.Add(new UnityEvent<int, float>());
-            }
-        }
     }
 }

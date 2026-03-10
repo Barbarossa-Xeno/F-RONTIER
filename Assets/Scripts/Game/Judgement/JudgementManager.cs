@@ -49,18 +49,14 @@ namespace FRONTIER.Game
         private TargetNote target = new();
 
         /// <summary>
-        /// <c>Item1</c> => タップされたレーンにあり、条件によって絞り込まれたノーツ
-        /// <c>Item2</c> => <c>Item1</c>のインデックス。
+        /// 1次元目にレーン番号、2次元目にそのレーンを流れるノーツの GameObject を格納するリスト。
         /// </summary>
-        private List<List<GameObject>> eachLanesNotes = new(6)
-        {
-            new(), new(), new(), new(), new(), new()
-        };
+        private readonly List<List<GameObject>> EachLanesNotes = Enumerable.Range(0, 6).Select(_ => new List<GameObject>()).ToList();
 
         /// <summary>
         /// 判定ステータスの基準。
         /// </summary>
-        private static readonly Dictionary<JudgementStatus, float> judgementTime = new()
+        private static readonly Dictionary<JudgementStatus, float> JudgementThreshold = new()
         {
             { JudgementStatus.Perfect, 0.05f },
             { JudgementStatus.Great, 0.1f },
@@ -225,7 +221,7 @@ namespace FRONTIER.Game
             #endregion
 
             // そのレーンを流れるノーツオブジェクトが入るリストの初期化
-            eachLanesNotes[laneIndex].Clear();
+            EachLanesNotes[laneIndex].Clear();
 
             // そのレーンを流れるノーツの中で一番近そうなノーツを何個か取得
             foreach (GameObject note in notesGenerator.notesObjects)
@@ -235,32 +231,32 @@ namespace FRONTIER.Game
                     float differenceZ = GetNotePositionDifference(note.transform.position.z);
                     if (differenceZ > -1.5f && differenceZ < 5f)
                     {
-                        eachLanesNotes[laneIndex].Add(note);
+                        EachLanesNotes[laneIndex].Add(note);
                     }
                 }
             }
 
             // 該当したノーツが１つもないようなら処理を抜ける
-            if (eachLanesNotes[laneIndex].Count == 0) { return; }
+            if (EachLanesNotes[laneIndex].Count == 0) { return; }
 
             // 最接近しているノーツは抽出したノーツリストのうち、
             // そのz座標と判定線との距離の差が最も小さいものを１つ抽出
             // 参照値をリストの一番初めの要素のz座標で初期化
-            float reference = eachLanesNotes[laneIndex][0].transform.position.z;
+            float reference = EachLanesNotes[laneIndex][0].transform.position.z;
             int targetIndex = 0;
 
-            for (int i = 0; i < eachLanesNotes[laneIndex].Count; i++)
+            for (int i = 0; i < EachLanesNotes[laneIndex].Count; i++)
             {
                 // 参照値よりもZ座標の差が小さいものがあるか確認する
-                if (eachLanesNotes[laneIndex][i].transform.position.z - noteOrigin.z < reference - noteOrigin.z)
+                if (EachLanesNotes[laneIndex][i].transform.position.z - noteOrigin.z < reference - noteOrigin.z)
                 {
                     // あれば、参照値を変更し、その番号を記憶する
-                    reference = eachLanesNotes[laneIndex][i].transform.position.z;
+                    reference = EachLanesNotes[laneIndex][i].transform.position.z;
                     targetIndex = i;
                 }
             }
             // 抽出できたものをターゲットノーツとする
-            target.note = eachLanesNotes[laneIndex][targetIndex];
+            target.note = EachLanesNotes[laneIndex][targetIndex];
             target.info = target.note.GetComponent<Notes>() ?? target.note.GetComponent<LongNotes>();
 
             // 便宜上、ノーツの種類のよって処理を分ける
@@ -336,7 +332,7 @@ namespace FRONTIER.Game
             if (notesGenerator.notesObjects.Contains(target.note))
             {
                 // ラグを判定幅に照応させて判定する
-                if (timeLag <= judgementTime[JudgementStatus.Perfect])
+                if (timeLag <= JudgementThreshold[JudgementStatus.Perfect])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
                     ShowScoreStatus(JudgementStatus.Perfect);
@@ -344,7 +340,7 @@ namespace FRONTIER.Game
                     Manager.score.judgementStatus[JudgementStatus.Perfect]++;
                     Manager.score.combo++;
                 }
-                else if (timeLag <= judgementTime[JudgementStatus.Great])
+                else if (timeLag <= JudgementThreshold[JudgementStatus.Great])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
                     ShowScoreStatus(JudgementStatus.Great);
@@ -352,7 +348,7 @@ namespace FRONTIER.Game
                     Manager.score.judgementStatus[JudgementStatus.Great]++;
                     Manager.score.combo++;
                 }
-                else if (timeLag <= judgementTime[JudgementStatus.Good])
+                else if (timeLag <= JudgementThreshold[JudgementStatus.Good])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
                     ShowScoreStatus(JudgementStatus.Good);
@@ -361,7 +357,7 @@ namespace FRONTIER.Game
                     Manager.score.combo++;
                     // 絶対精度良くないから、Goodまではコンボ許容しないと俺が怒るぜ
                 }
-                else if (timeLag <= judgementTime[JudgementStatus.Bad])
+                else if (timeLag <= JudgementThreshold[JudgementStatus.Bad])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
                     ShowScoreStatus(JudgementStatus.Bad);
