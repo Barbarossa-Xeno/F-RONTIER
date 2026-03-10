@@ -1,8 +1,6 @@
-/* 名前空間 */
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-//自作名前空間
 using FRONTIER.Utility;
 
 namespace FRONTIER.Game.NotesManagement
@@ -596,7 +594,8 @@ namespace FRONTIER.Game.NotesManagement
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            CreateRibbon(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectLinear, i);
+                            var (start, end) = laneNumbers[i].FirstAndLast();
+                            CreateRibbon(start, _positionZ[i, 0] + NOTE_DEPTH / 2, end, _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectLinear, i);
                         }
                     }
                     // 曲線型で中間点のないノーツ
@@ -637,7 +636,8 @@ namespace FRONTIER.Game.NotesManagement
 
                         if (_positionZ[i, _positionZ.GetLength(1) - 1] > 0)
                         {
-                            CreateRibbon(GetStartAndEndElements(laneNumbers[i])[0], _positionZ[i, 0] + NOTE_DEPTH / 2, GetStartAndEndElements(laneNumbers[i])[1], _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectCurved, i);
+                            var (start, end) = laneNumbers[i].FirstAndLast();
+                            CreateRibbon(start, _positionZ[i, 0] + NOTE_DEPTH / 2, end, _positionZ[i, _positionZ.GetLength(1) - 1] - NOTE_DEPTH / 2, Reference.LongNoteType.DirectCurved, i);
                         }
                     }
                     // 直線型で中間点のあるノーツ
@@ -989,29 +989,6 @@ namespace FRONTIER.Game.NotesManagement
             notesObjects = intermediateNotes.Values.ToList();
             notesObjects.Reverse();
             notesObjects.ForEach(notes => notes.Reverse());
-        }
-
-
-
-        /// <summary>
-        /// リストの最初と最後の要素を抽出する。
-        /// </summary>
-        /// <remarks>
-        /// ロングノーツの始点と終点のパラメーターを抽出するときに使う。
-        /// </remarks>
-        /// <typeparam name = "T">いずれかの型。</typeparam>
-        /// <param name = "list">いずれかの型のリスト。</param>
-        /// <returns>
-        /// いずれかの型のリストの最初、最終要素の二つを含んだ配列。
-        /// </returns>
-        private T[] GetStartAndEndElements<T>(List<T> list)
-        {
-            //返す配列。
-            T[] startAndEnd = new T[2];
-            //始点と終点を代入。
-            startAndEnd[0] = list[0];
-            startAndEnd[1] = list[list.Count - 1];
-            return startAndEnd;
         }
 
         #endregion

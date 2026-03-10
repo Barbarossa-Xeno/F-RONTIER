@@ -54,5 +54,15 @@ namespace FRONTIER.Utility
         /// <param name="list">要素を削除するリスト</param>
         /// <param name="indexFromEnd">後ろから数えた時のインデックス</param>
         public static void RemoveAt<T>(this List<T> list, Index indexFromEnd) => list.RemoveAt(list.Count - indexFromEnd.Value);
+
+        /// <summary>
+        /// リストの最初と最後の要素を抽出する。
+        /// </summary>
+        /// <typeparam name="T">いずれかの型。</typeparam>
+        /// <param name="list">いずれかの型のリスト。</param>
+        /// <returns>
+        /// いずれかの型のリストの最初、最終要素の二つを含んだタプル。
+        /// </returns>
+        public static (T, T) FirstAndLast<T>(this List<T> list) => (list[0], list[^1]);
     }
 }
