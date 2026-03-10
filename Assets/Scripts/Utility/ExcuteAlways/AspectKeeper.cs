@@ -5,7 +5,7 @@ using UnityEngine;
 namespace FRONTIER.Utility
 {
     /// <summary>
-    /// カメラのアスペクト比を固定する。
+    /// 同じオブジェクトにアタッチされているカメラのアスペクト比を固定する。
     /// </summary>
     [ExecuteAlways, RequireComponent(typeof(Camera))]
     public class AspectKeeper : MonoBehaviour
@@ -19,7 +19,7 @@ namespace FRONTIER.Utility
 
         #region MonoBehaviourメソッド
 
-        void Start() => targetCamera = targetCamera ?? GetComponent<Camera>();
+        void Start() => targetCamera = targetCamera != null ? targetCamera : GetComponent<Camera>();
 
         void Update()
         {
