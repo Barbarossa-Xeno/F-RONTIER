@@ -791,10 +791,11 @@ namespace FRONTIER.Game.NotesManagement
         }
 
         /// <summary>
-        /// 中間点有りのロングノーツの生成時、中間点どうしの間で各々生成されてしまうロングノーツの断片を、
+        /// ロングノーツの帯の transform を適切に設定する
+        /// 特に中間点有りのロングノーツについては、中間点どうしの間で各々生成されてしまうロングノーツの断片を、
         /// 譜面のロングノーツの順番ごとに1つの親オブジェクトに関連付けて、ロングノーツ１まとまりとする。
         /// </summary>
-        private void SetTransform()
+        private void SetRibbonTransform()
         {
             // 中間点なければ戻る
             if (ribbons.Count == 0) return;
@@ -876,7 +877,7 @@ namespace FRONTIER.Game.NotesManagement
 
         public override void NotesSort()
         {
-            SetTransform();
+            SetRibbonTransform();
 
             // インデックスを降順にソートし直したり、リストの中身を求め直す
             ribbons.Reverse();
