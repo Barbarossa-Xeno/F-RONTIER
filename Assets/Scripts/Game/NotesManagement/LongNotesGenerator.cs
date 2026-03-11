@@ -46,7 +46,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// 生成したロングノーツの帯を格納したリスト。
         /// </summary>
-        public List<GameObject> ribbonList = new();
+        public List<GameObject> ribbons = new();
 
         // TODO: 親のNoteともどもジェネリックにできるかも
         /// <summary>
@@ -370,7 +370,7 @@ namespace FRONTIER.Game.NotesManagement
             colliderParams.triangles = filterParams.triangles;
 
             // 各コンポーネントに計算したメッシュを渡す
-            target.GetComponent<MeshFilter>().mesh = filterParams.CreateMesh();;
+            target.GetComponent<MeshFilter>().mesh = filterParams.CreateMesh(); ;
             target.GetComponent<MeshCollider>().sharedMesh = colliderParams.CreateMesh();
 
             // コライダーを覆う場合は convex にチェックを入れる
@@ -380,59 +380,59 @@ namespace FRONTIER.Game.NotesManagement
             switch (type)
             {
                 case Reference.LongNoteType.DirectLinear:
-                {
-                    target.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
-                    break;
-                }
+                    {
+                        target.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
+                        break;
+                    }
                 // 中間点があればラインレンダラーで中心線を描画する
                 case Reference.LongNoteType.IntermediateLinear:
-                {
-                    Vector3[] linePositions = new Vector3[2] { start, end };
-
-                    // ribbon に中心線描画のための LineRenderer を追加
-                    LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
-                    lineRenderer.SetPositions(linePositions);
-                    lineRenderer.startWidth = lineRenderer.endWidth = 0.1f;
-                    lineRenderer.material = ribbonMaterials.line;
-                    lineRenderer.useWorldSpace = false;
-
-                    target.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
-                    target.transform.SetParent(ribbon.transform);
-                    break;
-                }
-                case Reference.LongNoteType.DirectCurved:
-                {
-                    // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
-                    if (isLast)
                     {
-                        // メッシュの結合とテクスチャの再貼付
-                        CombineFragmentMesh(ribbon);
-                        ReprintTexture(ribbon, split, Reference.LongNoteType.DirectCurved);
-                    }
-                    break;
-                }
-                case Reference.LongNoteType.IntermediateCurved:
-                {
-                    // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
-                    // 曲線の座標を収めた配列がnullでないことを確認して
-                    if (isLast && anchors != null)
-                    {
-                        // メッシュの結合とテクスチャの再貼付
-                        CombineFragmentMesh(ribbon);
-                        ReprintTexture(ribbon, split, Reference.LongNoteType.IntermediateCurved);
+                        Vector3[] linePositions = new Vector3[2] { start, end };
 
                         // ribbon に中心線描画のための LineRenderer を追加
                         LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
-                        lineRenderer.positionCount = anchors.Length;
-                        lineRenderer.widthMultiplier = 0.1f;
-                        lineRenderer.SetPositions(anchors);
+                        lineRenderer.SetPositions(linePositions);
+                        lineRenderer.startWidth = lineRenderer.endWidth = 0.1f;
+                        lineRenderer.material = ribbonMaterials.line;
                         lineRenderer.useWorldSpace = false;
 
-                        lineRenderer.material = ribbonMaterials.line;
+                        target.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
                         target.transform.SetParent(ribbon.transform);
+                        break;
                     }
-                    break;
-                }
+                case Reference.LongNoteType.DirectCurved:
+                    {
+                        // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
+                        if (isLast)
+                        {
+                            // メッシュの結合とテクスチャの再貼付
+                            CombineFragmentMesh(ribbon);
+                            ReprintTexture(ribbon, split, Reference.LongNoteType.DirectCurved);
+                        }
+                        break;
+                    }
+                case Reference.LongNoteType.IntermediateCurved:
+                    {
+                        // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
+                        // 曲線の座標を収めた配列がnullでないことを確認して
+                        if (isLast && anchors != null)
+                        {
+                            // メッシュの結合とテクスチャの再貼付
+                            CombineFragmentMesh(ribbon);
+                            ReprintTexture(ribbon, split, Reference.LongNoteType.IntermediateCurved);
+
+                            // ribbon に中心線描画のための LineRenderer を追加
+                            LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
+                            lineRenderer.positionCount = anchors.Length;
+                            lineRenderer.widthMultiplier = 0.1f;
+                            lineRenderer.SetPositions(anchors);
+                            lineRenderer.useWorldSpace = false;
+
+                            lineRenderer.material = ribbonMaterials.line;
+                            target.transform.SetParent(ribbon.transform);
+                        }
+                        break;
+                    }
             }
         }
 
@@ -473,12 +473,12 @@ namespace FRONTIER.Game.NotesManagement
             ribbon.tag = "LongNoteRibbon";
             ribbon.layer = LayerMask.NameToLayer("LongNoteRibbon");
 
-            ribbonList.Add(ribbon);
+            ribbons.Add(ribbon);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点座標を計算
             Vector3 start = new(LANE_GAP * RIBBON_WIDTH + startLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
             Vector3 end = new(LANE_GAP * RIBBON_WIDTH + endLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, endZ);
-            
+
             // 曲線型の場合、制御点も計算
             Vector3 anchor;
 
@@ -490,7 +490,7 @@ namespace FRONTIER.Game.NotesManagement
 
                 // ベジェ曲線から計算した曲線上の点
                 Vector3[] curves = CalculateBezierCurves(start, anchor, end, splitSize: SPLIT_SIZE);
-                
+
                 // 曲線を構成するオブジェクトの断片をつくる
                 GameObject[] fragments = new GameObject[curves.Length - 1];
                 for (int i = 0; i < fragments.Length; i++)
@@ -525,7 +525,7 @@ namespace FRONTIER.Game.NotesManagement
             // このメソッドは、そんな各ロングノーツ1まとまりを生成するタイミングで使用するため、
             // 随時データが追加されていく laneNumbers の1次元目のカウントが分かれば、今どのロングノーツを生成すれば良いかが分かる（※のように）
             int shouldGenerateNoteIndex = laneNumbers.Count - 1;
-            
+
             // 算出するX座標とZ座標
             float x, z;
 
@@ -627,7 +627,7 @@ namespace FRONTIER.Game.NotesManagement
                                     zRecords[i, 0] + NOTE_DEPTH / 2,
                                     end,
                                     zRecords[i, j] - NOTE_DEPTH / 2,
-                                    longNoteType, 
+                                    longNoteType,
                                     i
                                 );
                             }
@@ -661,7 +661,7 @@ namespace FRONTIER.Game.NotesManagement
             float t = 0;
 
             // 曲線上の点の座標を格納する配列
-            Vector3[] curvePoints = new Vector3[splitSize + 1];
+            Vector3[] curves = new Vector3[splitSize + 1];
 
             // 曲線上の点を求める
             for (int i = 0; i <= splitSize; i++)
@@ -674,10 +674,10 @@ namespace FRONTIER.Game.NotesManagement
                 Vector3 b = Vector3.Lerp(anchor, end, t);
 
                 // 2つの分割点をもとにさらに分割する
-                curvePoints[i] = Vector3.Lerp(a, b, t);
+                curves[i] = Vector3.Lerp(a, b, t);
             }
 
-            return curvePoints;
+            return curves;
         }
 
         /// <summary>
@@ -692,12 +692,13 @@ namespace FRONTIER.Game.NotesManagement
         private void CombineFragmentMesh(GameObject parent)
         {
             // 断片のメッシュを全取得
-            List<MeshFilter> meshFilters = new();
-            meshFilters = parent.GetComponentsInChildren<MeshFilter>().Where(fragmentFilter => fragmentFilter.gameObject != parent).ToList();
+            MeshFilter[] meshFilters = parent.GetComponentsInChildren<MeshFilter>()
+                .Where(fragment => fragment.gameObject != parent)
+                .ToArray();
 
             // メッシュを合成する
-            CombineInstance[] combineInstances = new CombineInstance[meshFilters.Count];
-            for (int i = 0; i < meshFilters.Count; i++)
+            CombineInstance[] combineInstances = new CombineInstance[meshFilters.Length];
+            for (int i = 0; i < meshFilters.Length; i++)
             {
                 combineInstances[i].mesh = meshFilters[i].sharedMesh;
                 combineInstances[i].transform = meshFilters[i].transform.localToWorldMatrix;
@@ -707,44 +708,48 @@ namespace FRONTIER.Game.NotesManagement
             parent.GetComponent<MeshFilter>().mesh.CombineMeshes(combineInstances);
 
             // 結合後の子オブジェクト（断片）の処理
-            // マテリアルで透明にしておくにとどめる(Destroyしたらコライダーが結合できていないままなので当たり判定が消える)
-            meshFilters.ForEach(fragment => fragment.gameObject.GetComponent<MeshRenderer>().material = ribbonMaterials.fadeMaterial);
+            // マテリアルで透明にしておくにとどめる
+            // (Destroyしたらコライダーが結合できていないままなので当たり判定が消えてしまう)
+            foreach (var fragment in meshFilters)
+            {
+                fragment.gameObject.GetComponent<MeshRenderer>().material = ribbonMaterials.fadeMaterial;
+            }
         }
 
         /// <summary>
         /// 結合した後のロングノーツのメッシュのUV座標を再計算してテクスチャを貼り直す。
         /// </summary>
-        /// <param name = "longNoteObject">結合させたメッシュを適用したオブジェクト。</param>
+        /// <param name = "combined">結合させたメッシュを適用したオブジェクト。</param>
         /// <param name = "split">分割数。</param>
-        private void ReprintTexture(GameObject longNoteObject, float split, Reference.LongNoteType type)
+        private void ReprintTexture(GameObject combined, float split, Reference.LongNoteType type)
         {
             // 結合後のメッシュの頂点数を取得する
-            int verticesLength = longNoteObject.GetComponent<MeshFilter>().mesh.vertices.Length;
+            int verticesLength = combined.GetComponent<MeshFilter>().mesh.vertices.Length;
 
             // UVを再計算する
             Vector2[] uvs = new Vector2[verticesLength];
             for (int i = 0; i < uvs.Length; i++)
             {
                 /* 以下：メッシュの上底（Y面）のUVを設定する。 */
-                //四角形左下の絞り込み。
+                // 四角形左下の絞り込み。
                 if (i == 0 || (i % 4 == 0 && i % 24 == 0))
                 {
                     uvs[i] = new Vector2(0, Mathf.Abs(i / 24 / (float)split));
                     continue;
                 }
-                //四角形右下の絞り込み。
+                // 四角形右下の絞り込み。
                 else if (i == 1 || ((i - 1) % 4 == 0 && (i - 1) % 24 == 0))
                 {
                     uvs[i] = new Vector2(1, Mathf.Abs((i - 1) / 24 / (float)split));
                     continue;
                 }
-                //四角形左上の絞り込み。
+                // 四角形左上の絞り込み。
                 else if (i == 2 || ((i - 2) % 4 == 0 && (i - 2) % 24 == 0))
                 {
                     uvs[i] = new Vector2(0, Mathf.Abs(i / 24 / (float)split + 1f / (float)split));
                     continue;
                 }
-                //四角形右上の絞り込み。
+                // 四角形右上の絞り込み。
                 else if (i == 3 || ((i - 3) % 4 == 0 && (i - 3) % 24 == 0))
                 {
                     uvs[i] = new Vector2(1, Mathf.Abs((i - 1) / 24 / (float)split + 1f / (float)split));
@@ -766,7 +771,7 @@ namespace FRONTIER.Game.NotesManagement
                     uvs[i] = new Vector2(0, 1);
                     continue;
                 }
-                else if (((i - 3) % 4 == 0))
+                else if ((i - 3) % 4 == 0)
                 {
                     uvs[i] = new Vector2(1, 1);
                     continue;
@@ -774,18 +779,15 @@ namespace FRONTIER.Game.NotesManagement
             }
 
             // UVを適用
-            longNoteObject.GetComponent<MeshFilter>().mesh.uv = uvs;
+            combined.GetComponent<MeshFilter>().mesh.uv = uvs;
 
             // テクスチャを再貼付
-            switch (type)
+            combined.GetComponent<MeshRenderer>().material = type switch
             {
-                case Reference.LongNoteType.DirectCurved:
-                    longNoteObject.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
-                    break;
-                case Reference.LongNoteType.IntermediateCurved:
-                    longNoteObject.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
-                    break;
-            }
+                Reference.LongNoteType.DirectCurved => ribbonMaterials.direct,
+                Reference.LongNoteType.IntermediateCurved => ribbonMaterials.intermediate,
+                _ => combined.GetComponent<MeshRenderer>().material
+            };
         }
 
         /// <summary>
@@ -794,100 +796,82 @@ namespace FRONTIER.Game.NotesManagement
         /// </summary>
         private void SetTransform()
         {
-            if (ribbonList.Count == 0) { return; }
+            // 中間点なければ戻る
+            if (ribbons.Count == 0) return;
 
-            // 各ロングノーツに設定された、流れてくる順番を入れるリストをつくり、各Ｌノーツから参照する
-            List<int> meshIndexList = ribbonList.Select(mesh => mesh.GetComponent<LongNote>().index).ToList();
+            // 各ロングノーツに設定された、流れてくる順番 (LongNote.index) を抽出
+            List<int> meshIndexList = ribbons.Select(mesh => mesh.GetComponent<LongNote>().index).ToList();
 
-            //ロングノーツのまとまりの個数を取得するために、Ｌノーツの最後のインデックスを取得する。(これは0から始まるインデックス番号なので実際はこれに+1した個数)
+            // ロングノーツのまとまりの個数を取得するために、その最後のインデックス (= インデックスリストの中で一番大きい値) を取得する。
+            // (これは0から始まるインデックス番号なので実際はこれに+1した個数)
             int maxNumberOfLongNotes = meshIndexList.Max();
 
-            // リストの中から重複しているインデックスとその重複数を抽出する。
-            //　1次元目：重複しているインデックス　2次元目：その重複数
-            Dictionary<int, int> duplicatesIndex = meshIndexList.GroupBy(x => x).Where(x => x.Count() > 1).ToDictionary(x => x.Key, y => y.Count());
-            // リストの中から1つしかないインデックスと実際に格納されたリストのなかでのインデックス番号を抽出する。
-            //　1次元目：1つしかないインデックス　2次元目：meshIndexList中でのそのインデックス番号
-            Dictionary<int, int> uniquesIndex = meshIndexList.GroupBy(x => x).Where(x => x.Count() == 1).ToDictionary(x => x.Key, y => meshIndexList.IndexOf(y.Key));
+            // ribbons (meshIndexList と同等の並び) 内で重複しているノーツインデックスを抽出する。
+            int[] duplicateIndexes = meshIndexList.GroupBy(x => x).Where(x => x.Count() > 1).Select(x => x.Key).ToArray();
 
-            // 新たにつくる親オブジェクトをひとまとめにするLノーツ(インデックスの重複があるＬノーツ)分だけ確保する。
-            GameObject[] parents = new GameObject[duplicatesIndex.Count];
+            // # 重複したものを処理
 
+            // 新たにつくる親オブジェクトをひとまとめにするLノーツ (インデックスの重複があるLノーツ) 分だけ確保する。
             // 親オブジェクトはインデックスをその名前に入れて生成
-            parents = duplicatesIndex.Select(item => new GameObject($"LongNoteMesh-{item.Key}")).ToArray();
+            GameObject[] parents = duplicateIndexes.Select(i => new GameObject($"LongNoteRibbon-{i}")).ToArray();
 
-            // 複数あるLノーツのインデックスを記録した配列
-            int[] duplicateIndexKeys = duplicatesIndex.Keys.ToArray();
-
-            // インデックスが重複した中間点有りLノーツの欠片を入れ子構造にして、インデックスごとにひとまとまりのオブジェクトができるよう調整
-            for (int j = 0; j < duplicateIndexKeys.Length; j++)
+            // インデックスが重複した中間点有りLノーツの欠片を入れ子構造にして、
+            // インデックスごとにひとまとまりのオブジェクトができるよう調整
+            for (int i = 0; i < duplicateIndexes.Length; i++)
             {
                 // 親にはコンポーネントを新しく設定する
-                parents[j].AddComponent<LongNote>().SetInfo(Reference.NoteType.LinearLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Ribbon, true);
-                parents[j].AddComponent<MeshCollider>();
-                for (int k = 0; k < meshIndexList.Count; k++)
+                parents[i].AddComponent<LongNote>().SetInfo(Reference.NoteType.LinearLong, duplicateIndexes[i], Reference.LongNoteStatus.Ribbon, true);
+                parents[i].AddComponent<MeshCollider>();
+
+                for (int j = 0; j < meshIndexList.Count; j++)
                 {
-                    if (ribbonList[k].GetComponent<LongNote>().index == duplicateIndexKeys[j])
+                    if (ribbons[j].GetComponent<LongNote>().index == duplicateIndexes[i])
                     {
-                        // 入れ子にする欠片の方はコンポーネントを削除する
-                        ribbonList[k].transform.SetParent(parents[j].transform);
+                        // インデックスが重複しているLノーツの断片を、同じインデックスをもつ親オブジェクトの子にする
+                        ribbons[j].transform.SetParent(parents[i].transform);
+
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
-                        if (ribbonList[k].transform.childCount > 0)
+                        if (ribbons[j].transform.childCount > 0)
                         {
-                            parents[j].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexKeys[j], Reference.LongNoteStatus.Ribbon, true);
+                            parents[i].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexes[i], Reference.LongNoteStatus.Ribbon, true);
                         }
-                        Destroy(ribbonList[k].GetComponent<Note>());
-                        Destroy(ribbonList[k].GetComponent<LongNote>());
+
+                        // 入れ子にした欠片の方はコンポーネントを削除する
+                        Destroy(ribbons[j].GetComponent<Note>());
+                        Destroy(ribbons[j].GetComponent<LongNote>());
                     }
                 }
             }
 
-            // 新しいリストは順番で代入できるように一旦配列で作成
-            GameObject[] newMeshArray = new GameObject[maxNumberOfLongNotes + 1];
+            // # 1つしかないものを処理
+
+            // リストの中から1つしかないインデックスと実際に格納されたリストのなかでのインデックス番号を抽出する。
+            // Note：1つしかないノーツインデックス
+            // OnRibbons：ribbons (meshIndexList と同等の並び) 内で、Note の値が入っている位置（ribbons でのインデックス）
+            var uniqueIndexes = meshIndexList.GroupBy(x => x).Where(x => x.Count() == 1).Select(x => new { Note = x.Key, OnRibbons = meshIndexList.IndexOf(x.Key) }).ToArray();
 
             // 1つしかないLノーツインデックスをもつメッシュの配列たち
-            // 元のリストの順番におけるインデックス番号
-            int[] uniqueValues = uniquesIndex.Values.ToArray();
+            // 新しいリストは順番で代入できるように一旦配列で確保
+            GameObject[] newMeshes = new GameObject[maxNumberOfLongNotes + 1];
 
-            // 実際のLノーツインデックス
-            int[] uniqueKeys = uniquesIndex.Keys.ToArray();
-
-            //新しいリスト（配列）に、Lノーツインデックス順にメッシュを追加。
-            for (int l = 0, n = 0, m = 0; l < ribbonList.Count; l++)
+            // 新しいリスト（配列）に、Lノーツインデックス順にメッシュを追加。
+            // duplicateIndexes と uniqueIndexes は互いに重複しない実際のLノーツインデックスなので、直接キーとして代入できる
+            for (int i = 0; i < duplicateIndexes.Length; i++)
             {
-                try
-                {
-                    if (l == duplicateIndexKeys[n] && n < duplicateIndexKeys.Length)
-                    {
-                        newMeshArray[l] = parents[n];
-                        if (n < duplicateIndexKeys.Length - 1) { n++; }
-                    }
-                }
-                catch (System.IndexOutOfRangeException) { }
+                newMeshes[duplicateIndexes[i]] = parents[i];
+            }
 
-                try
-                {
-                    if (l == uniqueValues[m])
-                    {
-                        newMeshArray[uniqueKeys[m]] = ribbonList[uniqueValues[m]];
-                        if (m < uniqueValues.Length - 1) { m++; }
-                    }
-                }
-                catch (System.IndexOutOfRangeException) { }
+            for (int i = 0; i < uniqueIndexes.Length; i++)
+            {
+                newMeshes[uniqueIndexes[i].Note] = ribbons[uniqueIndexes[i].OnRibbons];
             }
 
             // 新しいリストへ変更を反映する
-            ribbonList.Clear();
-            ribbonList = newMeshArray.ToList();
-            /*
-            longNoteMeshList.Reverse();
-            foreach (GameObject item in longNoteMeshList)
-            {
-                item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
-                longNotesList.Add(item.GetComponent<LongNotes>());
-            }
-            notesObjects = innerNotes.Values.ToList();
-            notesObjects.Reverse();
-            foreach (var l in notesObjects) { l.Reverse(); }*/
+            ribbons.Clear();
+            ribbons = newMeshes.ToList();
+
+            // 共通の親にまとめる
+            ribbons.ForEach(ribbon => ribbon.transform.SetParent(noteObjectParent));
         }
 
         public override void NotesSort()
@@ -895,13 +879,16 @@ namespace FRONTIER.Game.NotesManagement
             SetTransform();
 
             // インデックスを降順にソートし直したり、リストの中身を求め直す
-            ribbonList.Reverse();
-            foreach (var item in ribbonList)
+            ribbons.Reverse();
+            foreach (var item in ribbons)
             {
                 if (item == null) continue;
+
                 item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
                 longNotesList.Add(item.GetComponent<LongNote>());
             }
+
+            // このクラスで管理するのはロングノーツの始点以外
             notesObjects = intermediateNotes.Values.ToList();
             notesObjects.Reverse();
             notesObjects.ForEach(notes => notes.Reverse());
