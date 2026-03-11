@@ -11,7 +11,7 @@ namespace FRONTIER.Game.NotesManagement
     /// ロングノーツ生成を行うクラス。
     /// </summary>
     [System.Serializable]
-    public class LongNotesGenerator : NotesManager<List<int>, List<float>, List<GameObject>>
+    public class LongNotesGenerator : NotesManager<List<int>, List<float>, List<LongNote>>
     {
         #region フィールド
 
@@ -41,12 +41,12 @@ namespace FRONTIER.Game.NotesManagement
         /// <remarks>
         /// Keyにロングノーツのインデックス、Valueにそのインデックスのロングノーツが含む中間ノーツのリストを代入して管理する。
         /// </remarks>
-        public Dictionary<int, List<GameObject>> intermediateNotes = new();
+        public Dictionary<int, List<LongNote>> intermediateNotes = new();
 
         /// <summary>
         /// 生成したロングノーツの帯を格納したリスト。
         /// </summary>
-        public List<GameObject> ribbons = new();
+        public List<LongNote> ribbons = new();
 
         /// <summary>
         /// ロングノーツの帯に適用するマテリアル。
@@ -460,11 +460,12 @@ namespace FRONTIER.Game.NotesManagement
             ribbon.AddComponent<MeshRenderer>();
             ribbon.AddComponent<MeshFilter>();
             ribbon.AddComponent<MeshCollider>();
-            ribbon.AddComponent<LongNote>().SetInfo(categorizedType, index, Reference.LongNoteStatus.Ribbon, hasIntermediate);
             ribbon.tag = "LongNoteRibbon";
             ribbon.layer = LayerMask.NameToLayer("LongNoteRibbon");
+            LongNote note = ribbon.AddComponent<LongNote>();
+            note.SetInfo(categorizedType, index, Reference.LongNoteStatus.Ribbon, hasIntermediate);
 
-            ribbons.Add(ribbon);
+            ribbons.Add(note);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点座標を計算
             Vector3 start = new(LANE_GAP * RIBBON_WIDTH + startLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
@@ -521,10 +522,10 @@ namespace FRONTIER.Game.NotesManagement
             float x, z;
 
             // 実際に Instantiate するノーツ
-            GameObject note;
+            GameObject instance;
 
             // 仮で入れておく中間点のリスト
-            List<GameObject> t_intermediates = new();
+            List<LongNote> t_intermediates = new();
 
             // 現在計算中のロングノーツのインデックスに対応した情報をリストたちから参照するようにする（※）
             for (int i = shouldGenerateNoteIndex; i < laneIndexes.Count; i++)
@@ -555,15 +556,15 @@ namespace FRONTIER.Game.NotesManagement
                     };
 
                     // ノーツの種類と中間点の有無から、生成するノーツのプレハブを決める
-                    note = intermediateNotesCounts[i] == 0
+                    instance = intermediateNotesCounts[i] == 0
                         ? Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, instanceParent)
                         : Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, instanceParent);
 
                     // 値の適用
-                    note.name = objectName;
-                    LongNote prop = note.GetComponent<LongNote>();
-                    prop.Type = (Reference.NoteType)types[i];
-                    prop.index = i;
+                    instance.name = objectName;
+                    LongNote note = instance.GetComponent<LongNote>();
+                    note.Type = (Reference.NoteType)types[i];
+                    note.index = i;
 
                     // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
@@ -576,7 +577,7 @@ namespace FRONTIER.Game.NotesManagement
                     if (j == 0)
                     {
                         // 1番最初のノーツは始点のノーツ
-                        prop.status = Reference.LongNoteStatus.Start;
+                        note.status = Reference.LongNoteStatus.Start;
                     }
                     else
                     {
@@ -605,7 +606,7 @@ namespace FRONTIER.Game.NotesManagement
                             intermediateNotes.Add(i, t_intermediates);
 
                             // 終点のノーツに設定
-                            prop.status = Reference.LongNoteStatus.End;
+                            note.status = Reference.LongNoteStatus.End;
 
                             // 中間点がない場合
                             if (intermediateNotesCounts[i] == 0)
@@ -626,7 +627,7 @@ namespace FRONTIER.Game.NotesManagement
                         else
                         {
                             // それ以外はただの中間点とマーク
-                            prop.status = Reference.LongNoteStatus.Intermediate;
+                            note.status = Reference.LongNoteStatus.Intermediate;
                         }
                     }
                 }
@@ -792,7 +793,7 @@ namespace FRONTIER.Game.NotesManagement
             if (ribbons.Count == 0) return;
 
             // 各ロングノーツに設定された、流れてくる順番 (LongNote.index) を抽出
-            List<int> meshIndexList = ribbons.Select(mesh => mesh.GetComponent<LongNote>().index).ToList();
+            List<int> meshIndexList = ribbons.Select(mesh => mesh.index).ToList();
 
             // ロングノーツのまとまりの個数を取得するために、その最後のインデックス (= インデックスリストの中で一番大きい値) を取得する。
             // (これは0から始まるインデックス番号なので実際はこれに+1した個数)
@@ -817,7 +818,7 @@ namespace FRONTIER.Game.NotesManagement
 
                 for (int j = 0; j < meshIndexList.Count; j++)
                 {
-                    if (ribbons[j].GetComponent<LongNote>().index == duplicateIndexes[i])
+                    if (ribbons[j].index == duplicateIndexes[i])
                     {
                         // インデックスが重複しているLノーツの断片を、同じインデックスをもつ親オブジェクトの子にする
                         ribbons[j].transform.SetParent(parents[i].transform);
@@ -829,8 +830,7 @@ namespace FRONTIER.Game.NotesManagement
                         }
 
                         // 入れ子にした欠片の方はコンポーネントを削除する
-                        Destroy(ribbons[j].GetComponent<Note>());
-                        Destroy(ribbons[j].GetComponent<LongNote>());
+                        Destroy(ribbons[j]);
                     }
                 }
             }
@@ -844,13 +844,13 @@ namespace FRONTIER.Game.NotesManagement
 
             // 1つしかないLノーツインデックスをもつメッシュの配列たち
             // 新しいリストは順番で代入できるように一旦配列で確保
-            GameObject[] newMeshes = new GameObject[maxNumberOfLongNotes + 1];
+            LongNote[] newMeshes = new LongNote[maxNumberOfLongNotes + 1];
 
             // 新しいリスト（配列）に、Lノーツインデックス順にメッシュを追加。
             // duplicateIndexes と uniqueIndexes は互いに重複しない実際のLノーツインデックスなので、直接キーとして代入できる
             for (int i = 0; i < duplicateIndexes.Length; i++)
             {
-                newMeshes[duplicateIndexes[i]] = parents[i];
+                newMeshes[duplicateIndexes[i]] = parents[i].GetComponent<LongNote>();
             }
 
             for (int i = 0; i < uniqueIndexes.Length; i++)

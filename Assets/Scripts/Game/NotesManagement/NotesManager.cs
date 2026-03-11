@@ -17,7 +17,7 @@ namespace FRONTIER.Game.NotesManagement
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
     /// <typeparam name="TInstances">
-    /// リスト <c>instances</c> の型。基本は<c>GameObject</c><br/>
+    /// リスト <c>instances</c> の型。基本は<c><see cref="Note"/></c><br/>
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
     [Serializable]

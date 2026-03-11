@@ -8,7 +8,7 @@ namespace FRONTIER.Game.NotesManagement
     /// <summary>
     /// ノーツ生成を行うクラス。
     /// </summary>
-    public class NotesGenerator : NotesManager<int, float, GameObject>
+    public class NotesGenerator : NotesManager<int, float, Note>
     {
         #region フィールド
 
@@ -118,7 +118,7 @@ namespace FRONTIER.Game.NotesManagement
                     longNotesGenerator.GenerateNotes();
                 }
                 // ノーツのタイプが通常ノーツであった時
-                if (data.notes[i].type == (int)Reference.NoteType.Normal)
+                else if (data.notes[i].type == (int)Reference.NoteType.Normal)
                 {
                     reachedTimes.Add(CalculateNoteTime(data.notes[i].LPB, data.notes[i].num));
                     laneIndexes.Add(data.notes[i].block);
@@ -132,26 +132,19 @@ namespace FRONTIER.Game.NotesManagement
                     float z = reachedTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
 
                     // ノーツをゲームオブジェクトとして生成する
-                    instances.Add(Instantiate(notePrefab, new(x, Reference.noteOrigin.y, z), Quaternion.identity, instanceParent));
+                    GameObject instance = Instantiate(notePrefab, new(x, Reference.noteOrigin.y, z), Quaternion.identity, instanceParent);
+
+                    // そのコンポーネントを追加
+                    instances.Add(instance.GetComponent<Note>());
 
                     // プロパティを渡す
-                    instances[^1].GetComponent<Note>().Type = Reference.NoteType.Normal;
-                    instances[^1].GetComponent<Note>().index = i;
+                    instances[^1].Type = Reference.NoteType.Normal;
+                    instances[^1].index = i;
                     instances[^1].name = $"Note-{i}";
                 }
             }
 
-            // Linqを使ってノーツの到達時間を降順にソートする
-            reachedTimes.Reverse();
-
             SortNotes();
-
-            // 各ノーツにリスト内でのインデックスの情報を渡す
-            for (int i = 0; i < instances.Count; i++)
-            {
-                Note info = instances[i].GetComponent<Note>() ?? instances[i].GetComponent<LongNote>();
-                info.noteIndex = i;
-            }
 
             // ロングノーツの整理
             longNotesGenerator.SortNotes();
@@ -178,6 +171,10 @@ namespace FRONTIER.Game.NotesManagement
 
         public override void SortNotes()
         {
+            // ノーツの到達時間を降順にソートする
+            // 早く着くものから順に入れたので、逆順にすればいい
+            reachedTimes.Reverse();
+
             // Z座標の降順（＝到達順）でソートしたインデックスを取得し、各リストに適用する
             // OrderbyDescending が遅延評価のため、ToList でインスタンスを生成して確定させる
             var orderedByReachingIndexes = Enumerable.Range(0, instances.Count)
@@ -195,6 +192,12 @@ namespace FRONTIER.Game.NotesManagement
             instances.AddRange(sortedInstances);
             laneIndexes.AddRange(sortedLanes);
             types.AddRange(sortedTypes);
+
+            // 各ノーツにリスト内でのインデックスの情報を渡す
+            for (int i = 0; i < instances.Count; i++)
+            {
+                instances[i].noteIndex = i;
+            }
         }
 
         #endregion

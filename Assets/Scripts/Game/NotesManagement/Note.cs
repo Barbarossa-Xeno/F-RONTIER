@@ -31,7 +31,7 @@ namespace FRONTIER.Game.NotesManagement
         public int index;
 
         /// <summary>
-        /// このノーツが含まれているリスト (<see cref="NotesManager.notesObjects"/> ) でのインデックス。生成順
+        /// このノーツが含まれているリスト (<see cref="NotesManager.instances"/> ) でのインデックス。生成順
         /// </summary>
         public int noteIndex;
 
