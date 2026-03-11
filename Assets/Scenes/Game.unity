@@ -1710,7 +1710,7 @@ MonoBehaviour:
   notesGenerator: {fileID: 963748245}
   longNotesGenerator: {fileID: 963748247}
   laneManager: {fileID: 229032932}
-  noteDeleted:
+  noteJudged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 459182123}
@@ -8779,7 +8779,7 @@ MonoBehaviour:
   notesCount: 0
   notePrefab: {fileID: 7652398199858680092, guid: 5d128bac180a7a04ead3704594fbd3e5, type: 3}
   longNotesGenerator: {fileID: 963748247}
-  data:
+  patternData:
     name: 
     maxBlock: 0
     BPM: 0

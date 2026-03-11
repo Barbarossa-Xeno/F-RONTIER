@@ -39,9 +39,9 @@ namespace FRONTIER.Game.Judgement
         [SerializeField] private LaneManager laneManager;
 
         /// <summary>
-        /// ノーツが削除されたタイミングで発火するイベント。
+        /// ノーツが判定されたタイミングで発火するイベント。
         /// </summary>
-        [Header("ノーツが削除されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent noteDeleted;
+        [Header("ノーツが判定されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent noteJudged;
 
         /// <summary>
         /// 判定の対象とするノーツ。
@@ -341,7 +341,7 @@ namespace FRONTIER.Game.Judgement
             notesGenerator.types.RemoveAt(index);
             notesGenerator.instances.RemoveAt(index);
 
-            noteDeleted?.Invoke();
+            noteJudged?.Invoke();
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace FRONTIER.Game.Judgement
                 Manager.score.combo = 0;
             }
 
-            noteDeleted?.Invoke();
+            noteJudged?.Invoke();
         }
 
         /// <summary>
@@ -451,7 +451,7 @@ namespace FRONTIER.Game.Judgement
                 longNotesGenerator.ribbons.RemoveAt(targetLongNoteListIndex);
             }
 
-            noteDeleted?.Invoke();
+            noteJudged?.Invoke();
         }
 
         /// <summary>
@@ -515,7 +515,7 @@ namespace FRONTIER.Game.Judgement
                 Manager.score.judgementStatus[JudgementStatus.Perfect]++;
                 Manager.score.combo++;
                 Manager.score.CalculateScore();
-                noteDeleted?.Invoke();
+                noteJudged?.Invoke();
             }
 
             if (Mathf.Abs(notesGenerator.instances[^1].transform.position.z - 7.3f) < 1.0f) { Judgement(^1); }
