@@ -46,7 +46,7 @@ namespace FRONTIER.Game.Judgement
         /// <summary>
         /// 判定の対象とするノーツ。
         /// </summary>
-        private Note target;
+        [SerializeField] private Note target;
 
         /// <summary>
         /// 1次元目にレーン番号、2次元目にそのレーンを流れるノーツを格納するリスト。
@@ -164,40 +164,8 @@ namespace FRONTIER.Game.Judgement
         /// </summary>
         /// <param name="laneIndex"></param>
         /// <param name="tapTime"></param>
-        public void JudgeNote(int laneIndex, float tapTime)
+        private void JudgeNote(int laneIndex, float tapTime)
         {
-            #region ローカルメソッド
-
-            // タップされたレーンと押された時間をもとにノーツの判定をする
-            /// <param name="laneIndex">タップされたレーン</param>
-            /// <param name="tapTime">タップされた時間</param>
-            void Judge(int laneIndex, float tapTime)
-            {
-                // インデックスがオーバーしたときのことを考えて、例外はキャッチだけする
-                try
-                {
-                    if (laneIndex == notesGenerator.laneIndexes[^1])
-                    {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^1]));
-                    }
-                    else if (laneIndex == notesGenerator.laneIndexes[^2])
-                    {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^2]));
-                    }
-                    else if (laneIndex == notesGenerator.laneIndexes[^3])
-                    {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^3]));
-                    }
-                    else if (laneIndex == notesGenerator.laneIndexes[^4])
-                    {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^4]));
-                    }
-                }
-                catch (ArgumentOutOfRangeException) { }
-            }
-
-            #endregion
-
             // そのレーンを流れるノーツオブジェクトが入るリストの初期化
             EachLanesNotes[laneIndex].Clear();
 
@@ -222,7 +190,30 @@ namespace FRONTIER.Game.Judgement
             // MinBy の実装がまだらしいので、代用
             target = EachLanesNotes[laneIndex].OrderBy(note => note.transform.position.z).First();
 
-            Judge(laneIndex, tapTime);
+            // 同じレーン上を進むノーツのうち,最大4候補を target と見積もって判定する
+            // インデックスがオーバーしたときのことを考えて、例外はキャッチだけする
+            try
+            {
+                // JudgeStatus() では target が判定の対象に決まれば、そのあとに除去処理が走るので
+                // if 文を重ねるのでは target の存在チェックを複数回行うことになってしまい非効率。なので if-else if
+                if (laneIndex == notesGenerator.laneIndexes[^1])
+                {
+                    JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^1]));
+                }
+                else if (laneIndex == notesGenerator.laneIndexes[^2])
+                {
+                    JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^2]));
+                }
+                else if (laneIndex == notesGenerator.laneIndexes[^3])
+                {
+                    JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^3]));
+                }
+                else if (laneIndex == notesGenerator.laneIndexes[^4])
+                {
+                    JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^4]));
+                }
+            }
+            catch (ArgumentOutOfRangeException) { }
         }
 
         /// <summary>
@@ -240,7 +231,7 @@ namespace FRONTIER.Game.Judgement
             for (i = 1; i <= longNotesGenerator.instances.Count; i++)
             {
                 // インデックスが同じコンポーネントがあったら、そのインデックスを i にコピー
-                if (longNotesGenerator.ribbons[^i].GetComponent<LongNote>().Index == longNoteIndex) { break; }
+                if (longNotesGenerator.ribbons[^i].Index == longNoteIndex) { break; }
             }
 
             // 中間点を持つ場合 -> 中間点と終点のチェック
@@ -280,7 +271,7 @@ namespace FRONTIER.Game.Judgement
         /// <summary>
         /// ノーツが押されたときのラグに合わせて、判定をする。
         /// </summary>
-        /// <param name = "timeLag">実際にノーツが押された時間と押されるべき時間とのラグ。</param>
+        /// <param name="timeLag">実際にノーツが押された時間と押されるべき時間とのラグ。</param>
         private void JudgeStatus(float timeLag)
         {
             // ターゲットノーツがリストに存在するか確認する
@@ -310,7 +301,7 @@ namespace FRONTIER.Game.Judgement
                     Manager.score.apparentScoreValue += JudgementStatusScore.GOOD;
                     Manager.score.judgementStatus[JudgementStatus.Good]++;
                     Manager.score.combo++;
-                    // 絶対精度良くないから、Goodまではコンボ許容しないと俺が怒るぜ
+                    // 精度の問題もあり、Goodまではコンボ許容することにする
                 }
                 else if (timeLag <= JudgementThreshold[JudgementStatus.Bad])
                 {
