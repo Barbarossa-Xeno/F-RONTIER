@@ -32,25 +32,21 @@ namespace FRONTIER.Game.NotesManagement
         /// </summary>
         [SerializeField] private NotePatternData data;
 
-        /// <summary>
-        /// ノーツの情報を格納する各リスト（<see cref = "notesObjects"/>など）をノーツの降る順番に合わせて
-        /// ソートするためにソートの基底にするリスト
-        /// </summary>
-        private List<float> notePositionZBase;
-
         #endregion
 
-        #region Monobehaviorメソッド
+        #region MonoBehaviorメソッド
 
         void Awake()
         {
             data = base.LoadNotePattern(PlayInfo.ID, PlayInfo.DifficultyTo(PlayInfo.Difficulty).Item1);
             GenerateNotes();
-            //最大スコアの計算
+            // 最大スコアの計算
             Manager.score.maxScoreValue = notesCount * Reference.JudgementStatusScore.PERFECT;
             Manager.score.maxComboCount = notesCount;
+
+            // 譜面データからわかることをプレイ状況に反映
             PlayInfo.Bpm = data.BPM;
-            PlayInfo.Offset = (float)data.offset / 50000f;
+            PlayInfo.Offset = data.offset / 50000f;
         }
 
         #endregion
@@ -66,8 +62,9 @@ namespace FRONTIER.Game.NotesManagement
             // [ループ①]
             for (int i = 0; i < data.notes.Length; i++)
             {
-                //もし、ノーツのタイプが「2」または「３」=> いずれかのロングノーツであった時
-                if (data.notes[i].type == (int)Reference.NoteType.LinearLong || data.notes[i].type == (int)Reference.NoteType.CurvedLong)
+                // もし、ノーツのタイプが「2」または「3」=> いずれかのロングノーツであった時
+                if (data.notes[i].type == (int)Reference.NoteType.LinearLong
+                    || data.notes[i].type == (int)Reference.NoteType.CurvedLong)
                 {
                     // ロングノーツのプロパティ（レーン番号や到達時間等）だけを格納するリスト
                     List<float> longNoteTimes = new();
@@ -105,8 +102,8 @@ namespace FRONTIER.Game.NotesManagement
                     }
 
                     // 始点・終点以外にいくつかの中間点が存在するノーツは生成時に処理を分岐させたい
-                    // そこで、中間点の数を格納するリストを生成側のLongNotesGeneratorに作成しておく
-                    // notes[i].notesの長さから1引くと中間点の数になる（終点を除外している。）
+                    // そこで、中間点の数を格納するリストを生成側の LongNotesGenerator に作成しておく
+                    // notes[i].notes の長さから1引くと中間点の数になる（終点を除外している。）
                     longNotesGenerator.intermediateNotesCounts.Add(data.notes[i].notes.Length - 1);
                     longNotesGenerator.notesTypes.Add(data.notes[i].type);
 
@@ -129,26 +126,24 @@ namespace FRONTIER.Game.NotesManagement
 
                     // 座標計算
                     // X座標の振り分け
-                    float positionX = GetLaneX(data.notes[i].block);
+                    float x = GetLaneX(data.notes[i].block);
 
                     // Z座標の算出
-                    float positionZ = notesTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
+                    float z = notesTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
 
                     // ノーツをゲームオブジェクトとして生成する
-                    noteInstances.Add(Instantiate(notePrefab, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteInstanceParent));
+                    noteInstances.Add(Instantiate(notePrefab, new(x, Reference.noteOrigin.y, z), Quaternion.identity, noteInstanceParent));
 
                     // プロパティを渡す
                     noteInstances[^1].GetComponent<Note>().Type = Reference.NoteType.Normal;
                     noteInstances[^1].GetComponent<Note>().index = i;
-                    noteInstances[^1].name = $"Note_{i}";
+                    noteInstances[^1].name = $"Note-{i}";
                 }
             }
 
             // Linqを使ってノーツの到達時間を降順にソートする
             notesTimes.Reverse();
 
-            // ノーツのオブジェクトを到達順に整理したいが、Linqを使ったソートでは方法が思いつかないため、オブジェクトのZ座標を利用する
-            notePositionZBase = noteInstances.Select(note => note.transform.position.z).ToList();
             SortNotes();
 
             // 各ノーツにリスト内でのインデックスの情報を渡す
@@ -171,82 +166,35 @@ namespace FRONTIER.Game.NotesManagement
         private float CalculateNoteTime(int lpb, int index)
         {
             // 1拍あたりの秒数
-            float secPerBeat = 60f / (float)data.BPM;
+            float secPerBeat = 60f / data.BPM;
             // ノーツの間隔が最小のときの位置（小節位置）
-            float minDistance = secPerBeat / (float)lpb;
+            float minDistance = secPerBeat / lpb;
             // ノーツの判定線への到達時間
             // 小節位置に与えられた小節の通し番号（インデックス）を乗算して実際の再生時間を算出する
-            float noteTime = (float)index * minDistance + PlayInfo.JudgingTiming;
+            float noteTime = index * minDistance + PlayInfo.JudgingTiming;
 
-            return noteTime + (float)data.offset / 50000f;
-        }
-
-        /// <summary>
-        /// ノーツのZ座標をもとに、ノーツの情報のリストをノーツが流れてくる順番通りにソートする。
-        /// </summary>
-        /// <remarks>
-        /// 両リストは、同じインデックスに同じ対象のノーツの情報を格納しているので、
-        /// バブルソートで交換する時にそのインデックス番号を使って、対象リストの値を交換できる
-        /// </remarks>
-        /// <returns>ソート済みリスト</returns>
-        /// <param name = "targetList">整列する前のノーツのオブジェクトのリスト。</param>
-        /// <param name = "baseList">Z座標を格納したリスト</param>
-        /// <param name = "isAscending"><c>true</c>なら昇順、<c>false</c>なら降順</param>
-        private List<T> NotesSort<T>(List<T> targetList, bool isAscending)
-        {
-            float tmp = 0;
-            T target_tmp = default;
-
-            // リストは変更が参照されて引数に設定した元のリストまで変わるので実体コピーすること。
-            List<float> clone = new(notePositionZBase);
-
-            if (isAscending)
-            {
-                for (int i = 0; i < clone.Count; i++)
-                {
-                    for (int j = clone.Count - 1; j > i; j--)
-                    {
-                        if (clone[j - 1] > clone[j])
-                        {
-                            tmp = clone[j - 1];
-                            target_tmp = targetList[j - 1];
-                            clone[j - 1] = clone[j];
-                            targetList[j - 1] = targetList[j];
-                            clone[j] = tmp;
-                            targetList[j] = target_tmp;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < clone.Count; i++)
-                {
-                    for (int j = clone.Count - 1; j > i; j--)
-                    {
-                        if (clone[j - 1] < clone[j])
-                        {
-                            tmp = clone[j - 1];
-                            target_tmp = targetList[j - 1];
-                            clone[j - 1] = clone[j];
-                            targetList[j - 1] = targetList[j];
-                            clone[j] = tmp;
-                            targetList[j] = target_tmp;
-                        }
-                    }
-                }
-            }
-            return targetList;
+            return noteTime + data.offset / 50000f;
         }
 
         public override void SortNotes()
         {
-            // ノーツオブジェクトのソート
-            NotesSort(noteInstances, false);
-            // ノーツレーンのソート
-            NotesSort(laneIndexes, false);
-            // ノーツタイプのソート
-            NotesSort(notesTypes, false);
+            // Z座標の降順（＝到達順）でソートしたインデックスを取得し、各リストに適用する
+            // OrderbyDescending が遅延評価のため、ToList でインスタンスを生成して確定させる
+            var orderedByReachingIndexes = Enumerable.Range(0, noteInstances.Count)
+                .OrderByDescending(i => noteInstances[i].transform.position.z).ToList();
+
+            var sortedInstances = orderedByReachingIndexes.Select(i => noteInstances[i]).ToList();
+            var sortedLanes     = orderedByReachingIndexes.Select(i => laneIndexes[i]).ToList();
+            var sortedTypes     = orderedByReachingIndexes.Select(i => notesTypes[i]).ToList();
+
+            noteInstances.Clear();
+            laneIndexes.Clear();
+            notesTypes.Clear();
+
+            // 指定しなおし
+            noteInstances.AddRange(sortedInstances);
+            laneIndexes.AddRange(sortedLanes);
+            notesTypes.AddRange(sortedTypes);
         }
 
         #endregion
