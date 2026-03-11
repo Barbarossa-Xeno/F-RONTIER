@@ -8,10 +8,10 @@ namespace FRONTIER.Game.Notes
     // このクラスでの ribbon はロングノーツ間に生成する「帯」状のメッシュのことを指します。
 
     /// <summary>
-    /// ロングノーツ生成を行うクラス。
+    /// ロングノーツの生成と管理を行うクラス。
     /// </summary>
     [System.Serializable]
-    public class LongNotesGenerator : NotesManagerBase<List<int>, List<float>, List<LongNote>>
+    public class LongNotesManager : NotesManagerBase<List<int>, List<float>, List<LongNote>>
     {
         #region フィールド
 
@@ -26,9 +26,9 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private GameObject directNotePrefab;
 
         /// <summary>
-        /// <see cref = "NotesGenerator"/>
+        /// <see cref = "NotesManager"/>
         /// </summary>
-        [SerializeField] private NotesGenerator notesGenerator;
+        [SerializeField] private NotesManager notesGenerator;
 
         /// <summary>
         /// 各ロングノーツごとの中間点の数をインデックス順に格納するリスト。

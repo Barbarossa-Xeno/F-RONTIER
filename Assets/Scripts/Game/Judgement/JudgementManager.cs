@@ -24,14 +24,14 @@ namespace FRONTIER.Game.Judgement
         [SerializeField] private Score score;
 
         /// <summary>
-        /// <see cref = "NotesGenerator"/>
+        /// <see cref = "NotesManager"/>
         /// </summary>
-        [SerializeField] private NotesGenerator notesGenerator;
+        [SerializeField] private NotesManager notesGenerator;
 
         /// <summary>
-        /// <see cref = "LongNotesGenerator"/>
+        /// <see cref = "LongNotesManager"/>
         /// </summary>
-        [SerializeField] private LongNotesGenerator longNotesGenerator;
+        [SerializeField] private LongNotesManager longNotesGenerator;
 
         /// <summary>
         /// <see cref = "LaneManager"/>
