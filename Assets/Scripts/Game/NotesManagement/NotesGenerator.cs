@@ -129,7 +129,7 @@ namespace FRONTIER.Game.NotesManagement
 
                     // 座標計算
                     // X座標の振り分け
-                    float positionX = SwitchNoteLane(data.notes[i].block);
+                    float positionX = GetLaneX(data.notes[i].block);
 
                     // Z座標の算出
                     float positionZ = notesTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;

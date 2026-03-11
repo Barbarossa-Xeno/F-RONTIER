@@ -32,10 +32,10 @@ namespace FRONTIER.Utility
         /// <param name = "scene">現在のシーン。</param>
         public virtual void Destruct(Reference.Scene.GameScenes scene) { }
         
-        /// <summary>レーン番号に応じてノーツのX座標を設定します。</summary>
+        /// <summary>レーン番号に応じて、そのレーンにノーツが適切に配置されるようなX座標を返します。</summary>
         /// <param name = "laneIndex">レーン番号。</param>
         /// <param name = "useSplitLane">レーン数を細分するか。</param>
-        protected virtual float SwitchNoteLane(int laneIndex, bool useSplitLane = false)
+        protected virtual float GetLaneX(int laneIndex, bool useSplitLane = false)
         {
             float x = 0;
             if (!useSplitLane)

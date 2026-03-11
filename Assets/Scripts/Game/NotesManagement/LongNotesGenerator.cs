@@ -527,7 +527,7 @@ namespace FRONTIER.Game.NotesManagement
             int shouldGenerateNoteIndex = laneNumbers.Count - 1;
             
             // 算出するX座標とZ座標
-            float x = 0, z = 0;
+            float x, z;
 
             // 実際に Instantiate するノーツ
             GameObject note;
@@ -538,14 +538,20 @@ namespace FRONTIER.Game.NotesManagement
             // 現在計算中のロングノーツのインデックスに対応した情報をリストたちから参照するようにする（※）
             for (int i = shouldGenerateNoteIndex; i < laneNumbers.Count; i++)
             {
-                // ロングノーツひとまとまりに対応した二次元配列を使って座標を計算する
-                float[,] _positionZ = new float[laneNumbers.Count, laneNumbers[i].Count];
                 t_intermediates.Clear();
+
+                // ロングノーツひとまとまりに対応した二次元配列を使って座標を計算する
+                // 1次元目はロングノーツ1まとまとまりとして全体の中でのインデックス、2次元目はそのロングノーツ中のノーツのインデックス（始点、中間点、終点）
+                // ノーツ間をつなぐ帯の生成に前後の座標が必要なためこの形で記録しておくと参照しやすい
+                float[,] zRecords = new float[laneNumbers.Count, laneNumbers[i].Count];
+
+                // ロングノーツ内のノーツの数の分だけループ
                 for (int j = 0; j < laneNumbers[i].Count; j++)
                 {
-                    x = SwitchNoteLane(laneNumbers[i][j]);
+                    // ノーツの座標を求める
+                    x = GetLaneX(laneNumbers[i][j]);
                     z = notesTimes[i][j] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
-                    _positionZ[i, j] = z;
+                    zRecords[i, j] = z;
 
                     // ロングノーツの種類とオブジェクトとしてつけておく名前を、ノーツの種類と中間点の有無から決める
                     var (longNoteType, objectName) = (Reference.NoteType)notesTypes[i] switch
@@ -593,9 +599,9 @@ namespace FRONTIER.Game.NotesManagement
                             CreateRibbon
                             (
                                 laneNumbers[i][j - 1],
-                                _positionZ[i, j - 1] + NOTE_DEPTH / 2,
+                                zRecords[i, j - 1] + NOTE_DEPTH / 2,
                                 laneNumbers[i][j],
-                                _positionZ[i, j] - NOTE_DEPTH / 2,
+                                zRecords[i, j] - NOTE_DEPTH / 2,
                                 longNoteType,
                                 i
                             );
@@ -618,9 +624,9 @@ namespace FRONTIER.Game.NotesManagement
                                 CreateRibbon
                                 (
                                     start,
-                                    _positionZ[i, 0] + NOTE_DEPTH / 2,
+                                    zRecords[i, 0] + NOTE_DEPTH / 2,
                                     end,
-                                    _positionZ[i, j] - NOTE_DEPTH / 2,
+                                    zRecords[i, j] - NOTE_DEPTH / 2,
                                     longNoteType, 
                                     i
                                 );

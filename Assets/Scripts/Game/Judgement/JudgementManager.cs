@@ -226,7 +226,7 @@ namespace FRONTIER.Game
             // そのレーンを流れるノーツの中で一番近そうなノーツを何個か取得
             foreach (GameObject note in notesGenerator.notesObjects)
             {
-                if (note.transform.position.x == SwitchNoteLane(laneIndex))
+                if (note.transform.position.x == GetLaneX(laneIndex))
                 {
                     float differenceZ = GetNotePositionDifference(note.transform.position.z);
                     if (differenceZ > -1.5f && differenceZ < 5f)
