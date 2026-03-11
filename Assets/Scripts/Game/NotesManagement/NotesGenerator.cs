@@ -139,7 +139,7 @@ namespace FRONTIER.Game.NotesManagement
 
                     // プロパティを渡す
                     instances[^1].Type = Reference.NoteType.Normal;
-                    instances[^1].index = i;
+                    instances[^1].Index = i;
                     instances[^1].name = $"Note-{i}";
                 }
             }
@@ -196,7 +196,7 @@ namespace FRONTIER.Game.NotesManagement
             // 各ノーツにリスト内でのインデックスの情報を渡す
             for (int i = 0; i < instances.Count; i++)
             {
-                instances[i].noteIndex = i;
+                instances[i].NoteIndex = i;
             }
         }
 

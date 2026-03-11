@@ -88,9 +88,9 @@ namespace FRONTIER.Utility
         }
 
         /// <summary>
-        /// ロングノーツのステータス。
+        /// ロングノーツのどの部分か。
         /// </summary>
-        public enum LongNoteStatus
+        public enum LongNotePart
         {
             Start, Intermediate, End, Ribbon, None
         }

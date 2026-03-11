@@ -17,6 +17,30 @@ namespace FRONTIER.Game.NotesManagement
         [SerializeField] private Reference.NoteType type;
 
         /// <summary>
+        /// このノーツが流れてくる順番。
+        /// </summary>
+        [SerializeField] private int index;
+
+        /// <summary>
+        /// このノーツが含まれているリスト (<see cref="NotesManager.instances"/> ) でのインデックス。生成順
+        /// </summary>
+        [SerializeField] private int noteIndex;
+
+        /// <summary>
+        /// このノーツが判定ラインを超過したときに発火するイベント。
+        /// </summary>
+        public event Action ReachedLineEvent;
+
+        /// <summary>
+        /// 判定線を超過したか。
+        /// </summary>
+        [SerializeField] protected bool isReachedLine = false;
+
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
         /// このノーツの種類。
         /// </summary>
         public Reference.NoteType Type
@@ -28,22 +52,20 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// このノーツが流れてくる順番。
         /// </summary>
-        public int index;
+        public int Index
+        {
+            get => index;
+            set => index = value;
+        }
 
         /// <summary>
-        /// このノーツが含まれているリスト (<see cref="NotesManager.instances"/> ) でのインデックス。生成順
+        /// このノーツが含まれているリスト (<see cref="NotesManager.instances"/>) でのインデックス。生成順
         /// </summary>
-        public int noteIndex;
-
-        /// <summary>
-        /// このノーツが判定ラインを超過したときに発火するイベント。
-        /// </summary>
-        public event Action ReachedLineEvent;
-
-        /// <summary>
-        /// 判定線を超過したか。
-        /// </summary>
-        protected bool isReachedLine = false;
+        public int NoteIndex
+        {
+            get => noteIndex;
+            set => noteIndex = value;
+        }
 
         #endregion
 
@@ -78,11 +100,11 @@ namespace FRONTIER.Game.NotesManagement
         #region メソッド
 
         /// <summary>
-        /// 情報フィールドに値を設定する。
+        /// 各プロパティに値を設定する。
         /// </summary>
         /// <param name="type">ノーツの種類</param>
         /// <param name="index">順番</param>
-        public void SetInfo(Reference.NoteType type, int index)
+        public void SetProperties(Reference.NoteType type, int index)
         {
             this.Type = type;
             this.index = index;

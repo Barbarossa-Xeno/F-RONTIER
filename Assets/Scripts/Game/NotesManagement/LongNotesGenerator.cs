@@ -463,7 +463,7 @@ namespace FRONTIER.Game.NotesManagement
             ribbon.tag = "LongNoteRibbon";
             ribbon.layer = LayerMask.NameToLayer("LongNoteRibbon");
             LongNote note = ribbon.AddComponent<LongNote>();
-            note.SetInfo(categorizedType, index, Reference.LongNoteStatus.Ribbon, hasIntermediate);
+            note.SetInfo(categorizedType, index, Reference.LongNotePart.Ribbon, hasIntermediate);
 
             ribbons.Add(note);
 
@@ -564,7 +564,7 @@ namespace FRONTIER.Game.NotesManagement
                     instance.name = objectName;
                     LongNote note = instance.GetComponent<LongNote>();
                     note.Type = (Reference.NoteType)types[i];
-                    note.index = i;
+                    note.Index = i;
 
                     // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
@@ -577,7 +577,7 @@ namespace FRONTIER.Game.NotesManagement
                     if (j == 0)
                     {
                         // 1番最初のノーツは始点のノーツ
-                        note.status = Reference.LongNoteStatus.Start;
+                        note.Part = Reference.LongNotePart.Start;
                     }
                     else
                     {
@@ -606,7 +606,7 @@ namespace FRONTIER.Game.NotesManagement
                             intermediateNotes.Add(i, t_intermediates);
 
                             // 終点のノーツに設定
-                            note.status = Reference.LongNoteStatus.End;
+                            note.Part = Reference.LongNotePart.End;
 
                             // 中間点がない場合
                             if (intermediateNotesCounts[i] == 0)
@@ -627,7 +627,7 @@ namespace FRONTIER.Game.NotesManagement
                         else
                         {
                             // それ以外はただの中間点とマーク
-                            note.status = Reference.LongNoteStatus.Intermediate;
+                            note.Part = Reference.LongNotePart.Intermediate;
                         }
                     }
                 }
@@ -793,7 +793,7 @@ namespace FRONTIER.Game.NotesManagement
             if (ribbons.Count == 0) return;
 
             // 各ロングノーツに設定された、流れてくる順番 (LongNote.index) を抽出
-            List<int> meshIndexList = ribbons.Select(mesh => mesh.index).ToList();
+            List<int> meshIndexList = ribbons.Select(mesh => mesh.Index).ToList();
 
             // ロングノーツのまとまりの個数を取得するために、その最後のインデックス (= インデックスリストの中で一番大きい値) を取得する。
             // (これは0から始まるインデックス番号なので実際はこれに+1した個数)
@@ -806,19 +806,24 @@ namespace FRONTIER.Game.NotesManagement
 
             // 新たにつくる親オブジェクトをひとまとめにするLノーツ (インデックスの重複があるLノーツ) 分だけ確保する。
             // 親オブジェクトはインデックスをその名前に入れて生成
-            GameObject[] parents = duplicateIndexes.Select(i => new GameObject($"LongNoteRibbon-{i}")).ToArray();
+            LongNote[] parents = duplicateIndexes.Select(i => 
+            {
+                return new GameObject($"LongNoteRibbon-{i}").AddComponent<LongNote>();
+            }).ToArray();
 
             // インデックスが重複した中間点有りLノーツの欠片を入れ子構造にして、
             // インデックスごとにひとまとまりのオブジェクトができるよう調整
             for (int i = 0; i < duplicateIndexes.Length; i++)
             {
-                // 親にはコンポーネントを新しく設定する
-                parents[i].AddComponent<LongNote>().SetInfo(Reference.NoteType.LinearLong, duplicateIndexes[i], Reference.LongNoteStatus.Ribbon, true);
-                parents[i].AddComponent<MeshCollider>();
+                // さっきつけた LongNote を編集
+                parents[i].SetInfo(Reference.NoteType.LinearLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
+                
+                // 親には Collider を新しく設定する
+                parents[i].gameObject.AddComponent<MeshCollider>();
 
                 for (int j = 0; j < meshIndexList.Count; j++)
                 {
-                    if (ribbons[j].index == duplicateIndexes[i])
+                    if (ribbons[j].Index == duplicateIndexes[i])
                     {
                         // インデックスが重複しているLノーツの断片を、同じインデックスをもつ親オブジェクトの子にする
                         ribbons[j].transform.SetParent(parents[i].transform);
@@ -826,7 +831,7 @@ namespace FRONTIER.Game.NotesManagement
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
                         if (ribbons[j].transform.childCount > 0)
                         {
-                            parents[i].GetComponent<LongNote>().SetInfo(Reference.NoteType.CurvedLong, duplicateIndexes[i], Reference.LongNoteStatus.Ribbon, true);
+                            parents[i].SetInfo(Reference.NoteType.CurvedLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
                         }
 
                         // 入れ子にした欠片の方はコンポーネントを削除する
@@ -876,7 +881,7 @@ namespace FRONTIER.Game.NotesManagement
             {
                 if (ribbon == null) continue;
 
-                ribbon.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
+                ribbon.gameObject.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
             }
 
             // このクラスで管理するのはロングノーツの始点以外

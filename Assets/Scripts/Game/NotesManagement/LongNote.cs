@@ -15,24 +15,24 @@ namespace FRONTIER.Game.NotesManagement
         #region フィールド
 
         /// <summary>
-        /// ロングノーツとしてのステータス。
+        /// ロングノーツのどの部分にあたるか。
         /// </summary>
-        public Reference.LongNoteStatus status = default;
+        [SerializeField] private Reference.LongNotePart part = default;
 
         /// <summary>
         /// ロングノーツの種類。
         /// </summary>
-        public Reference.LongNoteType longNoteType = default;
+        [SerializeField] private Reference.LongNoteType longNoteType = default;
 
         /// <summary>
-        /// このロングノーツが中間点を持つか。
+        /// このロングノーツが中間点であるか。
         /// </summary>
-        public bool isInner;
+        [SerializeField] private bool isIntermediate;
 
         /// <summary>
         /// ロングノーツが押下されているか。
         /// </summary>
-        public bool isPressed = false;
+        [SerializeField] private bool isPressed = false;
 
         /// <summary>
         /// ロングノーツが押下されているときに発火するイベント。
@@ -53,6 +53,46 @@ namespace FRONTIER.Game.NotesManagement
         /// 曲線型ロングノーツで必要なコンポーネントなどを取得するインスタンス。
         /// </summary>
         private CurveTypeComponent curveTypeComponent;
+
+        #endregion
+
+        #region プロパティ
+
+        /// <summary>
+        /// ロングノーツのどの部分にあたるか。
+        /// </summary>
+        public Reference.LongNotePart Part
+        {
+            get => part;
+            set => part = value;
+        }
+
+        /// <summary>
+        /// ロングノーツの種類。
+        /// </summary>
+        public Reference.LongNoteType LongNoteType
+        {
+            get => longNoteType;
+            set => longNoteType = value;
+        }
+
+        /// <summary>
+        /// このロングノーツが中間点であるか。
+        /// </summary>
+        public bool IsIntermediate
+        {
+            get => isIntermediate;
+            set => isIntermediate = value;
+        }
+
+        /// <summary>
+        /// ロングノーツが押下されているか。
+        /// </summary>
+        public bool IsPressed
+        {
+            get => isPressed;
+            set => isPressed = value;
+        }
 
         #endregion
 
@@ -136,7 +176,7 @@ namespace FRONTIER.Game.NotesManagement
             else if (longNoteType == Reference.LongNoteType.IntermediateLinear || longNoteType == Reference.LongNoteType.IntermediateCurved)
             {
                 // 中間点があるLノーツの場合、各種コンポーネントを取得してマテリアルを設定する
-                curveTypeComponent = new(transform, isInner);
+                curveTypeComponent = new(transform, isIntermediate);
                 OnPressed += isOn =>
                 {
                     curveTypeComponent.longNoteMeshes.ForEach(fragment => fragment.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn)));
@@ -193,11 +233,11 @@ namespace FRONTIER.Game.NotesManagement
         /// <param name="index">順番</param>
         /// <param name="status">ロングノーツのステータス</param>
         /// <param name="isInner">中間点があるか</param>
-        public void SetInfo(Reference.NoteType noteType, int index, Reference.LongNoteStatus status, bool isInner)
+        public void SetInfo(Reference.NoteType noteType, int index, Reference.LongNotePart status, bool isInner)
         {
-            SetInfo(noteType, index);
-            this.status = status;
-            this.isInner = isInner;
+            SetProperties(noteType, index);
+            this.part = status;
+            this.isIntermediate = isInner;
             if (isInner)
             {
                 if (noteType == Reference.NoteType.LinearLong) { longNoteType = Reference.LongNoteType.IntermediateLinear; }
