@@ -21,7 +21,7 @@ namespace FRONTIER.Game.Notes
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
     [Serializable]
-    public abstract class NotesManager<TLaneIndexes, TReachedTimes, TInstances> : GameUtilityBase
+    public abstract class NotesManagerBase<TLaneIndexes, TReachedTimes, TInstances> : GameUtilityBase
     {
         #region フィールド
 

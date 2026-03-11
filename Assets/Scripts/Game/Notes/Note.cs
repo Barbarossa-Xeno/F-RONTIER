@@ -22,7 +22,7 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private int index;
 
         /// <summary>
-        /// このノーツが含まれているリスト (<see cref="NotesManager.instances"/> ) でのインデックス。生成順
+        /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/> ) でのインデックス。生成順
         /// </summary>
         [SerializeField] private int noteIndex;
 
@@ -59,7 +59,7 @@ namespace FRONTIER.Game.Notes
         }
 
         /// <summary>
-        /// このノーツが含まれているリスト (<see cref="NotesManager.instances"/>) でのインデックス。生成順
+        /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/>) でのインデックス。生成順
         /// </summary>
         public int NoteIndex
         {

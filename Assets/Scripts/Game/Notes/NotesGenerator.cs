@@ -8,7 +8,7 @@ namespace FRONTIER.Game.Notes
     /// <summary>
     /// ノーツ生成を行うクラス。
     /// </summary>
-    public class NotesGenerator : NotesManager<int, float, Note>
+    public class NotesGenerator : NotesManagerBase<int, float, Note>
     {
         #region フィールド
 

@@ -11,7 +11,7 @@ namespace FRONTIER.Game.Notes
     /// ロングノーツ生成を行うクラス。
     /// </summary>
     [System.Serializable]
-    public class LongNotesGenerator : NotesManager<List<int>, List<float>, List<LongNote>>
+    public class LongNotesGenerator : NotesManagerBase<List<int>, List<float>, List<LongNote>>
     {
         #region フィールド
 
