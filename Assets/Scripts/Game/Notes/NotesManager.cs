@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FRONTIER.Utility;
 using UnityEngine;
 
-namespace FRONTIER.Game.NotesManagement
+namespace FRONTIER.Game.Notes
 {
     /// <summary>
     /// ノーツを管理するための抽象クラス。

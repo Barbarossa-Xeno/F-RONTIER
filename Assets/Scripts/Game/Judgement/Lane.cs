@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using FRONTIER.Audio;
 
-namespace FRONTIER.Game.InputManagement
+namespace FRONTIER.Game.Judgement
 {
     [RequireComponent(typeof(Collider), typeof(MeshFilter), typeof(MeshRenderer))]
     public class Lane : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler

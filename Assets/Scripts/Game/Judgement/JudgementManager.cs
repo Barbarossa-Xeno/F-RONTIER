@@ -3,13 +3,13 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using FRONTIER.Game.NotesManagement;
-using FRONTIER.Game.InputManagement;
+using FRONTIER.Game.Notes;
+using FRONTIER.Game.Judgement;
 using FRONTIER.Audio;
 using FRONTIER.Utility;
 using static FRONTIER.Utility.Reference;
 
-namespace FRONTIER.Game
+namespace FRONTIER.Game.Judgement
 {
     /// <summary>
     /// ノーツの判定をする。

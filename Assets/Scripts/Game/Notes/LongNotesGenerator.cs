@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using FRONTIER.Utility;
 
-namespace FRONTIER.Game.NotesManagement
+namespace FRONTIER.Game.Notes
 {
     // このクラスでの ribbon はロングノーツ間に生成する「帯」状のメッシュのことを指します。
 

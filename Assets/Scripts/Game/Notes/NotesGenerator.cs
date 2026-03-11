@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using FRONTIER.Utility;
 
-namespace FRONTIER.Game.NotesManagement
+namespace FRONTIER.Game.Notes
 {
     /// <summary>
     /// ノーツ生成を行うクラス。

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace FRONTIER.Game.InputManagement
+namespace FRONTIER.Game.Judgement
 {
     /// <summary>
     /// 各レーンの入力を管理する。

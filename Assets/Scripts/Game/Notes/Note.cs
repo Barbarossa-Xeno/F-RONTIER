@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using FRONTIER.Utility;
 
-namespace FRONTIER.Game.NotesManagement
+namespace FRONTIER.Game.Notes
 {
     /// <summary>
     /// ノーツの情報を保持し、ノーツを動かすためのクラス。ノーツ1つにつきこのクラス1つ。

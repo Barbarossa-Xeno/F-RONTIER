@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using FRONTIER.Utility;
 
-namespace FRONTIER.Game.NotesManagement
+namespace FRONTIER.Game.Notes
 {
     /// <summary>
     /// ロングノーツの情報を保持し、押下の判定を制御する。
