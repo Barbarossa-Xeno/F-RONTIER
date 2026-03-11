@@ -524,7 +524,7 @@ namespace FRONTIER.Game.NotesManagement
             // JSONの譜面データからロングノーツの情報を取得したとき、それらの情報は、ロングノーツ1まとまり単位でリストに格納する仕様にしている
             // このメソッドは、そんな各ロングノーツ1まとまりを生成するタイミングで使用するため、
             // 随時データが追加されていく laneNumbers の1次元目のカウントが分かれば、今どのロングノーツを生成すれば良いかが分かる（※のように）
-            int shouldGenerateNoteIndex = laneNumbers.Count - 1;
+            int shouldGenerateNoteIndex = laneIndexes.Count - 1;
 
             // 算出するX座標とZ座標
             float x, z;
@@ -536,20 +536,20 @@ namespace FRONTIER.Game.NotesManagement
             List<GameObject> t_intermediates = new();
 
             // 現在計算中のロングノーツのインデックスに対応した情報をリストたちから参照するようにする（※）
-            for (int i = shouldGenerateNoteIndex; i < laneNumbers.Count; i++)
+            for (int i = shouldGenerateNoteIndex; i < laneIndexes.Count; i++)
             {
                 t_intermediates.Clear();
 
                 // ロングノーツひとまとまりに対応した二次元配列を使って座標を計算する
                 // 1次元目はロングノーツ1まとまとまりとして全体の中でのインデックス、2次元目はそのロングノーツ中のノーツのインデックス（始点、中間点、終点）
                 // ノーツ間をつなぐ帯の生成に前後の座標が必要なためこの形で記録しておくと参照しやすい
-                float[,] zRecords = new float[laneNumbers.Count, laneNumbers[i].Count];
+                float[,] zRecords = new float[laneIndexes.Count, laneIndexes[i].Count];
 
                 // ロングノーツ内のノーツの数の分だけループ
-                for (int j = 0; j < laneNumbers[i].Count; j++)
+                for (int j = 0; j < laneIndexes[i].Count; j++)
                 {
                     // ノーツの座標を求める
-                    x = GetLaneX(laneNumbers[i][j]);
+                    x = GetLaneX(laneIndexes[i][j]);
                     z = notesTimes[i][j] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
                     zRecords[i, j] = z;
 
@@ -565,8 +565,8 @@ namespace FRONTIER.Game.NotesManagement
 
                     // ノーツの種類と中間点の有無から、生成するノーツのプレハブを決める
                     note = intermediateNotesCounts[i] == 0
-                        ? Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent)
-                        : Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteObjectParent);
+                        ? Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteInstanceParent)
+                        : Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteInstanceParent);
 
                     // 値の適用
                     note.name = objectName;
@@ -578,7 +578,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
                     if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
                     {
-                        notesGenerator.notesObjects.Add(note);
+                        notesGenerator.noteInstances.Add(note);
                     }
 
                     // ループ回数（中間点の数）で処理する部分
@@ -598,9 +598,9 @@ namespace FRONTIER.Game.NotesManagement
                             // 分割メッシュ単位でリボンを作る
                             CreateRibbon
                             (
-                                laneNumbers[i][j - 1],
+                                laneIndexes[i][j - 1],
                                 zRecords[i, j - 1] + NOTE_DEPTH / 2,
-                                laneNumbers[i][j],
+                                laneIndexes[i][j],
                                 zRecords[i, j] - NOTE_DEPTH / 2,
                                 longNoteType,
                                 i
@@ -608,7 +608,7 @@ namespace FRONTIER.Game.NotesManagement
                         }
 
                         // 最後のノーツ
-                        if (j == laneNumbers[i].Count - 1)
+                        if (j == laneIndexes[i].Count - 1)
                         {
                             // 今までの中間点のノーツをまとめて管理するリストに入れる
                             intermediateNotes.Add(i, t_intermediates);
@@ -620,7 +620,7 @@ namespace FRONTIER.Game.NotesManagement
                             if (intermediateNotesCounts[i] == 0)
                             {
                                 // 最後に帯をつくる
-                                var (start, end) = laneNumbers[i].FirstAndLast();
+                                var (start, end) = laneIndexes[i].FirstAndLast();
                                 CreateRibbon
                                 (
                                     start,
@@ -872,10 +872,10 @@ namespace FRONTIER.Game.NotesManagement
             ribbons = newMeshes.ToList();
 
             // 共通の親にまとめる
-            ribbons.ForEach(ribbon => ribbon.transform.SetParent(noteObjectParent));
+            ribbons.ForEach(ribbon => ribbon.transform.SetParent(noteInstanceParent));
         }
 
-        public override void NotesSort()
+        public override void SortNotes()
         {
             SetRibbonTransform();
 
@@ -890,9 +890,9 @@ namespace FRONTIER.Game.NotesManagement
             }
 
             // このクラスで管理するのはロングノーツの始点以外
-            notesObjects = intermediateNotes.Values.ToList();
-            notesObjects.Reverse();
-            notesObjects.ForEach(notes => notes.Reverse());
+            noteInstances = intermediateNotes.Values.ToList();
+            noteInstances.Reverse();
+            noteInstances.ForEach(notes => notes.Reverse());
         }
 
         #endregion

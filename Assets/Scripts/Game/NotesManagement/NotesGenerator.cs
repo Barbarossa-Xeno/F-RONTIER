@@ -79,7 +79,7 @@ namespace FRONTIER.Game.NotesManagement
                     // 各リストへの追加
                     // Lノーツの始点はマニュアル・オートプレイに拘わらず、通常ノーツのリストへ追加する（始点は到達時間で判定するため）
                     notesTimes.Add(noteTime);
-                    laneNumbers.Add(data.notes[i].block);
+                    laneIndexes.Add(data.notes[i].block);
                     notesTypes.Add(data.notes[i].type);
 
                     // ロングノーツ専用のリストにも追加
@@ -96,7 +96,7 @@ namespace FRONTIER.Game.NotesManagement
                         if (PlayInfo.IsAutoPlay)
                         {
                             notesTimes.Add(_noteTime);
-                            laneNumbers.Add(data.notes[i].notes[j].block);
+                            laneIndexes.Add(data.notes[i].notes[j].block);
                             notesTypes.Add(data.notes[i].notes[j].type);
                         }
 
@@ -112,7 +112,7 @@ namespace FRONTIER.Game.NotesManagement
 
                     // 各リストへの追加
                     longNotesGenerator.notesTimes.Add(longNoteTimes);
-                    longNotesGenerator.laneNumbers.Add(longNoteLaneNumbers);
+                    longNotesGenerator.laneIndexes.Add(longNoteLaneNumbers);
 
                     // ノーツ総数に追加
                     notesCount += data.notes[i].notes.Length;
@@ -124,7 +124,7 @@ namespace FRONTIER.Game.NotesManagement
                 if (data.notes[i].type == (int)Reference.NoteType.Normal)
                 {
                     notesTimes.Add(CalculateNoteTime(data.notes[i].LPB, data.notes[i].num));
-                    laneNumbers.Add(data.notes[i].block);
+                    laneIndexes.Add(data.notes[i].block);
                     notesTypes.Add(data.notes[i].type);
 
                     // 座標計算
@@ -135,12 +135,12 @@ namespace FRONTIER.Game.NotesManagement
                     float positionZ = notesTimes[^1] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
 
                     // ノーツをゲームオブジェクトとして生成する
-                    notesObjects.Add(Instantiate(notePrefab, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteObjectParent));
+                    noteInstances.Add(Instantiate(notePrefab, new(positionX, Reference.noteOrigin.y, positionZ), Quaternion.identity, noteInstanceParent));
 
                     // プロパティを渡す
-                    notesObjects[^1].GetComponent<Note>().Type = Reference.NoteType.Normal;
-                    notesObjects[^1].GetComponent<Note>().index = i;
-                    notesObjects[^1].name = $"Note_{i}";
+                    noteInstances[^1].GetComponent<Note>().Type = Reference.NoteType.Normal;
+                    noteInstances[^1].GetComponent<Note>().index = i;
+                    noteInstances[^1].name = $"Note_{i}";
                 }
             }
 
@@ -148,18 +148,18 @@ namespace FRONTIER.Game.NotesManagement
             notesTimes.Reverse();
 
             // ノーツのオブジェクトを到達順に整理したいが、Linqを使ったソートでは方法が思いつかないため、オブジェクトのZ座標を利用する
-            notePositionZBase = notesObjects.Select(note => note.transform.position.z).ToList();
-            NotesSort();
+            notePositionZBase = noteInstances.Select(note => note.transform.position.z).ToList();
+            SortNotes();
 
             // 各ノーツにリスト内でのインデックスの情報を渡す
-            for (int i = 0; i < notesObjects.Count; i++)
+            for (int i = 0; i < noteInstances.Count; i++)
             {
-                Note info = notesObjects[i].GetComponent<Note>() ?? notesObjects[i].GetComponent<LongNote>();
+                Note info = noteInstances[i].GetComponent<Note>() ?? noteInstances[i].GetComponent<LongNote>();
                 info.noteIndex = i;
             }
 
             // ロングノーツの整理
-            longNotesGenerator.NotesSort();
+            longNotesGenerator.SortNotes();
         }
 
         /// <summary>
@@ -239,12 +239,12 @@ namespace FRONTIER.Game.NotesManagement
             return targetList;
         }
 
-        public override void NotesSort()
+        public override void SortNotes()
         {
             // ノーツオブジェクトのソート
-            NotesSort(notesObjects, false);
+            NotesSort(noteInstances, false);
             // ノーツレーンのソート
-            NotesSort(laneNumbers, false);
+            NotesSort(laneIndexes, false);
             // ノーツタイプのソート
             NotesSort(notesTypes, false);
         }

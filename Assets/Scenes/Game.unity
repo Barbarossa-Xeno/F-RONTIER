@@ -8771,11 +8771,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bd876c88e4621a40a45d6010c236a5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noteObjectParent: {fileID: 1415855445}
-  laneNumbers: 
+  noteInstanceParent: {fileID: 2106285031}
+  laneIndexes: 
   notesTimes: []
   notesTypes: 
-  notesObjects: []
+  noteInstances: []
   notesCount: 0
   notePrefab: {fileID: 7652398199858680092, guid: 5d128bac180a7a04ead3704594fbd3e5, type: 3}
   longNotesGenerator: {fileID: 963748247}
@@ -8812,13 +8812,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30f8b5a96ae65724aad2b172648af3b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noteObjectParent: {fileID: 1415855445}
+  noteInstanceParent: {fileID: 1415855445}
   notesTypes: 
   intermediateNotePrefab: {fileID: 7652398199858680092, guid: a015d6a663a79f44fa3d2aa4abd465da, type: 3}
   directNotePrefab: {fileID: 7652398199858680092, guid: 068c76dfac48bdb4e95ce35d8bb7a4a5, type: 3}
   notesGenerator: {fileID: 963748245}
   intermediateNotesCounts: 
-  ribbonList: []
+  ribbons: []
   longNotesList: []
   ribbonMaterials:
     direct: {fileID: 2100000, guid: b7521a052c6412f4fb85fe7fd2743cc6, type: 2}
@@ -10916,7 +10916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1415855445}
   m_Layer: 0
-  m_Name: NoteObjectParent
+  m_Name: NoteInstanceParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

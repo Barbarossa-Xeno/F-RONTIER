@@ -8,27 +8,27 @@ namespace FRONTIER.Game.NotesManagement
     /// <summary>
     /// ノーツを管理するための抽象クラス。
     /// </summary>
-    /// <typeparam name="LaneNumbersType">
-    /// リスト <c>laneNumber</c> の型。基本は<c>int</c><br/>
-    /// 通常ノーツを収めるなら１次元を、ロングノーツを収めるなら２次元のリストになるようにする
+    /// <typeparam name="TLaneIndexes">
+    /// リスト <c>laneIndexes</c> の型。基本は<c>int</c><br/>
+    /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
-    /// <typeparam name="NotesTimesType">
+    /// <typeparam name="TNotesTimes">
     /// リスト <c>notesTimes</c> の型。基本は<c>float</c><br/>
-    /// 通常ノーツを収めるなら１次元を、ロングノーツを収めるなら２次元のリストになるようにする
+    /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
-    /// <typeparam name="NotesObjectsType">
-    /// リスト <c>notesObjects</c> の型。基本は<c>GameObject</c><br/>
-    /// 通常ノーツを収めるなら１次元を、ロングノーツを収めるなら２次元のリストになるようにする
+    /// <typeparam name="TNoteInstances">
+    /// リスト <c>noteInstances</c> の型。基本は<c>GameObject</c><br/>
+    /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
     [Serializable]
-    public abstract class NotesManager<LaneNumbersType, NotesTimesType, NotesObjectsType> : GameUtilityBase
+    public abstract class NotesManager<TLaneIndexes, TNotesTimes, TNoteInstances> : GameUtilityBase
     {
         #region フィールド
 
         /// <summary>
         /// ゲームオブジェクトとして生成したノーツの親オブジェクトとする。
         /// </summary>
-        [SerializeField] protected Transform noteObjectParent;
+        [SerializeField] protected Transform noteInstanceParent;
 
         /// <summary>
         /// 各ノーツが流れるレーン番号を格納する。
@@ -37,7 +37,7 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーマルノーツの場合：<c>int</c>型リスト。順にレーン番号を格納<br/>
         /// ロングノーツの場合：<c>List(int)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツのレーン番号を格納
         /// </remarks>
-        public List<LaneNumbersType> laneNumbers = new();
+        public List<TLaneIndexes> laneIndexes = new();
 
         /// <summary>
         /// 各ノーツの楽曲が判定線に接触する時間を格納する。
@@ -46,7 +46,7 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーマルノーツの場合：<c>float</c>型リスト。順に時間を格納<br/>
         /// ロングノーツの場合：<c>List(float)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツの時間を格納
         /// </remarks>
-        public List<NotesTimesType> notesTimes = new();
+        public List<TNotesTimes> notesTimes = new();
 
         /// <summary>
         /// 各ノーツの種類を格納する。種類の仕分けに利用する
@@ -60,16 +60,11 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーマルノーツの場合：<c>GameObject</c>型リスト。順にオブジェクトを格納<br/>
         /// ロングノーツの場合：<c>List(GameObject)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツのオブジェクトを格納
         /// </remarks>
-        public List<NotesObjectsType> notesObjects = new();
+        public List<TNoteInstances> noteInstances = new();
 
         #endregion
 
         #region プロパティ
-
-        /// <summary>
-        /// ノーツを持っているか。
-        /// </summary>
-        public virtual bool IsHavingNotes { get; }
 
         /// <summary>
         /// ゲームの準備に際して必要な情報。
@@ -95,7 +90,7 @@ namespace FRONTIER.Game.NotesManagement
         /// <summary>
         /// ノーツのリスト等をソート・整理する。
         /// </summary>
-        public abstract void NotesSort();
+        public abstract void SortNotes();
 
         #endregion
 
