@@ -119,7 +119,7 @@ namespace FRONTIER.Game
                 laneManager.TappedEvents.ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
 
                 // ノーツが判定線を越えたときのイベントを登録する
-                notesGenerator.noteInstances.ForEach
+                notesGenerator.instances.ForEach
                 (
                     note =>
                     {
@@ -155,13 +155,12 @@ namespace FRONTIER.Game
                 );
 
                 // ロングノーツの判定のイベントを登録する
-                longNotesGenerator.ribbons.Select(line => line.GetComponent<LongNote>())
-                                               .ToList().ForEach
-                                               (
-                                                    info =>
-                                                    info.OnPressedUpdate += isOn =>
-                                                    JudgeLongNote(isOn, info.isInner, info.index)
-                                               );
+                longNotesGenerator.ribbons
+                    .Select(line => line.GetComponent<LongNote>())
+                    .ToList().ForEach
+                    (
+                        info => info.OnPressedUpdate += isOn => JudgeLongNote(isOn, info.isInner, info.index)
+                    );
             }
         }
 
@@ -200,19 +199,19 @@ namespace FRONTIER.Game
                 {
                     if (laneIndex == notesGenerator.laneIndexes[^1])
                     {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.notesTimes[^1]));
+                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^1]));
                     }
                     else if (laneIndex == notesGenerator.laneIndexes[^2])
                     {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.notesTimes[^2]));
+                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^2]));
                     }
                     else if (laneIndex == notesGenerator.laneIndexes[^3])
                     {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.notesTimes[^3]));
+                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^3]));
                     }
                     else if (laneIndex == notesGenerator.laneIndexes[^4])
                     {
-                        JudgeStatus(CalculateLag(tapTime, notesGenerator.notesTimes[^4]));
+                        JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^4]));
                     }
                 }
                 catch (ArgumentOutOfRangeException) { }
@@ -224,7 +223,7 @@ namespace FRONTIER.Game
             EachLanesNotes[laneIndex].Clear();
 
             // そのレーンを流れるノーツの中で一番近そうなノーツを何個か取得
-            foreach (GameObject note in notesGenerator.noteInstances)
+            foreach (GameObject note in notesGenerator.instances)
             {
                 if (note.transform.position.x == GetLaneX(laneIndex))
                 {
@@ -282,10 +281,10 @@ namespace FRONTIER.Game
             int i;
 
             // 指定されたロングノーツの順番に照応するロングノーツラインを探す
-            for (i = 1; i <= longNotesGenerator.noteInstances.Count; i++)
+            for (i = 1; i <= longNotesGenerator.instances.Count; i++)
             {
                 // インデックスが同じコンポーネントがあったら、そのインデックスを i にコピー
-                if (longNotesGenerator.longNotesList[^i].index == longNoteIndex) { break; }
+                if (longNotesGenerator.ribbons[^i].GetComponent<LongNote>().index == longNoteIndex) { break; }
             }
 
             // 中間点を持つ場合 -> 中間点と終点のチェック
@@ -294,17 +293,17 @@ namespace FRONTIER.Game
                 // 中間ノーツがロングノーツのまとまりごとに収まっているリストにおいて、
                 // i番目のロングノーツの中間ノーツのリストの、一番最後の要素が最も近い中間ノーツになる
                 // その中間ノーツが判定線まで近づいたとき (押下判定が外れてしまうタイミングを考慮して、余分に距離を見積もる)
-                if (longNotesGenerator.noteInstances[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
+                if (longNotesGenerator.instances[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
                 {
                     // その中間ノーツが終点の場合
-                    if (longNotesGenerator.noteInstances[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.End)
+                    if (longNotesGenerator.instances[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.End)
                     {
-                        DeleteNote(longNotesGenerator.noteInstances, ^i, isPressed);
+                        DeleteNote(longNotesGenerator.instances, ^i, isPressed);
                     }
                     // その中間ノーツが中間点の場合
-                    else if (longNotesGenerator.noteInstances[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.Intermediate)
+                    else if (longNotesGenerator.instances[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.Intermediate)
                     {
-                        DeleteNote(longNotesGenerator.noteInstances, ^i, isPressed, ^1);
+                        DeleteNote(longNotesGenerator.instances, ^i, isPressed, ^1);
                     }
                 }
             }
@@ -312,11 +311,11 @@ namespace FRONTIER.Game
             else
             {
                 // 説明略（中間点を持つ場合の処理と同じ）
-                if (longNotesGenerator.noteInstances[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
+                if (longNotesGenerator.instances[^i][^1].transform.position.z <= noteOrigin.z + 0.5f)
                 {
-                    if (longNotesGenerator.noteInstances[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.End)
+                    if (longNotesGenerator.instances[^i][^1].GetComponent<LongNote>().status == LongNoteStatus.End)
                     {
-                        DeleteNote(longNotesGenerator.noteInstances, ^i, isPressed);
+                        DeleteNote(longNotesGenerator.instances, ^i, isPressed);
                     }
                 }
             }
@@ -329,7 +328,7 @@ namespace FRONTIER.Game
         private void JudgeStatus(float timeLag)
         {
             // ターゲットノーツがリストに存在するか確認する
-            if (notesGenerator.noteInstances.Contains(target.note))
+            if (notesGenerator.instances.Contains(target.note))
             {
                 // ラグを判定幅に照応させて判定する
                 if (timeLag <= JudgementThreshold[JudgementStatus.Perfect])
@@ -380,11 +379,11 @@ namespace FRONTIER.Game
         private void DeleteNote()
         {
             target.note.SetActive(false);
-            int index = notesGenerator.noteInstances.IndexOf(target.note);
-            notesGenerator.notesTimes.RemoveAt(index);
+            int index = notesGenerator.instances.IndexOf(target.note);
+            notesGenerator.reachedTimes.RemoveAt(index);
             notesGenerator.laneIndexes.RemoveAt(index);
-            notesGenerator.notesTypes.RemoveAt(index);
-            notesGenerator.noteInstances.RemoveAt(index);
+            notesGenerator.types.RemoveAt(index);
+            notesGenerator.instances.RemoveAt(index);
 
             OnNoteDeleted?.Invoke();
         }
@@ -403,10 +402,10 @@ namespace FRONTIER.Game
             if (isAuto)
             {
                 // 同じノーツを二度判定することがないように、ノーツのアクティブ状態を確認する
-                if (notesGenerator.noteInstances[targetIndex].activeSelf)
+                if (notesGenerator.instances[targetIndex].activeSelf)
                 {
                     // ノーツをリストから削除せずに形だけ消す
-                    notesGenerator.noteInstances[targetIndex].SetActive(false);
+                    notesGenerator.instances[targetIndex].SetActive(false);
 
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
 
@@ -423,23 +422,23 @@ namespace FRONTIER.Game
             {
                 // 同タイミングで判定線を通過するノーツは、インデックスが被って上手くリストから削除できないことがあるので
                 // リストのカウントを超えないようにtargetIndexを予め調整する
-                if (targetIndex <= notesGenerator.noteInstances.Count)
+                if (targetIndex <= notesGenerator.instances.Count)
                 {
                     int i = 0;
                     while (true)
                     {
-                        if (targetIndex - i < notesGenerator.noteInstances.Count) { break; }
+                        if (targetIndex - i < notesGenerator.instances.Count) { break; }
                         else { i++; }
                     }
                     targetIndex -= i;
                 }
 
                 // ノーツをリストから削除
-                notesGenerator.noteInstances[targetIndex].SetActive(notesGenerator.noteInstances[targetIndex].activeSelf ? false : false);
-                notesGenerator.notesTimes.RemoveAt(targetIndex);
+                notesGenerator.instances[targetIndex].SetActive(notesGenerator.instances[targetIndex].activeSelf ? false : false);
+                notesGenerator.reachedTimes.RemoveAt(targetIndex);
                 notesGenerator.laneIndexes.RemoveAt(targetIndex);
-                notesGenerator.notesTypes.RemoveAt(targetIndex);
-                notesGenerator.noteInstances.RemoveAt(targetIndex);
+                notesGenerator.types.RemoveAt(targetIndex);
+                notesGenerator.instances.RemoveAt(targetIndex);
 
                 // スコア計算
                 ShowScoreStatus(JudgementStatus.Miss);
@@ -494,7 +493,6 @@ namespace FRONTIER.Game
                 // ロングノーツラインのリストからも消す
                 longNotesGenerator.ribbons[targetLongNoteListIndex].SetActive(false);
                 longNotesGenerator.ribbons.RemoveAt(targetLongNoteListIndex);
-                longNotesGenerator.longNotesList.RemoveAt(targetLongNoteListIndex);
             }
 
             OnNoteDeleted?.Invoke();
@@ -548,11 +546,11 @@ namespace FRONTIER.Game
             void Judgement(Index index)
             {
                 // ノーツをリストから削除
-                notesGenerator.noteInstances[index].SetActive(false);
-                notesGenerator.notesTimes.RemoveAt(index);
+                notesGenerator.instances[index].SetActive(false);
+                notesGenerator.reachedTimes.RemoveAt(index);
                 notesGenerator.laneIndexes.RemoveAt(index);
-                notesGenerator.notesTypes.RemoveAt(index);
-                notesGenerator.noteInstances.RemoveAt(index);
+                notesGenerator.types.RemoveAt(index);
+                notesGenerator.instances.RemoveAt(index);
 
                 // スコア計算
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
@@ -564,15 +562,15 @@ namespace FRONTIER.Game
                 OnNoteDeleted?.Invoke();
             }
 
-            if (Mathf.Abs(notesGenerator.noteInstances[^1].transform.position.z - 7.3f) < 1.0f) { Judgement(^1); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^2].transform.position.z - 7.3f) < 1.0f) { Judgement(^2); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^3].transform.position.z - 7.3f) < 1.0f) { Judgement(^3); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^4].transform.position.z - 7.3f) < 1.0f) { Judgement(^4); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^5].transform.position.z - 7.3f) < 1.0f) { Judgement(^5); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^6].transform.position.z - 7.3f) < 1.0f) { Judgement(^6); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^7].transform.position.z - 7.3f) < 1.0f) { Judgement(^7); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^8].transform.position.z - 7.3f) < 1.0f) { Judgement(^8); }
-            if (Mathf.Abs(notesGenerator.noteInstances[^9].transform.position.z - 7.3f) < 1.0f) { Judgement(^9); }
+            if (Mathf.Abs(notesGenerator.instances[^1].transform.position.z - 7.3f) < 1.0f) { Judgement(^1); }
+            if (Mathf.Abs(notesGenerator.instances[^2].transform.position.z - 7.3f) < 1.0f) { Judgement(^2); }
+            if (Mathf.Abs(notesGenerator.instances[^3].transform.position.z - 7.3f) < 1.0f) { Judgement(^3); }
+            if (Mathf.Abs(notesGenerator.instances[^4].transform.position.z - 7.3f) < 1.0f) { Judgement(^4); }
+            if (Mathf.Abs(notesGenerator.instances[^5].transform.position.z - 7.3f) < 1.0f) { Judgement(^5); }
+            if (Mathf.Abs(notesGenerator.instances[^6].transform.position.z - 7.3f) < 1.0f) { Judgement(^6); }
+            if (Mathf.Abs(notesGenerator.instances[^7].transform.position.z - 7.3f) < 1.0f) { Judgement(^7); }
+            if (Mathf.Abs(notesGenerator.instances[^8].transform.position.z - 7.3f) < 1.0f) { Judgement(^8); }
+            if (Mathf.Abs(notesGenerator.instances[^9].transform.position.z - 7.3f) < 1.0f) { Judgement(^9); }
         }
         #endregion
     }

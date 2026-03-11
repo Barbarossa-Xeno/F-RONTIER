@@ -12,23 +12,23 @@ namespace FRONTIER.Game.NotesManagement
     /// リスト <c>laneIndexes</c> の型。基本は<c>int</c><br/>
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
-    /// <typeparam name="TNotesTimes">
-    /// リスト <c>notesTimes</c> の型。基本は<c>float</c><br/>
+    /// <typeparam name="TReachedTimes">
+    /// リスト <c>reachedTimes</c> の型。基本は<c>float</c><br/>
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
-    /// <typeparam name="TNoteInstances">
-    /// リスト <c>noteInstances</c> の型。基本は<c>GameObject</c><br/>
+    /// <typeparam name="TInstances">
+    /// リスト <c>instances</c> の型。基本は<c>GameObject</c><br/>
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
     [Serializable]
-    public abstract class NotesManager<TLaneIndexes, TNotesTimes, TNoteInstances> : GameUtilityBase
+    public abstract class NotesManager<TLaneIndexes, TReachedTimes, TInstances> : GameUtilityBase
     {
         #region フィールド
 
         /// <summary>
         /// ゲームオブジェクトとして生成したノーツの親オブジェクトとする。
         /// </summary>
-        [SerializeField] protected Transform noteInstanceParent;
+        [SerializeField] protected Transform instanceParent;
 
         /// <summary>
         /// 各ノーツが流れるレーン番号を格納する。
@@ -46,12 +46,13 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーマルノーツの場合：<c>float</c>型リスト。順に時間を格納<br/>
         /// ロングノーツの場合：<c>List(float)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツの時間を格納
         /// </remarks>
-        public List<TNotesTimes> notesTimes = new();
+        public List<TReachedTimes> reachedTimes = new();
 
         /// <summary>
-        /// 各ノーツの種類を格納する。種類の仕分けに利用する
+        /// 各ノーツの種類を <see cref="Reference.NoteType"/> を <c>int</c> に変換した値で格納する。（インスペクタ確認用）
+        /// 種類の仕分けに利用する
         /// </summary>
-        public List<int> notesTypes = new();
+        public List<int> types = new();
 
         /// <summary>
         /// 各ノーツを<c>GameObject</c>として生成したインスタンスを格納する。
@@ -60,7 +61,7 @@ namespace FRONTIER.Game.NotesManagement
         /// ノーマルノーツの場合：<c>GameObject</c>型リスト。順にオブジェクトを格納<br/>
         /// ロングノーツの場合：<c>List(GameObject)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツのオブジェクトを格納
         /// </remarks>
-        public List<TNoteInstances> noteInstances = new();
+        public List<TInstances> instances = new();
 
         #endregion
 

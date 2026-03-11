@@ -48,15 +48,6 @@ namespace FRONTIER.Game.NotesManagement
         /// </summary>
         public List<GameObject> ribbons = new();
 
-        // TODO: 親のNoteともどもジェネリックにできるかも
-        /// <summary>
-        /// 生成したロングノーツ帯に紐づけた<see cref = "LongNote"/>コンポーネントのリスト。
-        /// </summary>
-        /// <remarks>
-        /// ロングノーツの長押し判定をEventSystemでとってくれる。
-        /// </remarks>
-        public List<LongNote> longNotesList = new();
-
         /// <summary>
         /// ロングノーツの帯に適用するマテリアル。
         /// </summary>
@@ -550,11 +541,11 @@ namespace FRONTIER.Game.NotesManagement
                 {
                     // ノーツの座標を求める
                     x = GetLaneX(laneIndexes[i][j]);
-                    z = notesTimes[i][j] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
+                    z = reachedTimes[i][j] * PlayInfo.NoteSpeed + Reference.noteOrigin.z;
                     zRecords[i, j] = z;
 
                     // ロングノーツの種類とオブジェクトとしてつけておく名前を、ノーツの種類と中間点の有無から決める
-                    var (longNoteType, objectName) = (Reference.NoteType)notesTypes[i] switch
+                    var (longNoteType, objectName) = (Reference.NoteType)types[i] switch
                     {
                         Reference.NoteType.LinearLong when intermediateNotesCounts[i] == 0 => (Reference.LongNoteType.DirectLinear, $"LongNote (DirectLinear) -{i}"),
                         Reference.NoteType.CurvedLong when intermediateNotesCounts[i] == 0 => (Reference.LongNoteType.DirectCurved, $"LongNote (DirectCurved) -{i}"),
@@ -565,20 +556,20 @@ namespace FRONTIER.Game.NotesManagement
 
                     // ノーツの種類と中間点の有無から、生成するノーツのプレハブを決める
                     note = intermediateNotesCounts[i] == 0
-                        ? Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteInstanceParent)
-                        : Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, noteInstanceParent);
+                        ? Instantiate(directNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, instanceParent)
+                        : Instantiate(intermediateNotePrefab, new(x, Reference.specialNoteOrigin.y, z), Quaternion.identity, instanceParent);
 
                     // 値の適用
                     note.name = objectName;
                     LongNote prop = note.GetComponent<LongNote>();
-                    prop.Type = (Reference.NoteType)notesTypes[i];
+                    prop.Type = (Reference.NoteType)types[i];
                     prop.index = i;
 
                     // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
                     if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
                     {
-                        notesGenerator.noteInstances.Add(note);
+                        notesGenerator.instances.Add(note);
                     }
 
                     // ループ回数（中間点の数）で処理する部分
@@ -872,7 +863,7 @@ namespace FRONTIER.Game.NotesManagement
             ribbons = newMeshes.ToList();
 
             // 共通の親にまとめる
-            ribbons.ForEach(ribbon => ribbon.transform.SetParent(noteInstanceParent));
+            ribbons.ForEach(ribbon => ribbon.transform.SetParent(instanceParent));
         }
 
         public override void SortNotes()
@@ -881,18 +872,17 @@ namespace FRONTIER.Game.NotesManagement
 
             // インデックスを降順にソートし直したり、リストの中身を求め直す
             ribbons.Reverse();
-            foreach (var item in ribbons)
+            foreach (var ribbon in ribbons)
             {
-                if (item == null) continue;
+                if (ribbon == null) continue;
 
-                item.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
-                longNotesList.Add(item.GetComponent<LongNote>());
+                ribbon.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
             }
 
             // このクラスで管理するのはロングノーツの始点以外
-            noteInstances = intermediateNotes.Values.ToList();
-            noteInstances.Reverse();
-            noteInstances.ForEach(notes => notes.Reverse());
+            instances = intermediateNotes.Values.ToList();
+            instances.Reverse();
+            instances.ForEach(notes => notes.Reverse());
         }
 
         #endregion
