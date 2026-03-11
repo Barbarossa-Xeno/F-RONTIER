@@ -8771,7 +8771,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bd876c88e4621a40a45d6010c236a5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noteInstanceParent: {fileID: 2106285031}
+  noteInstanceParent: {fileID: 1415855445}
   laneIndexes: 
   notesTimes: []
   notesTypes: 
