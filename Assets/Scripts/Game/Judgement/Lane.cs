@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using FRONTIER.Audio;
 
@@ -7,15 +8,22 @@ namespace FRONTIER.Game.Judgement
     [RequireComponent(typeof(Collider), typeof(MeshFilter), typeof(MeshRenderer))]
     public class Lane : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        [SerializeField] private LaneManager laneManager;
+        #region フィールド
 
         /// <summary>
         /// レーンのインデックス。
         /// </summary>
-        [SerializeField] private int laneIndex;
+        [SerializeField] private int index;
+
+        /// <summary>
+        /// レーンがタップされたときの時間。
+        /// </summary>
+        [SerializeField] private float tappedTime;
+
+        /// <summary>
+        /// レーンがタップされたか。
+        /// </summary>
+        [SerializeField] private bool isTapped;
 
         /// <summary>
         /// レーンのマテリアル。MeshRendererから取得する。
@@ -26,25 +34,40 @@ namespace FRONTIER.Game.Judgement
         /// レーンの光る速さに応じて変化させる透明度。マテリアルに適用する。
         /// </summary>
         private float alfa;
+
+        public event Action<int, float> TappedEvent;
+
+        #endregion
+
+        #region プロパティ
         
         /// <summary>
         /// レーンがタップされたときの時間。InputManagerに渡すためのプロパティ。
         /// </summary>
-        private float TappedTime
+        public float TappedTime
         {
-            get => laneManager.tappedTime[laneIndex];
-            set => laneManager.tappedTime[laneIndex] = value;
+            get => tappedTime;
+            set => tappedTime = value;
         }
 
         /// <summary>
         /// レーンがタップされたか。InputManagerに渡すためのプロパティ。
         /// </summary>
-        private bool IsTapped
+        public bool IsTapped
         {
-            get => laneManager.tappedLaneFlags[laneIndex];
-            set => laneManager.tappedLaneFlags[laneIndex] = value;
+            get => isTapped;
+            set => isTapped = value;
         }
-        
+
+        /// <summary>
+        /// レーンの光る速さ。
+        /// </summary>
+        /// <remarks>
+        /// <see cref="LaneManager"/> 側から値がセットされる 
+        /// </remarks>
+        public float LightSpeed { get; set; }
+
+        #endregion
 
         void Start()
         {
@@ -56,9 +79,9 @@ namespace FRONTIER.Game.Judgement
             material.color = new(1f, 1f, 1f, alfa);
 
             // タップされていないとき、アルファ値を減少させる
-            if (alfa > 0 && !IsTapped)
+            if (alfa > 0 && !isTapped)
             {
-                alfa -= laneManager.LightSpeed * Time.unscaledDeltaTime;
+                alfa -= LightSpeed * Time.unscaledDeltaTime;
             }
             // 0未満にはならないように
             alfa = alfa < 0 ? 0 : alfa;
@@ -67,29 +90,27 @@ namespace FRONTIER.Game.Judgement
         /// <summary>
         /// レーンがタップされたときの処理。
         /// </summary>
-        public void OnTapped()
+        private void OnTapped()
         {
             // 時間を記録
-            TappedTime = Time.time;
+            tappedTime = Time.time;
             
             // フラグを立てる
-            IsTapped = true;
+            isTapped = true;
             
             // アルファを最大の値にする
             alfa = 0.2f;
 
             // イベントを発火させる
-            laneManager.TappedEvents[laneIndex]?.Invoke(laneIndex, TappedTime);
-
-            GameManager.Instance.audios.seManager.Play(SEManager.SE.TapedLane);
+            TappedEvent?.Invoke(index, tappedTime);
         }
 
         public void OnPointerDown(PointerEventData eventData) => OnTapped();
 
-        public void OnPointerUp(PointerEventData eventData) => IsTapped = false;
+        public void OnPointerUp(PointerEventData eventData) => isTapped = false;
 
         public void OnPointerEnter(PointerEventData eventData) => OnTapped();
 
-        public void OnPointerExit(PointerEventData eventData) => IsTapped = false;
+        public void OnPointerExit(PointerEventData eventData) => isTapped = false;
     }
 }

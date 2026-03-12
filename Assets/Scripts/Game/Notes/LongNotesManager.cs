@@ -891,6 +891,11 @@ namespace FRONTIER.Game.Notes
             instances.ForEach(notes => notes.Reverse());
         }
 
+        public override bool DeleteNote(List<LongNote> target)
+        {
+            throw new System.NotImplementedException();
+        }
+
         #endregion
     }
 }

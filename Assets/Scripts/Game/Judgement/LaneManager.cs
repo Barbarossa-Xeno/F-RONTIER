@@ -8,43 +8,51 @@ namespace FRONTIER.Game.Judgement
     /// <summary>
     /// 各レーンの入力を管理する。
     /// </summary>
-    public class LaneManager : MonoBehaviour
+    public class LaneManager : Utility.GameUtilityBase
     {
         #region フィールド
+
+        /// <summary>
+        /// ノーツが流れる、シーン上の6つのレーン（インスペクタ確認用）。
+        /// </summary>
+        [Header("階下の Lane を6つ登録"), SerializeField] private Lane[] lanes = new Lane[6];
 
         /// <summary>
         /// レーンの光る速さ（インスペクタ調整用）。
         /// </summary>
         [SerializeField, Range(0.1f, 2f)] private float lightSpeed = 0.1f;
 
-        /// <summary>
-        /// レーンの光る速さ。
-        /// </summary>
-        public float LightSpeed => lightSpeed;
+        #endregion
+
+        #region プロパティ
 
         /// <summary>
-        /// 各レーンがタップされたか示すフラグ。
+        /// ノーツが流れる、シーン上の6つのレーン。
+        /// この配列のインデックスと、要素の <c>Lane</c> クラスの <c>laneIndex</c> フィールドは対応している必要がある。
         /// </summary>
-        /// <remarks>
-        /// <see cref="Lane"/> からデータを渡すことのみの使用を想定
-        /// </remarks> 
-        public bool[] tappedLaneFlags = new bool[6];
+        public Lane[] Lanes => lanes;
 
-        /// <summary>
-        /// 各レーンがタップされたときの時間。
-        /// </summary>
-        /// /// <remarks>
-        /// <see cref="Lane"/> からデータを渡すことのみの使用を想定
-        /// </remarks> 
-        public float[] tappedTime = new float[6];
+        #endregion
 
-        /// <summary>
-        /// 各レーンに入力があったとき、発火するイベントのリスト。
-        /// 各要素が各レーンに対応する。
-        /// </summary>
-        public List<UnityEvent<int, float>> TappedEvents { get; } = Enumerable.Range(0, 6)
-            .Select(_ => new UnityEvent<int, float>())
-            .ToList();
+        #region MonoBehaviourメソッド
+
+        void Awake()
+        {
+            foreach (var lane in lanes)
+            {
+                if (lane == null)
+                {
+                    Debug.LogError("未登録のレーンがあります。");
+                    break;
+                }
+
+                lane.LightSpeed = lightSpeed;
+
+                // レーンがタップされた時のSEを登録
+                lane.TappedEvent += (index, time) => Manager.audios.seManager.Play(Audio.SEManager.SE.TapedLane);
+            }
+        }
+
         #endregion
     }
 }

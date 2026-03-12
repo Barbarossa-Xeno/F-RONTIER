@@ -797,7 +797,7 @@ GameObject:
   - component: {fileID: 126515369}
   - component: {fileID: 126515368}
   m_Layer: 8
-  m_Name: lane (0)
+  m_Name: Lane (0)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -816,7 +816,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.01, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 229032931}
+  m_Father: {fileID: 555879465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &126515368
 BoxCollider:
@@ -908,8 +908,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneManager: {fileID: 229032932}
-  laneIndex: 0
+  index: 0
+  tappedTime: 0
+  isTapped: 0
 --- !u!1 &138461503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,7 +1141,7 @@ GameObject:
   - component: {fileID: 178613364}
   - component: {fileID: 178613363}
   m_Layer: 8
-  m_Name: lane (3)
+  m_Name: Lane (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1159,7 +1160,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.01, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 229032931}
+  m_Father: {fileID: 555879465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &178613363
 BoxCollider:
@@ -1251,8 +1252,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneManager: {fileID: 229032932}
-  laneIndex: 3
+  index: 3
+  tappedTime: 0
+  isTapped: 0
 --- !u!1 &184248306
 GameObject:
   m_ObjectHideFlags: 0
@@ -1329,65 +1331,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 184248306}
   m_CullTransparentMesh: 1
---- !u!1 &229032930
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 229032931}
-  - component: {fileID: 229032932}
-  m_Layer: 2
-  m_Name: LaneManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &229032931
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 229032930}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 126515367}
-  - {fileID: 767139610}
-  - {fileID: 719621248}
-  - {fileID: 178613362}
-  - {fileID: 956461924}
-  - {fileID: 1797241839}
-  m_Father: {fileID: 461476168}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &229032932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 229032930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdc3e9d076dd5564398c494f230e9907, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lightSpeed: 1
-  tappedLaneFlags: 000000000000
-  tappedTime:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
 --- !u!1 &270896656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,7 +1652,7 @@ MonoBehaviour:
     parent: {fileID: 2106285031}
   notesGenerator: {fileID: 963748245}
   longNotesGenerator: {fileID: 963748247}
-  laneManager: {fileID: 229032932}
+  laneManager: {fileID: 461476169}
   noteJudged:
     m_PersistentCalls:
       m_Calls:
@@ -1941,8 +1884,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 461476168}
+  - component: {fileID: 461476169}
   m_Layer: 2
-  m_Name: Lanes
+  m_Name: LaneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1963,12 +1907,32 @@ Transform:
   m_Children:
   - {fileID: 1384714551}
   - {fileID: 1209021735}
-  - {fileID: 229032931}
+  - {fileID: 555879465}
   - {fileID: 1498008960}
   - {fileID: 1690066214}
   - {fileID: 887803746}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &461476169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 461476167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc3e9d076dd5564398c494f230e9907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lanes:
+  - {fileID: 126515372}
+  - {fileID: 767139614}
+  - {fileID: 719621250}
+  - {fileID: 178613366}
+  - {fileID: 956461928}
+  - {fileID: 1797241841}
+  lightSpeed: 1
 --- !u!1 &522604218
 GameObject:
   m_ObjectHideFlags: 0
@@ -2195,6 +2159,43 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &555879464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 555879465}
+  m_Layer: 2
+  m_Name: Lanes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &555879465
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 555879464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 126515367}
+  - {fileID: 767139610}
+  - {fileID: 719621248}
+  - {fileID: 178613362}
+  - {fileID: 956461924}
+  - {fileID: 1797241839}
+  m_Father: {fileID: 461476168}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &610850807
 GameObject:
   m_ObjectHideFlags: 0
@@ -2786,7 +2787,7 @@ GameObject:
   - component: {fileID: 719621252}
   - component: {fileID: 719621251}
   m_Layer: 8
-  m_Name: lane (2)
+  m_Name: Lane (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2805,7 +2806,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.01, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 229032931}
+  m_Father: {fileID: 555879465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &719621250
 MonoBehaviour:
@@ -2819,8 +2820,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneManager: {fileID: 229032932}
-  laneIndex: 2
+  index: 2
+  tappedTime: 0
+  isTapped: 0
 --- !u!65 &719621251
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2913,7 +2915,7 @@ GameObject:
   - component: {fileID: 767139612}
   - component: {fileID: 767139611}
   m_Layer: 8
-  m_Name: lane (1)
+  m_Name: Lane (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2932,7 +2934,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.01, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 229032931}
+  m_Father: {fileID: 555879465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &767139611
 BoxCollider:
@@ -3024,8 +3026,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneManager: {fileID: 229032932}
-  laneIndex: 1
+  index: 1
+  tappedTime: 0
+  isTapped: 0
 --- !u!1 &862620398
 GameObject:
   m_ObjectHideFlags: 0
@@ -8484,7 +8487,7 @@ GameObject:
   - component: {fileID: 956461926}
   - component: {fileID: 956461925}
   m_Layer: 8
-  m_Name: lane (4)
+  m_Name: Lane (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8503,7 +8506,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.01, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 229032931}
+  m_Father: {fileID: 555879465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &956461925
 BoxCollider:
@@ -8595,8 +8598,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneManager: {fileID: 229032932}
-  laneIndex: 4
+  index: 4
+  tappedTime: 0
+  isTapped: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -11991,7 +11995,7 @@ GameObject:
   - component: {fileID: 1797241843}
   - component: {fileID: 1797241842}
   m_Layer: 8
-  m_Name: lane (5)
+  m_Name: Lane (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12010,7 +12014,7 @@ Transform:
   m_LocalScale: {x: 2, y: 0.01, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 229032931}
+  m_Father: {fileID: 555879465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1797241841
 MonoBehaviour:
@@ -12024,8 +12028,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f4d75a996498643bbff9e7e4171e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laneManager: {fileID: 229032932}
-  laneIndex: 5
+  index: 5
+  tappedTime: 0
+  isTapped: 0
 --- !u!65 &1797241842
 BoxCollider:
   m_ObjectHideFlags: 0

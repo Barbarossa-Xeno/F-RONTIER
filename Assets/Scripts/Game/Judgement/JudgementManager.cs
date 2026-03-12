@@ -100,7 +100,7 @@ namespace FRONTIER.Game.Judgement
             if (!Manager.info.IsAutoPlay)
             {
                 // タップしたときのイベントを登録する
-                laneManager.TappedEvents.ForEach(tapEvent => tapEvent.AddListener((index, time) => JudgeNote(index, time)));
+                Array.ForEach(laneManager.Lanes, lane => lane.TappedEvent += (index, time) => JudgeNote(index, time));
 
                 // ノーツが判定線を越えたときのイベントを登録する
                 notesGenerator.instances.ForEach
@@ -166,6 +166,7 @@ namespace FRONTIER.Game.Judgement
         /// <param name="tapTime"></param>
         private void JudgeNote(int laneIndex, float tapTime)
         {
+            Debug.Log($"レーン{laneIndex}がタップされました。");
             // そのレーンを流れるノーツオブジェクトが入るリストの初期化
             EachLanesNotes[laneIndex].Clear();
 
@@ -181,7 +182,7 @@ namespace FRONTIER.Game.Judgement
                     }
                 }
             }
-
+            
             // 該当したノーツが１つもないようなら処理を抜ける
             if (EachLanesNotes[laneIndex].Count == 0)
             {
@@ -191,7 +192,7 @@ namespace FRONTIER.Game.Judgement
             // foreach で絞り込んだ後なので、LINQでもGCの影響は誤差
             // MinBy の実装がまだらしいので、代用
             target = EachLanesNotes[laneIndex].OrderBy(note => note.transform.position.z).First();
-
+            
             // 同じレーン上を進むノーツのうち,最大4候補を target と見積もって判定する
             // インデックスがオーバーしたときのことを考えて、例外はキャッチだけする
             try
@@ -215,7 +216,10 @@ namespace FRONTIER.Game.Judgement
                     JudgeStatus(CalculateLag(tapTime, notesGenerator.reachedTimes[^4]));
                 }
             }
-            catch (ArgumentOutOfRangeException) { }
+            catch (ArgumentOutOfRangeException)
+            {
+                Debug.LogError($"リスト操作が範囲を超えています");
+            }
         }
 
         /// <summary>
@@ -292,7 +296,7 @@ namespace FRONTIER.Game.Judgement
                 // その他: Miss
                 _ => JudgementRank.Miss
             };
-
+            
             if (scoreRank == JudgementRank.Miss)
             {
                 return;
@@ -307,45 +311,49 @@ namespace FRONTIER.Game.Judgement
             // ターゲットノーツがリストに存在するか確認する
             if (notesGenerator.instances.Contains(target))
             {
-                // ラグを判定幅に照応させて判定する
-                if (timeLag <= JudgementThreshold[JudgementRank.Perfect])
-                {
+                // // ラグを判定幅に照応させて判定する
+                // if (timeLag <= JudgementThreshold[JudgementRank.Perfect])
+                // {
                     
-                    ShowScoreStatus(JudgementRank.Perfect);
+                //     ShowScoreStatus(JudgementRank.Perfect);
                     
-                    Manager.score.combo++;
-                }
-                else if (timeLag <= JudgementThreshold[JudgementRank.Great])
-                {
-                    Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                    ShowScoreStatus(JudgementRank.Great);
-                    Manager.score.apparentScoreValue += JudgementRankValues.GREAT;
-                    Manager.score.judgementStatus[JudgementRank.Great]++;
-                    Manager.score.combo++;
-                }
-                else if (timeLag <= JudgementThreshold[JudgementRank.Good])
-                {
-                    Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
-                    ShowScoreStatus(JudgementRank.Good);
-                    Manager.score.apparentScoreValue += JudgementRankValues.GOOD;
-                    Manager.score.judgementStatus[JudgementRank.Good]++;
-                    Manager.score.combo++;
-                    // 精度の問題もあり、Goodまではコンボ許容することにする
-                }
-                else if (timeLag <= JudgementThreshold[JudgementRank.Bad])
-                {
-                    Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
-                    ShowScoreStatus(JudgementRank.Bad);
-                    Manager.score.apparentScoreValue += JudgementRankValues.BAD;
-                    Manager.score.judgementStatus[JudgementRank.Bad]++;
-                    Manager.score.combo = 0;
-                }
+                //     Manager.score.combo++;
+                // }
+                // else if (timeLag <= JudgementThreshold[JudgementRank.Great])
+                // {
+                //     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
+                //     ShowScoreStatus(JudgementRank.Great);
+                //     Manager.score.apparentScoreValue += JudgementRankValues.GREAT;
+                //     Manager.score.judgementStatus[JudgementRank.Great]++;
+                //     Manager.score.combo++;
+                // }
+                // else if (timeLag <= JudgementThreshold[JudgementRank.Good])
+                // {
+                //     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
+                //     ShowScoreStatus(JudgementRank.Good);
+                //     Manager.score.apparentScoreValue += JudgementRankValues.GOOD;
+                //     Manager.score.judgementStatus[JudgementRank.Good]++;
+                //     Manager.score.combo++;
+                //     // 精度の問題もあり、Goodまではコンボ許容することにする
+                // }
+                // else if (timeLag <= JudgementThreshold[JudgementRank.Bad])
+                // {
+                //     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
+                //     ShowScoreStatus(JudgementRank.Bad);
+                //     Manager.score.apparentScoreValue += JudgementRankValues.BAD;
+                //     Manager.score.judgementStatus[JudgementRank.Bad]++;
+                //     Manager.score.combo = 0;
+                // }
 
                 // スコア計算
                 Manager.score.CalculateScore();
 
                 // ノーツを消す
                 DeleteNote();
+            }
+            else
+            {
+                Debug.LogError("ターゲットノーツがリストに存在しません");
             }
         }
 
@@ -433,7 +441,7 @@ namespace FRONTIER.Game.Judgement
             }
     
             // FIXME: 仮設定
-            noteJudged?.Invoke(notesGenerator.instances[targetIndex]);
+            // noteJudged?.Invoke(notesGenerator.instances[targetIndex]);
         }
 
         /// <summary>
@@ -483,7 +491,7 @@ namespace FRONTIER.Game.Judgement
             }
 
             // FIXME: 仮設定
-            noteJudged?.Invoke(longNotesGenerator.ribbons[targetLongNoteListIndex]);
+            // noteJudged?.Invoke(longNotesGenerator.ribbons[targetLongNoteListIndex]);
         }
 
         /// <summary>
@@ -549,7 +557,7 @@ namespace FRONTIER.Game.Judgement
                 Manager.score.CalculateScore();
 
                 // FIXME: 仮設定
-                noteJudged?.Invoke(notesGenerator.instances[index]);
+                // noteJudged?.Invoke(notesGenerator.instances[index]);
             }
 
             if (Mathf.Abs(notesGenerator.instances[^1].transform.position.z - 7.3f) < 1.0f)
