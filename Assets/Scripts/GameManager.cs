@@ -204,8 +204,10 @@ namespace FRONTIER
                 // 最大持続コンボ数を更新
                 maxCombo = combo > maxCombo ? combo : maxCombo;
 
-                if (maxScoreValue == 0) return;
-
+                if (maxScoreValue == 0)
+                {
+                    return;
+                }
                 ScoreValue = Mathf.RoundToInt(THEORETICAL_SCORE_VALUE * Mathf.Floor(apparentScoreValue / maxScoreValue * THEORETICAL_SCORE_VALUE) / THEORETICAL_SCORE_VALUE);
             }
 

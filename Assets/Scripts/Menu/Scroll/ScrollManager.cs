@@ -53,8 +53,14 @@ namespace FancyScrollView.FRONTIER
 
         void Start()
         {
-            if (prevCellButton != null) prevCellButton.onClick?.AddListener(scrollView.SelectPrevCell);
-            if (nextCellButton != null) nextCellButton.onClick?.AddListener(scrollView.SelectNextCell);
+            if (prevCellButton != null)
+            {
+                prevCellButton.onClick?.AddListener(scrollView.SelectPrevCell);
+            }
+            if (nextCellButton != null)
+            {
+                nextCellButton.onClick?.AddListener(scrollView.SelectNextCell);
+            }
 
             // セルが選択されたときのイベントを登録する
             scrollView.OnSelectionChanged(

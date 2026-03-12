@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
@@ -286,9 +286,18 @@ namespace FRONTIER.Menu.Window.Setting
         void Start()
         {
             // 自分が設定することになっている項目に応じて初期化
-            if (valueType == ValueType.Float) { floatTypeValue.Init(element); }
-            else if (valueType == ValueType.Slider) { sliderTypeValue.Init(element); }
-            else if (valueType == ValueType.Bool) { boolTypeValue.Init(element); }
+            if (valueType == ValueType.Float)
+            {
+                floatTypeValue.Init(element);
+            }
+            else if (valueType == ValueType.Slider)
+            {
+                sliderTypeValue.Init(element);
+            }
+            else if (valueType == ValueType.Bool)
+            {
+                boolTypeValue.Init(element);
+            }
         }
 
         #endregion

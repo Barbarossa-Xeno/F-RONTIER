@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -244,7 +244,10 @@ namespace FRONTIER.Game
             introductionScreen.Open();
             StartCoroutine(StartGame());
 
-            if (Manager.info.IsMV) { mvManager.Construct(); }
+            if (Manager.info.IsMV)
+            {
+                mvManager.Construct();
+            }
         }
 
         void Update()
@@ -288,8 +291,10 @@ namespace FRONTIER.Game
             Manager.startTime = Time.time;
             Manager.audios.musicManager.Play();
 
-            if (Manager.info.IsMV) { mvManager.Player.Play(); }
-
+            if (Manager.info.IsMV)
+            {
+                mvManager.Player.Play();
+            }
             Manager.gamePlayState = GameManager.GamePlayState.Playing;
         }
 
@@ -330,7 +335,10 @@ namespace FRONTIER.Game
                     isPaused = false;
                     Time.timeScale = 1;
                     Manager.audios.musicManager.Source.Play();
-                    if (Manager.info.IsMV) { mvManager.Player.Play(); }
+                    if (Manager.info.IsMV)
+                    {
+                        mvManager.Player.Play();
+                    }
                     Manager.gamePlayState = GameManager.GamePlayState.Playing;
                 }
             ));

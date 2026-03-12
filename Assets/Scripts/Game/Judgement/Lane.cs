@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using FRONTIER.Audio;
 
@@ -60,7 +60,6 @@ namespace FRONTIER.Game.Judgement
             {
                 alfa -= laneManager.LightSpeed * Time.unscaledDeltaTime;
             }
-
             // 0未満にはならないように
             alfa = alfa < 0 ? 0 : alfa;
         }

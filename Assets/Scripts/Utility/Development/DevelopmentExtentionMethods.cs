@@ -45,7 +45,10 @@ namespace FRONTIER.Utility.Development
         ///<summary>ゲームオブジェクトのマテリアルをデフォルトに変更します。</summary>
         public static void ResetMaterial(this GameObject target)
         {
-            if(target == null) { return; }
+            if (target == null)
+            {
+                return;
+            }
             target.GetComponent<Renderer>().material = default;
         }
     }

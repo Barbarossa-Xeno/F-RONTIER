@@ -23,8 +23,10 @@ namespace FRONTIER.Utility
 
         void Update()
         {
-            if (targetCamera == null) return;
-
+            if (targetCamera == null)
+            {
+                return;
+            }
             float screenAspect = Screen.width / (float)Screen.height;
             float targetAspect = aspect.x / aspect.y;
             float ratio = targetAspect / screenAspect;

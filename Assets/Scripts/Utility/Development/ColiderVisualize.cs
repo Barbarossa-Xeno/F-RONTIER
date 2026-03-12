@@ -1,4 +1,4 @@
-/* REFERENCE */
+﻿/* REFERENCE */
 /* https://nn-hokuson.hatenablog.com/entry/2021/12/09/205155 */
 
 using System.Collections.Generic;
@@ -33,9 +33,14 @@ namespace FRONTIER.Utility.Development
         {
             primitive.transform.localPosition = capsuleCollider.center;
 
-            if (capsuleCollider.direction == 0) primitive.transform.rotation = Quaternion.Euler(90, 0, 0);
-            if (capsuleCollider.direction == 2) primitive.transform.rotation = Quaternion.Euler(0, 0, 90);
-
+            if (capsuleCollider.direction == 0)
+            {
+                primitive.transform.rotation = Quaternion.Euler(90, 0, 0);
+            }
+            if (capsuleCollider.direction == 2)
+            {
+                primitive.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
             Vector3 s = Vector3.one;// primitive.transform.localScale;
             float radius = capsuleCollider.radius;
             float sx = s.x * radius * 2f;
@@ -51,8 +56,10 @@ namespace FRONTIER.Utility.Development
 
             foreach (var collider in colliders)
             {
-                if (collider.enabled == false) continue;
-
+                if (collider.enabled == false)
+                {
+                    continue;
+                }
                 GameObject primitive;
 
                 if (collider is SphereCollider)

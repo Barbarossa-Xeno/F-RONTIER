@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FancyScrollView (https://github.com/setchi/FancyScrollView)
  * Copyright (c) 2020 setchi
  * Licensed under MIT (https://github.com/setchi/FancyScrollView/blob/master/LICENSE)
@@ -61,7 +61,6 @@ namespace FancyScrollView.FRONTIER
             {
                 return;
             }
-
             Context.SelectedIndex = index;
             Refresh();
 
@@ -99,7 +98,6 @@ namespace FancyScrollView.FRONTIER
             {
                 return;
             }
-
             UpdateSelection(index);
             scroller.ScrollTo(index, 0.35f, Ease.OutCubic);
         }

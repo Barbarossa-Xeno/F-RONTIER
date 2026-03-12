@@ -13,7 +13,10 @@ namespace FRONTIER.Utility
         /// <summary>必要ならば初期化を行うメソッド。</summary>
         public void IfInit()
         {
-            if (isInitialized) { return; }
+            if (isInitialized)
+            {
+                return;
+            }
             Init();
             isInitialized = true;
         }

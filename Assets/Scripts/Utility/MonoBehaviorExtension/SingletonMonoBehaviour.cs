@@ -39,7 +39,10 @@ namespace FRONTIER.Utility
 
         protected sealed override void Awake()
         {
-            if (this == Instance) return;
+            if (this == Instance)
+            {
+                return;
+            }
             Debug.LogError($"{typeof(T)}は重複して存在しています。");
         }
     }

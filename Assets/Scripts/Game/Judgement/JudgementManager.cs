@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -183,8 +183,10 @@ namespace FRONTIER.Game.Judgement
             }
 
             // 該当したノーツが１つもないようなら処理を抜ける
-            if (EachLanesNotes[laneIndex].Count == 0) { return; }
-
+            if (EachLanesNotes[laneIndex].Count == 0)
+            {
+                return;
+            }
             // 判定線に最も近い（z座標が最小の）ノーツをターゲットにする
             // foreach で絞り込んだ後なので、LINQでもGCの影響は誤差
             // MinBy の実装がまだらしいので、代用
@@ -231,7 +233,10 @@ namespace FRONTIER.Game.Judgement
             for (i = 1; i <= longNotesGenerator.instances.Count; i++)
             {
                 // インデックスが同じコンポーネントがあったら、そのインデックスを i にコピー
-                if (longNotesGenerator.ribbons[^i].Index == longNoteIndex) { break; }
+                if (longNotesGenerator.ribbons[^i].Index == longNoteIndex)
+                {
+                    break;
+                }
             }
 
             // 中間点を持つ場合 -> 中間点と終点のチェック
@@ -374,7 +379,10 @@ namespace FRONTIER.Game.Judgement
                     int i = 0;
                     while (true)
                     {
-                        if (targetIndex - i < notesGenerator.instances.Count) { break; }
+                        if (targetIndex - i < notesGenerator.instances.Count)
+                        {
+                            break;
+                        }
                         else { i++; }
                     }
                     targetIndex -= i;
@@ -509,15 +517,42 @@ namespace FRONTIER.Game.Judgement
                 noteJudged?.Invoke();
             }
 
-            if (Mathf.Abs(notesGenerator.instances[^1].transform.position.z - 7.3f) < 1.0f) { Judgement(^1); }
-            if (Mathf.Abs(notesGenerator.instances[^2].transform.position.z - 7.3f) < 1.0f) { Judgement(^2); }
-            if (Mathf.Abs(notesGenerator.instances[^3].transform.position.z - 7.3f) < 1.0f) { Judgement(^3); }
-            if (Mathf.Abs(notesGenerator.instances[^4].transform.position.z - 7.3f) < 1.0f) { Judgement(^4); }
-            if (Mathf.Abs(notesGenerator.instances[^5].transform.position.z - 7.3f) < 1.0f) { Judgement(^5); }
-            if (Mathf.Abs(notesGenerator.instances[^6].transform.position.z - 7.3f) < 1.0f) { Judgement(^6); }
-            if (Mathf.Abs(notesGenerator.instances[^7].transform.position.z - 7.3f) < 1.0f) { Judgement(^7); }
-            if (Mathf.Abs(notesGenerator.instances[^8].transform.position.z - 7.3f) < 1.0f) { Judgement(^8); }
-            if (Mathf.Abs(notesGenerator.instances[^9].transform.position.z - 7.3f) < 1.0f) { Judgement(^9); }
+            if (Mathf.Abs(notesGenerator.instances[^1].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^1);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^2].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^2);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^3].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^3);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^4].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^4);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^5].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^5);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^6].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^6);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^7].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^7);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^8].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^8);
+            }
+            if (Mathf.Abs(notesGenerator.instances[^9].transform.position.z - 7.3f) < 1.0f)
+            {
+                Judgement(^9);
+            }
         }
         #endregion
     }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -185,7 +185,10 @@ namespace FRONTIER.Game.Notes
             }
 
             // オート時はずっと押された判定にする
-            if (Manager.info.IsAutoPlay) { OnPressed.Invoke(true); }
+            if (Manager.info.IsAutoPlay)
+            {
+                OnPressed.Invoke(true);
+            }
         }
 
         protected sealed override void Update()
@@ -205,7 +208,10 @@ namespace FRONTIER.Game.Notes
         /// <param name = "flag">押下の有無のフラグ。</param>
         private void Pressing(bool flag)
         {
-            if (!Manager.info.IsAutoPlay) { OnPressed.Invoke(flag); }
+            if (!Manager.info.IsAutoPlay)
+            {
+                OnPressed.Invoke(flag);
+            }
             else { OnPressed.Invoke(true); }
         }
 
@@ -240,13 +246,25 @@ namespace FRONTIER.Game.Notes
             this.isIntermediate = isInner;
             if (isInner)
             {
-                if (noteType == Reference.NoteType.LinearLong) { longNoteType = Reference.LongNoteType.IntermediateLinear; }
-                else if (noteType == Reference.NoteType.CurvedLong) { longNoteType = Reference.LongNoteType.IntermediateCurved; }
+                if (noteType == Reference.NoteType.LinearLong)
+                {
+                    longNoteType = Reference.LongNoteType.IntermediateLinear;
+                }
+                else if (noteType == Reference.NoteType.CurvedLong)
+                {
+                    longNoteType = Reference.LongNoteType.IntermediateCurved;
+                }
             }
             else
             {
-                if (noteType == Reference.NoteType.LinearLong) { longNoteType = Reference.LongNoteType.DirectLinear; }
-                else if (noteType == Reference.NoteType.CurvedLong) { longNoteType = Reference.LongNoteType.DirectCurved; }
+                if (noteType == Reference.NoteType.LinearLong)
+                {
+                    longNoteType = Reference.LongNoteType.DirectLinear;
+                }
+                else if (noteType == Reference.NoteType.CurvedLong)
+                {
+                    longNoteType = Reference.LongNoteType.DirectCurved;
+                }
             }
         }
 

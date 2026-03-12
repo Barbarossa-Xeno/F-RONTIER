@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -488,7 +488,10 @@ namespace FRONTIER.Result
         /// </summary>
         private void Save()
         {
-            if (!Manager.info.IsAutoPlay) SongSaveData.Instance.Save();
+            if (!Manager.info.IsAutoPlay)
+            {
+                SongSaveData.Instance.Save();
+            }
         }
 
         #endregion

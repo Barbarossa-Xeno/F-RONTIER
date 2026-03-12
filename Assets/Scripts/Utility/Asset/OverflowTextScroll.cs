@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Collections;
 using TMPro;
@@ -82,7 +82,10 @@ namespace FRONTIER.Utility.Asset
         {
             get
             {
-                if (ignoreTimeScale) return Time.unscaledDeltaTime;
+                if (ignoreTimeScale)
+                {
+                    return Time.unscaledDeltaTime;
+                }
                 else return Time.deltaTime;
             }
         }
@@ -152,7 +155,10 @@ namespace FRONTIER.Utility.Asset
             // いろいろ取得する
             parentTransform = GetComponent<RectTransform>();
             overflowPosition = parentTransform.sizeDelta.x - text.preferredWidth;
-            if (overflowPosition < 0) { overflowPosition = -overflowPosition; }
+            if (overflowPosition < 0)
+            {
+                overflowPosition = -overflowPosition;
+            }
             else { overflowPosition = 0; }
             // 位置合わせ
             text.rectTransform.offsetMin = new Vector2(0, 0);
@@ -170,8 +176,10 @@ namespace FRONTIER.Utility.Asset
         private IEnumerator ScrollText(RectTransform rect, float overflow)
         {
             // オーバーフローしたテキストが無ければコルーチンを破棄
-            if (overflow == 0) { yield break; }
-
+            if (overflow == 0)
+            {
+                yield break;
+            }
             // ループさせてスクロールを繰り返す
             while (true)
             {

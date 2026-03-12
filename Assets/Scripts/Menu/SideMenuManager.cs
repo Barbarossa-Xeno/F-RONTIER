@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -190,7 +190,10 @@ namespace FRONTIER.Menu
             // SortOptionのEnumとintを相互変換して、ボタンが押された毎に値を変えていく
             int enumNum = (int)MenuInfo.menuInfo.SortOption + 1;
             
-            if (enumNum < IMenu.Sort.OptionCount) { menuManager.events.OnSortOptionChanged?.Invoke(enumNum); }
+            if (enumNum < IMenu.Sort.OptionCount)
+            {
+                menuManager.events.OnSortOptionChanged?.Invoke(enumNum);
+            }
             else { menuManager.events.OnSortOptionChanged?.Invoke((int)IMenu.Sort.Option.ID); }
 
             Debug.Log(MenuInfo.menuInfo.SortOption);
@@ -204,7 +207,10 @@ namespace FRONTIER.Menu
         {
             int enumNum = (int)MenuInfo.menuInfo.SortOrder + 1;
 
-            if (enumNum < IMenu.Sort.OrderCount) { menuManager.events.OnSortOrderChanged?.Invoke(enumNum); }
+            if (enumNum < IMenu.Sort.OrderCount)
+            {
+                menuManager.events.OnSortOrderChanged?.Invoke(enumNum);
+            }
             else { menuManager.events.OnSortOrderChanged?.Invoke((int)IMenu.Sort.Order.Ascending); }
 
             sortConditionView.UpdateSortCondition(MenuInfo.menuInfo.SortOrder);

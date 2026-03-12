@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using UnityEngine;
 
@@ -97,14 +97,20 @@ namespace FRONTIER.Menu.Background
 
         void FixedUpdate()
         {
-            if (audioSource == null) return;
-
+            if (audioSource == null)
+            {
+                return;
+            }
             //オーディオクリップが変更された時に音声情報を一新する
-            if (IsAudioClipChange) { OnAudioClipChanged?.Invoke(); }
-            
+            if (IsAudioClipChange)
+            {
+                OnAudioClipChanged?.Invoke();
+            }
             // 音声情報が取得できなかったらやめる
-            if (audioData == null) return;
-            
+            if (audioData == null)
+            {
+                return;
+            }
             if (audioSource.isPlaying && audioSource.timeSamples < audioData.Length)
             {
                 audioSource.GetSpectrumData(spectrumData, 0, FFT_window);

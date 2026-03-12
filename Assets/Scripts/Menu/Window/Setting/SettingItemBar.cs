@@ -73,7 +73,10 @@ namespace FRONTIER.Menu.Window.Setting
                 // 項目が選択されていないとき
                 case ButtonState.Unselected:
                     // テンポラリーと現在の選択カテゴリが同じなら表示を変えない
-                    if (category_tmp == settingWindowManager.currentCategory) { return; }         
+                    if (category_tmp == settingWindowManager.currentCategory)
+                    {
+                        return;
+                    }
                     icon.sprite = outlineIcon;
                     GetComponent<Image>().enabled = false;
                     break;

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using FRONTIER.Utility;
 using FRONTIER.Utility.Development;
@@ -158,13 +158,25 @@ namespace FRONTIER.Menu.Background
             for (int i = 4; i < vertice.Length; i++)
             {
                 //左下
-                if (i % 4 == 0) { vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, 0, 0); }
+                if (i % 4 == 0)
+                {
+                    vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, 0, 0);
+                }
                 //左上
-                if ((i - 1) % 4 == 0) { vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, waveHeight, 0); }
+                if ((i - 1) % 4 == 0)
+                {
+                    vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, waveHeight, 0);
+                }
                 //右下
-                if ((i - 2) % 4 == 0) { vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, 0, 0); }
+                if ((i - 2) % 4 == 0)
+                {
+                    vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, 0, 0);
+                }
                 //右上
-                if ((i - 3) % 4 == 0) { vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, waveHeight, 0); }
+                if ((i - 3) % 4 == 0)
+                {
+                    vertice[i] = new Vector3(vertice[i - 4].x + pointWidth, waveHeight, 0);
+                }
             }
 
             //三角形のインデックスを決める

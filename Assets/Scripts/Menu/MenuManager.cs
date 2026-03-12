@@ -95,7 +95,10 @@ namespace FRONTIER.Menu
         /// <param name="id">曲のID</param>
         private void PlayHighLight(int id)
         {
-            if (id_tmp == id) { return; }
+            if (id_tmp == id)
+            {
+                return;
+            }
             id_tmp = id;
             GameManager.Instance.audios.musicManager.Source.clip = songHighlights[id];
             GameManager.Instance.audios.musicManager.Source.Play();

@@ -1,4 +1,4 @@
-// [reference] https://edom18.hateblo.jp/entry/2018/12/30/171214
+﻿// [reference] https://edom18.hateblo.jp/entry/2018/12/30/171214
 
 using UnityEngine;
 
@@ -67,7 +67,6 @@ namespace FRONTIER.ShaderScripts
             {
                 return;
             }
-
             UpdateWeights();
 
             Blur();
@@ -83,7 +82,6 @@ namespace FRONTIER.ShaderScripts
             {
                 return;
             }
-
             _material = new Material(_shader);
             _material.hideFlags = HideFlags.HideAndDontSave;
 
@@ -107,7 +105,6 @@ namespace FRONTIER.ShaderScripts
             {
                 Initialize();
             }
-
             Graphics.Blit(_texture, _rt[0]);
 
             _material.SetFloatArray("_Weights", _weights);
@@ -158,7 +155,6 @@ namespace FRONTIER.ShaderScripts
                 {
                     w *= 2.0f;
                 }
-
                 total += w;
             }
 

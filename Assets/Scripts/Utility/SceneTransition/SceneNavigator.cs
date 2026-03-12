@@ -1,4 +1,4 @@
-//  SceneNavigator.cs
+﻿//  SceneNavigator.cs
 //  [Reference] http://kan-kikuchi.hatenablog.com/entry/SceneNavigator
 
 using System;
@@ -54,7 +54,10 @@ namespace FRONTIER.Utility.SceneTransition
         protected override void Init()
         {
             base.Init();
-            if (canvasFader == null) { Reset(); }
+            if (canvasFader == null)
+            {
+                Reset();
+            }
             //*
             CurrentSceneName = SceneManager.GetActiveScene().name;
 

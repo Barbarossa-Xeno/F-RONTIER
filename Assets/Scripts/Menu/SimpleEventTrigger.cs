@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -46,27 +46,42 @@ namespace FRONTIER.Menu
         
         void Awake()
         {
-            if (triggerTiming == TriggerTiming.Awake) { Trigger(); }
+            if (triggerTiming == TriggerTiming.Awake)
+            {
+                Trigger();
+            }
         }
 
         void OnEnable()
         {
-            if (triggerTiming == TriggerTiming.OnEnable) { Trigger(); }
+            if (triggerTiming == TriggerTiming.OnEnable)
+            {
+                Trigger();
+            }
         }
 
         void Start()
         {
-            if (triggerTiming == TriggerTiming.Start) { Trigger(); }
+            if (triggerTiming == TriggerTiming.Start)
+            {
+                Trigger();
+            }
         }
 
         void Update()
         {
-            if (triggerTiming == TriggerTiming.Update) { Trigger(); }
+            if (triggerTiming == TriggerTiming.Update)
+            {
+                Trigger();
+            }
         }
 
         void OnValidate()
         {
-            if (onValidate) { Trigger(); }
+            if (onValidate)
+            {
+                Trigger();
+            }
         }
     }
 }

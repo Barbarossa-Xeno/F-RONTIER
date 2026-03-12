@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using FRONTIER.Utility;
@@ -221,7 +221,6 @@ namespace FRONTIER.Game.Notes
             {
                 target = ribbon;
             }
-
             // MeshFilter のパラメータ
             MeshFilterParameters filterParams = new()
             {
@@ -572,7 +571,6 @@ namespace FRONTIER.Game.Notes
                     {
                         notesGenerator.instances.Add(note);
                     }
-
                     // ループ回数（中間点の数）で処理する部分
                     if (j == 0)
                     {
@@ -790,8 +788,10 @@ namespace FRONTIER.Game.Notes
         private void SetRibbonTransform()
         {
             // 中間点なければ戻る
-            if (ribbons.Count == 0) return;
-
+            if (ribbons.Count == 0)
+            {
+                return;
+            }
             // 各ロングノーツに設定された、流れてくる順番 (LongNote.index) を抽出
             List<int> meshIndexList = ribbons.Select(mesh => mesh.Index).ToList();
 
@@ -833,7 +833,6 @@ namespace FRONTIER.Game.Notes
                         {
                             parents[i].SetInfo(Reference.NoteType.CurvedLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
                         }
-
                         // 入れ子にした欠片の方はコンポーネントを削除する
                         Destroy(ribbons[j]);
                     }
@@ -879,8 +878,10 @@ namespace FRONTIER.Game.Notes
             ribbons.Reverse();
             foreach (var ribbon in ribbons)
             {
-                if (ribbon == null) continue;
-
+                if (ribbon == null)
+                {
+                    continue;
+                }
                 ribbon.gameObject.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
             }
 

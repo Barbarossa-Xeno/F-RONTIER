@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using FRONTIER.Utility;
 using FRONTIER.Utility.Easing;
 using System;

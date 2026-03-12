@@ -53,7 +53,9 @@ namespace Banzan.Lib.Editor.Utility
             {
                 stringBuilder.Append(array[index].Name);
                 if (index < array.Length - 1)
+                {
                     stringBuilder.Append(", ");
+                }
             }
 
             stringBuilder.Append(")");
@@ -64,7 +66,10 @@ namespace Banzan.Lib.Editor.Utility
         {
             var propertyPath = prop.propertyPath;
             m_States.TryGetValue(propertyPath, out var state);
-            if (state != null) return state;
+            if (state != null)
+            {
+                return state;
+            }
             state = new State();
             var propertyRelative = prop.FindPropertyRelative("m_PersistentCalls.m_Calls");
             state.m_ReorderableList =
@@ -106,20 +111,28 @@ namespace Banzan.Lib.Editor.Utility
             RestoreState(property);
             var num = 0.0f;
             if (m_ReorderableList != null)
+            {
                 num = m_ReorderableList.GetHeight();
+            }
             return num;
         }
 
         public void OnGUI(Rect position)
         {
             if (!(m_ListenersArray is { isArray: true }))
+            {
                 return;
+            }
             m_DummyEvent = GetDummyEvent(m_Prop);
             if (m_DummyEvent == null)
+            {
                 return;
+            }
             m_Styles ??= new Styles();
             if (m_ReorderableList == null)
+            {
                 return;
+            }
             var indentLevel = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
             m_ReorderableList.DoList(position);
@@ -157,10 +170,14 @@ namespace Banzan.Lib.Editor.Utility
             GUI.Box(position2, GUIContent.none);
             EditorGUI.PropertyField(position2, propertyRelative4, GUIContent.none);
             if (EditorGUI.EndChangeCheck())
+            {
                 propertyRelative5.stringValue = null;
+            }
             var persistentListenerMode = GetMode(propertyRelative2);
             if (propertyRelative4.objectReferenceValue == null || string.IsNullOrEmpty(propertyRelative5.stringValue))
+            {
                 persistentListenerMode = PersistentListenerMode.Void;
+            }
             var propertyRelative6 = persistentListenerMode switch
             {
                 PersistentListenerMode.Object => propertyRelative3.FindPropertyRelative("m_ObjectArgument"),
@@ -173,14 +190,18 @@ namespace Banzan.Lib.Editor.Utility
             var stringValue = propertyRelative3.FindPropertyRelative("m_ObjectArgumentAssemblyTypeName").stringValue;
             var type = typeof(Object);
             if (!string.IsNullOrEmpty(stringValue))
+            {
                 type = Type.GetType(stringValue, false) ?? typeof(Object);
+            }
             if (persistentListenerMode == PersistentListenerMode.Object)
             {
                 EditorGUI.BeginChangeCheck();
                 var @object = EditorGUI.ObjectField(position3, GUIContent.none, propertyRelative6.objectReferenceValue,
                     type, true);
                 if (EditorGUI.EndChangeCheck())
+                {
                     propertyRelative6.objectReferenceValue = @object;
+                }
             }
             else if (persistentListenerMode != PersistentListenerMode.Void &&
                      persistentListenerMode != PersistentListenerMode.EventDefined &&
@@ -192,7 +213,9 @@ namespace Banzan.Lib.Editor.Utility
                     GetMode(propertyRelative2), type);
                 object[] attributes = null;
                 if (method != null)
+                {
                     attributes = method.GetCustomAttributes(typeof(EnumActionAttribute), true);
+                }
                 if (attributes != null && attributes.Length > 0)
                 {
                     // Make an enum popup
@@ -223,7 +246,9 @@ namespace Banzan.Lib.Editor.Utility
                     var str = "UnknownComponent";
                     var objectReferenceValue = propertyRelative4.objectReferenceValue;
                     if (objectReferenceValue != null)
+                    {
                         str = objectReferenceValue.GetType().Name;
+                    }
                     stringBuilder.Append($"<Missing {str}.{propertyRelative5.stringValue}>");
                 }
                 else
@@ -334,13 +359,17 @@ namespace Banzan.Lib.Editor.Utility
         {
             var validMethodMapList = new List<ValidMethodMap>();
             if (target == null || t == null)
+            {
                 return validMethodMapList;
+            }
             var type = target.GetType();
             var list = type.GetMethods().Where(x => !x.IsSpecialName).ToList();
             var source = type.GetProperties().AsEnumerable().Where(x =>
             {
                 if (x.GetCustomAttributes(typeof(ObsoleteAttribute), true).Length == 0)
+                {
                     return x.GetSetMethod() != null;
+                }
                 return false;
             });
             list.AddRange(source.Select(x => x.GetSetMethod()));
@@ -356,9 +385,13 @@ namespace Banzan.Lib.Editor.Utility
                 for (var index = 0; index < t.Count; ++index)
                 {
                     if (!parameters[index].ParameterType.IsAssignableFrom(t[index]))
+                    {
                         flag = false;
+                    }
                     if (allowSubclasses && t[index].IsAssignableFrom(parameters[index].ParameterType))
+                    {
                         flag = true;
+                    }
                 }
 
                 if (flag)
@@ -376,7 +409,9 @@ namespace Banzan.Lib.Editor.Utility
             PersistentListenerMode modeEnum, Type argumentType)
         {
             if (uObject == null || string.IsNullOrEmpty(methodName))
+            {
                 return false;
+            }
             return GetMethod(dummyEvent, methodName, uObject, modeEnum, argumentType) != null;
         }
 
@@ -388,13 +423,17 @@ namespace Banzan.Lib.Editor.Utility
         {
             var target1 = target;
             if (target1 is Component)
+            {
                 target1 = (target as Component).gameObject;
+            }
             var propertyRelative = listener.FindPropertyRelative("m_MethodName");
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("No Function"), string.IsNullOrEmpty(propertyRelative.stringValue),
                 ClearEventFunction, new UnityEventFunction(listener, null, null, PersistentListenerMode.EventDefined));
             if (target1 == null)
+            {
                 return menu;
+            }
             menu.AddSeparator(string.Empty);
             var array = dummyEvent.GetType().GetMethod("Invoke").GetParameters().Select(x => x.ParameterType).ToArray();
             GeneratePopUpForType(menu, target1, false, listener, array);
@@ -406,7 +445,9 @@ namespace Banzan.Lib.Editor.Utility
                 foreach (var component in components)
                 {
                     if (!(component == null))
+                    {
                         GeneratePopUpForType(menu, component, list.Contains(component.GetType().Name), listener, array);
+                    }
                 }
             }
 
@@ -441,11 +482,17 @@ namespace Banzan.Lib.Editor.Utility
             GetMethodsForTargetAndMode(target, new[] { typeof(Object) }, methods, PersistentListenerMode.Object, true);
             GetMethodsForTargetAndMode(target, Type.EmptyTypes, methods, PersistentListenerMode.Void);
             if (methods.Count <= 0)
+            {
                 return;
+            }
             if (flag)
+            {
                 menu.AddItem(new GUIContent(targetName + "/ "), false, null);
+            }
             if (delegateArgumentsTypes.Length != 0)
+            {
                 menu.AddDisabledItem(new GUIContent(targetName + "/Static Parameters"));
+            }
             AddMethodsToMenu(menu, listener, methods, targetName);
         }
 
@@ -485,7 +532,9 @@ namespace Banzan.Lib.Editor.Utility
                 var parameter = method.methodInfo.GetParameters()[index];
                 stringBuilder.Append(GetTypeName(parameter.ParameterType));
                 if (index < length - 1)
+                {
                     stringBuilder.Append(", ");
+                }
             }
 
             var on = objectReferenceValue == method.target && stringValue == method.methodInfo.Name && mode1 == mode2;
@@ -502,13 +551,21 @@ namespace Banzan.Lib.Editor.Utility
         private static string GetTypeName(Type t)
         {
             if (t == typeof(int))
+            {
                 return "int";
+            }
             if (t == typeof(float))
+            {
                 return "float";
+            }
             if (t == typeof(string))
+            {
                 return "string";
+            }
             if (t == typeof(bool))
+            {
                 return "bool";
+            }
             return t.Name;
         }
 
@@ -602,10 +659,14 @@ namespace Banzan.Lib.Editor.Utility
                 else
                 {
                     if (objectReferenceValue == null)
+                    {
                         return;
+                    }
                     var type = Type.GetType(propertyRelative1.stringValue, false);
                     if (typeof(Object).IsAssignableFrom(type) && type.IsInstanceOfType(objectReferenceValue))
+                    {
                         return;
+                    }
                     propertyRelative2.objectReferenceValue = null;
                 }
             }

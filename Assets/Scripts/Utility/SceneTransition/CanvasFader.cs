@@ -1,4 +1,4 @@
-//  CanvasFader.cs
+﻿//  CanvasFader.cs
 //  [Reference] http://kan-kikuchi.hatenablog.com/entry/CanvasFader
 
 using System;
@@ -70,8 +70,10 @@ namespace FRONTIER.Utility.SceneTransition
         ///<summary>更新処理</summary>
         void Update()
         {
-            if (!IsFading) return;
-
+            if (!IsFading)
+            {
+                return;
+            }
             // フェードの進行
             float fadeSpeed = 1f / duration;
             fadeSpeed *= ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime;
@@ -80,8 +82,10 @@ namespace FRONTIER.Utility.SceneTransition
 
             // フェード終了判定
             // 0 < Alpha < 1 ならフェード中なので戻る
-            if (Alpha > 0 && Alpha < 1) return;
-
+            if (Alpha > 0 && Alpha < 1)
+            {
+                return;
+            }
             fadeState = FadeState.None;
             enabled = false;
             onFadeFinished?.Invoke();
@@ -97,7 +101,6 @@ namespace FRONTIER.Utility.SceneTransition
             {
                 canvasFader = target.AddComponent<CanvasFader>();
             }
-
             canvasFader.enabled = true;
             canvasFader.Play(isFadeOut, duration, ignoreTimeScale, onFinished);
 
