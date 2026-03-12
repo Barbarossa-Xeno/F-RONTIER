@@ -564,6 +564,7 @@ namespace FRONTIER.Game.Notes
                     LongNote note = instance.GetComponent<LongNote>();
                     note.Type = (Reference.NoteType)types[i];
                     note.Index = i;
+                    note.ReachedTime = reachedTimes[i][j];
 
                     // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
@@ -867,6 +868,7 @@ namespace FRONTIER.Game.Notes
             ribbons = newMeshes.ToList();
 
             // 共通の親にまとめる
+            // FIXME: ribbon が ぬるりになるときがあるよう
             ribbons.ForEach(ribbon => ribbon.transform.SetParent(instanceParent));
         }
 

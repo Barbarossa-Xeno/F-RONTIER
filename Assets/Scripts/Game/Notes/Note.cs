@@ -22,14 +22,25 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private int index;
 
         /// <summary>
-        /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/> ) でのインデックス。生成順
+        /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/> ) でのインデックス。
+        /// 最終的に、先に判定線に到達する方が番号が大きくなるような番号付けがされている。
         /// </summary>
         [SerializeField] private int noteIndex;
 
         /// <summary>
-        /// このノーツが判定ラインを超過したときに発火するイベント。
+        /// このノーツが到達する時間。
         /// </summary>
-        public event Action ReachedLineEvent;
+        [SerializeField] private float reachedTime;
+
+        /// <summary>
+        /// このノーツが判定ラインを超過したときに発火するイベント。<br/>
+        /// </summary>
+        /// <remarks>
+        /// <see cref="GameManager.PlayInfo.IsAutoPlay"/> が
+        /// <b><c>true</c> の時: 判定線から少し離れた位置 (<see cref="Reference.missJudgementPosition.z"/>) で発火</b><br/>
+        /// <b><c>false</c> の時: ノーツの判定線到達時間が経過すると発火</b><br/>
+        /// </remarks>
+        public event Action<Note> ReachedLineEvent;
 
         /// <summary>
         /// 判定線を超過したか。
@@ -59,12 +70,19 @@ namespace FRONTIER.Game.Notes
         }
 
         /// <summary>
-        /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/>) でのインデックス。生成順
+        /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/>) でのインデックス。
+        /// 最終的に、先に判定線に到達する方が番号が大きくなるような番号付けがされている。
         /// </summary>
         public int NoteIndex
         {
             get => noteIndex;
             set => noteIndex = value;
+        }
+
+        public float ReachedTime
+        {
+            get => reachedTime;
+            set => reachedTime = value;
         }
 
         #endregion
@@ -83,14 +101,14 @@ namespace FRONTIER.Game.Notes
                 transform.position -= new Vector3(0, 0, Manager.info.NoteSpeed) * Time.deltaTime;
 
                 // 判定線を超過したかチェック
-                if (!isReachedLine &&
+                if (!isReachedLine
                     // 通常プレイ: 画面外
-                    ((!Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z - 3.5f) ||
-                    // オートプレイ: 判定線通過
-                     (Manager.info.IsAutoPlay && transform.position.z <= Reference.noteOrigin.z)))
+                    && ((!Manager.info.IsAutoPlay && transform.position.z <= Reference.missJudgementPosition.z)
+                        // オートプレイ: 到達時間で判定することで、ノーツの速さごとに毎フレームの変位が異なって実際の判定とギャップができるのを防ぐ
+                        || (Manager.info.IsAutoPlay && Time.time - Manager.startTime >= reachedTime)))
                 {
                     isReachedLine = true;
-                    ReachedLineEvent?.Invoke();
+                    ReachedLineEvent?.Invoke(this);
                 }
             }
         }

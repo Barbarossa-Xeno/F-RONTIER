@@ -140,6 +140,7 @@ namespace FRONTIER.Game.Notes
                     // プロパティを渡す
                     instances[^1].Type = Reference.NoteType.Normal;
                     instances[^1].Index = i;
+                    instances[^1].ReachedTime = reachedTimes[^1];
                     instances[^1].name = $"Note-{i}";
                 }
             }
