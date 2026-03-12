@@ -138,7 +138,16 @@ namespace FRONTIER.Utility
         /// </summary>
         public static readonly Vector3 missJudgementPosition = noteOrigin - new Vector3(0.0f, 0.0f, 3.5f);
 
+        /// <summary>
+        /// 表記上のノーツの速さの値を小さくするために、それに乗算して実際の値を大きくするための係数。
+        /// </summary>
         public const float NOTE_SPEED_FACTOR = 2.5f;
+
+        /// <sumamr>
+        /// LineRenderer で描画された判定線の太さ。
+        /// 特にヒエラルキーと同期されないので手動で変えること。
+        /// </summary>
+        public const float JUDGEMENT_LINE_THICKNESS = 0.2f;
 
         // FIXME: Utility の中の Utilities てなんや、下に合わせて DifficultyValues に変える
         /// <summary>
