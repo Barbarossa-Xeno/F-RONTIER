@@ -56,13 +56,13 @@ namespace FRONTIER.Game.Judgement
         /// <summary>
         /// 判定ステータスの基準。
         /// </summary>
-        private static readonly Dictionary<ScoreRank, float> JudgementThreshold = new()
+        private static readonly Dictionary<JudgementRank, float> JudgementThreshold = new()
         {
-            { ScoreRank.Perfect, 0.05f },
-            { ScoreRank.Great, 0.1f },
-            { ScoreRank.Good, 0.25f },
-            { ScoreRank.Bad, 0.4f },
-            { ScoreRank.Miss, 0.6f }
+            { JudgementRank.Perfect, 0.05f },
+            { JudgementRank.Great, 0.1f },
+            { JudgementRank.Good, 0.25f },
+            { JudgementRank.Bad, 0.4f },
+            { JudgementRank.Miss, 0.6f }
         };
 
         #endregion
@@ -279,41 +279,65 @@ namespace FRONTIER.Game.Judgement
         /// <param name="timeLag">実際にノーツが押された時間と押されるべき時間とのラグ。</param>
         private void JudgeStatus(float timeLag)
         {
+            JudgementRank scoreRank = timeLag switch
+            {
+                // 0.05s 以内: Perfect
+                <= 0.05f => JudgementRank.Perfect,
+                // 0.1s 以内: Great
+                <= 0.1f => JudgementRank.Great,
+                // 0.25s 以内: Good
+                <= 0.25f => JudgementRank.Good,
+                // 0.4s 以内: Bad
+                <= 0.4f => JudgementRank.Bad,
+                // その他: Miss
+                _ => JudgementRank.Miss
+            };
+
+            if (scoreRank == JudgementRank.Miss)
+            {
+                return;
+            }
+
+            Manager.audios.seManager.Play(scoreRank switch
+            {
+                JudgementRank.Perfect or JudgementRank.Great => SEManager.SE.GreatOrPerfect,
+                _ => SEManager.SE.GoodOrBad,
+            });
+
             // ターゲットノーツがリストに存在するか確認する
             if (notesGenerator.instances.Contains(target))
             {
                 // ラグを判定幅に照応させて判定する
-                if (timeLag <= JudgementThreshold[ScoreRank.Perfect])
+                if (timeLag <= JudgementThreshold[JudgementRank.Perfect])
                 {
-                    Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                    ShowScoreStatus(ScoreRank.Perfect);
-                    Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
-                    Manager.score.judgementStatus[ScoreRank.Perfect]++;
+                    
+                    ShowScoreStatus(JudgementRank.Perfect);
+                    
                     Manager.score.combo++;
                 }
-                else if (timeLag <= JudgementThreshold[ScoreRank.Great])
+                else if (timeLag <= JudgementThreshold[JudgementRank.Great])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                    ShowScoreStatus(ScoreRank.Great);
-                    Manager.score.apparentScoreValue += ScoreRankValues.GREAT;
-                    Manager.score.judgementStatus[ScoreRank.Great]++;
+                    ShowScoreStatus(JudgementRank.Great);
+                    Manager.score.apparentScoreValue += JudgementRankValues.GREAT;
+                    Manager.score.judgementStatus[JudgementRank.Great]++;
                     Manager.score.combo++;
                 }
-                else if (timeLag <= JudgementThreshold[ScoreRank.Good])
+                else if (timeLag <= JudgementThreshold[JudgementRank.Good])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
-                    ShowScoreStatus(ScoreRank.Good);
-                    Manager.score.apparentScoreValue += ScoreRankValues.GOOD;
-                    Manager.score.judgementStatus[ScoreRank.Good]++;
+                    ShowScoreStatus(JudgementRank.Good);
+                    Manager.score.apparentScoreValue += JudgementRankValues.GOOD;
+                    Manager.score.judgementStatus[JudgementRank.Good]++;
                     Manager.score.combo++;
                     // 精度の問題もあり、Goodまではコンボ許容することにする
                 }
-                else if (timeLag <= JudgementThreshold[ScoreRank.Bad])
+                else if (timeLag <= JudgementThreshold[JudgementRank.Bad])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
-                    ShowScoreStatus(ScoreRank.Bad);
-                    Manager.score.apparentScoreValue += ScoreRankValues.BAD;
-                    Manager.score.judgementStatus[ScoreRank.Bad]++;
+                    ShowScoreStatus(JudgementRank.Bad);
+                    Manager.score.apparentScoreValue += JudgementRankValues.BAD;
+                    Manager.score.judgementStatus[JudgementRank.Bad]++;
                     Manager.score.combo = 0;
                 }
 
@@ -363,9 +387,9 @@ namespace FRONTIER.Game.Judgement
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
 
                     // スコア計算
-                    ShowScoreStatus(ScoreRank.Perfect);
-                    Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
-                    Manager.score.judgementStatus[ScoreRank.Perfect]++;
+                    ShowScoreStatus(JudgementRank.Perfect);
+                    Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
+                    Manager.score.judgementStatus[JudgementRank.Perfect]++;
                     Manager.score.combo++;
                     Manager.score.CalculateScore();
                 }
@@ -403,8 +427,8 @@ namespace FRONTIER.Game.Judgement
                 notesGenerator.instances.RemoveAt(targetIndex);
 
                 // スコア計算
-                ShowScoreStatus(ScoreRank.Miss);
-                Manager.score.judgementStatus[ScoreRank.Miss]++;
+                ShowScoreStatus(JudgementRank.Miss);
+                Manager.score.judgementStatus[JudgementRank.Miss]++;
                 Manager.score.combo = 0;
             }
     
@@ -426,17 +450,17 @@ namespace FRONTIER.Game.Judgement
             {
                 // 押されていたまま判定線を超過したら、Perfectで判定をとる
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                ShowScoreStatus(ScoreRank.Perfect);
-                Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
-                Manager.score.judgementStatus[ScoreRank.Perfect]++;
+                ShowScoreStatus(JudgementRank.Perfect);
+                Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
+                Manager.score.judgementStatus[JudgementRank.Perfect]++;
                 Manager.score.combo++;
                 Manager.score.CalculateScore();
             }
             else
             {
                 // 押されてなかったらミス
-                ShowScoreStatus(ScoreRank.Miss);
-                Manager.score.judgementStatus[ScoreRank.Miss]++;
+                ShowScoreStatus(JudgementRank.Miss);
+                Manager.score.judgementStatus[JudgementRank.Miss]++;
                 Manager.score.combo = 0;
             }
 
@@ -468,23 +492,23 @@ namespace FRONTIER.Game.Judgement
         /// <remarks>
         /// オブジェクトプール(<see cref = "ScoreObjectPool"/>)を利用する
         /// </remarks>
-        private void ShowScoreStatus(ScoreRank status)
+        private void ShowScoreStatus(JudgementRank status)
         {
             switch (status)
             {
-                case ScoreRank.Perfect:
+                case JudgementRank.Perfect:
                     score.Object = score.objectPool.perfect.Get();
                     break;
-                case ScoreRank.Great:
+                case JudgementRank.Great:
                     score.Object = score.objectPool.great.Get();
                     break;
-                case ScoreRank.Good:
+                case JudgementRank.Good:
                     score.Object = score.objectPool.good.Get();
                     break;
-                case ScoreRank.Bad:
+                case JudgementRank.Bad:
                     score.Object = score.objectPool.bad.Get();
                     break;
-                case ScoreRank.Miss:
+                case JudgementRank.Miss:
                     score.Object = score.objectPool.miss.Get();
                     break;
             }
@@ -518,9 +542,9 @@ namespace FRONTIER.Game.Judgement
 
                 // スコア計算
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                ShowScoreStatus(ScoreRank.Perfect);
-                Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
-                Manager.score.judgementStatus[ScoreRank.Perfect]++;
+                ShowScoreStatus(JudgementRank.Perfect);
+                Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
+                Manager.score.judgementStatus[JudgementRank.Perfect]++;
                 Manager.score.combo++;
                 Manager.score.CalculateScore();
 

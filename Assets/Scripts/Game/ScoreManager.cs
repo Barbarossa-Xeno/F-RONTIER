@@ -2,11 +2,12 @@
 using UnityEngine.UI;
 using FRONTIER.Utility;
 using TMPro;
+using static FRONTIER.Utility.Reference;
 
 namespace FRONTIER.Game
 {
     /// <summary>
-    /// ゲーム中のUIにスコアを表示する。
+    /// スコアを計算し、ゲーム中のUIにスコアを表示する。
     /// </summary>
     public class ScoreManager : GameUtilityBase
     {
@@ -62,6 +63,45 @@ namespace FRONTIER.Game
         #endregion
 
         #region メソッド
+
+        public void UpdateScore(JudgementRank judgementRank)
+        {
+            switch (judgementRank)
+            {
+                case JudgementRank.Perfect:
+                {
+                    Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
+                    Manager.score.judgementStatus[JudgementRank.Perfect]++;
+                    Manager.score.combo++;
+                    break;
+                }
+                case JudgementRank.Great:
+                {
+                    Manager.score.apparentScoreValue += JudgementRankValues.GREAT;
+                    Manager.score.judgementStatus[JudgementRank.Great]++;
+                    Manager.score.combo++;
+                    break;
+                }
+                case JudgementRank.Good:
+                {
+                    Manager.score.apparentScoreValue += JudgementRankValues.GOOD;
+                    Manager.score.judgementStatus[JudgementRank.Good]++;
+                    Manager.score.combo++;
+                    break;
+                }
+                case JudgementRank.Bad:
+                {
+                    Manager.score.apparentScoreValue += JudgementRankValues.BAD;
+                    Manager.score.judgementStatus[JudgementRank.Bad]++;
+                    Manager.score.combo = 0;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
 
         /// <summary>
         /// スコアをアップデートする。

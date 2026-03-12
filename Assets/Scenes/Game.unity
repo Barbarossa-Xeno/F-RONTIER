@@ -1713,8 +1713,8 @@ MonoBehaviour:
   noteJudged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 459182123}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1279732031}
+        m_TargetAssemblyTypeName: FRONTIER.Game.ScoreManager, Assembly-CSharp
         m_MethodName: UpdateScore
         m_Mode: 1
         m_Arguments:
@@ -1904,34 +1904,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 459182124}
-  - component: {fileID: 459182123}
   m_Layer: 5
-  m_Name: ScoreManager
+  m_Name: ScoreBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &459182123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 459182122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58119dee29b8c0046a65d6ccc1138a34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scoreGauge: {fileID: 552005551}
-  score: {fileID: 705684280}
-  scoreRankTexts:
-    s: {fileID: 867102274}
-    a: {fileID: 1025203467}
-    b: {fileID: 862620400}
-    c: {fileID: 1999095060}
-  combo: {fileID: 939685606}
 --- !u!224 &459182124
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10438,6 +10417,58 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 100}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1279732030
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1279732032}
+  - component: {fileID: 1279732031}
+  m_Layer: 0
+  m_Name: ScoreManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1279732031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279732030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58119dee29b8c0046a65d6ccc1138a34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scoreGauge: {fileID: 552005551}
+  score: {fileID: 705684280}
+  scoreRankTexts:
+    s: {fileID: 867102274}
+    a: {fileID: 1025203467}
+    b: {fileID: 862620400}
+    c: {fileID: 1999095060}
+  combo: {fileID: 939685606}
+--- !u!4 &1279732032
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279732030}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1288592783
 GameObject:
   m_ObjectHideFlags: 0
@@ -12772,6 +12803,7 @@ SceneRoots:
   - {fileID: 1493081520}
   - {fileID: 963748246}
   - {fileID: 336479141}
+  - {fileID: 1279732032}
   - {fileID: 1908174220}
   - {fileID: 461476168}
   - {fileID: 1331748794}

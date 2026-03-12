@@ -41,7 +41,7 @@ namespace FRONTIER.Game.Notes
             patternData = base.LoadNotePattern(PlayInfo.ID, PlayInfo.DifficultyTo(PlayInfo.Difficulty).Item1);
             GenerateNotes();
             // 最大スコアの計算
-            Manager.score.maxScoreValue = notesCount * Reference.JudgementStatusScore.PERFECT;
+            Manager.score.maxScoreValue = notesCount * Reference.JudgementRankValues.PERFECT;
             Manager.score.maxComboCount = notesCount;
 
             // 譜面データからわかることをプレイ状況に反映
@@ -197,6 +197,24 @@ namespace FRONTIER.Game.Notes
             for (int i = 0; i < instances.Count; i++)
             {
                 instances[i].NoteIndex = i;
+            }
+        }
+
+        public override bool DeleteNote(Note target)
+        {
+            if (instances.Contains(target))
+            {
+                target.gameObject.SetActive(false);
+                reachedTimes.RemoveAt(target.NoteIndex);
+                laneIndexes.RemoveAt(target.NoteIndex);
+                types.RemoveAt(target.NoteIndex);
+                instances.RemoveAt(target.NoteIndex);
+
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

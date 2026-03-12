@@ -93,6 +93,8 @@ namespace FRONTIER.Game.Notes
         /// </summary>
         public abstract void SortNotes();
 
+        public abstract bool DeleteNote(TInstances target);
+
         #endregion
 
         #region クラス

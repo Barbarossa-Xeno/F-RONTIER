@@ -135,6 +135,7 @@ namespace FRONTIER.Utility
 
         public const float NOTE_SPEED_FACTOR = 2.5f;
 
+        // FIXME: Utility の中の Utilities てなんや、下に合わせて DifficultyValues に変える
         /// <summary>
         /// 難易度のランクの名前とイメージカラー。
         /// </summary>
