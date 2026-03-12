@@ -143,7 +143,7 @@ namespace FRONTIER.Utility
         /// </summary>
         public const float NOTE_SPEED_FACTOR = 2.5f;
 
-        /// <sumamr>
+        /// <summary>
         /// LineRenderer で描画された判定線の太さ。
         /// 特にヒエラルキーと同期されないので手動で変えること。
         /// </summary>
