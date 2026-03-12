@@ -126,12 +126,17 @@ namespace FRONTIER.Utility
         /// <summary>
         /// ノーツを設定する基準と判定線の位置。
         /// </summary>
-        public static readonly Vector3 noteOrigin = new(0, 0.0f, 7.3f);
+        public static readonly Vector3 noteOrigin = new(0.0f, 0.0f, 7.3f);
 
         /// <summary>
         /// 特殊ノーツの基準座標。
         /// </summary>
-        public static readonly Vector3 specialNoteOrigin = new (0, 0.05f, 0f);
+        public static readonly Vector3 specialNoteOrigin = new (0.0f, 0.05f, 0.0f);
+
+        /// <summary>
+        /// ノーツが判定線を超過してミス判定をするときの基準位置。
+        /// </summary>
+        public static readonly Vector3 missJudgementPosition = noteOrigin - new Vector3(0.0f, 0.0f, 3.5f);
 
         public const float NOTE_SPEED_FACTOR = 2.5f;
 
