@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,7 +41,7 @@ namespace FRONTIER.Game.Judgement
         /// <summary>
         /// ノーツが判定されたタイミングで発火するイベント。
         /// </summary>
-        [Header("ノーツが判定されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent noteJudged;
+        [Header("ノーツが判定されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent<Note> noteJudged;
 
         /// <summary>
         /// 判定の対象とするノーツ。
@@ -56,13 +56,13 @@ namespace FRONTIER.Game.Judgement
         /// <summary>
         /// 判定ステータスの基準。
         /// </summary>
-        private static readonly Dictionary<JudgementStatus, float> JudgementThreshold = new()
+        private static readonly Dictionary<ScoreRank, float> JudgementThreshold = new()
         {
-            { JudgementStatus.Perfect, 0.05f },
-            { JudgementStatus.Great, 0.1f },
-            { JudgementStatus.Good, 0.25f },
-            { JudgementStatus.Bad, 0.4f },
-            { JudgementStatus.Miss, 0.6f }
+            { ScoreRank.Perfect, 0.05f },
+            { ScoreRank.Great, 0.1f },
+            { ScoreRank.Good, 0.25f },
+            { ScoreRank.Bad, 0.4f },
+            { ScoreRank.Miss, 0.6f }
         };
 
         #endregion
@@ -283,37 +283,37 @@ namespace FRONTIER.Game.Judgement
             if (notesGenerator.instances.Contains(target))
             {
                 // ラグを判定幅に照応させて判定する
-                if (timeLag <= JudgementThreshold[JudgementStatus.Perfect])
+                if (timeLag <= JudgementThreshold[ScoreRank.Perfect])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                    ShowScoreStatus(JudgementStatus.Perfect);
-                    Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
-                    Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                    ShowScoreStatus(ScoreRank.Perfect);
+                    Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
+                    Manager.score.judgementStatus[ScoreRank.Perfect]++;
                     Manager.score.combo++;
                 }
-                else if (timeLag <= JudgementThreshold[JudgementStatus.Great])
+                else if (timeLag <= JudgementThreshold[ScoreRank.Great])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                    ShowScoreStatus(JudgementStatus.Great);
-                    Manager.score.apparentScoreValue += JudgementStatusScore.GREAT;
-                    Manager.score.judgementStatus[JudgementStatus.Great]++;
+                    ShowScoreStatus(ScoreRank.Great);
+                    Manager.score.apparentScoreValue += ScoreRankValues.GREAT;
+                    Manager.score.judgementStatus[ScoreRank.Great]++;
                     Manager.score.combo++;
                 }
-                else if (timeLag <= JudgementThreshold[JudgementStatus.Good])
+                else if (timeLag <= JudgementThreshold[ScoreRank.Good])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
-                    ShowScoreStatus(JudgementStatus.Good);
-                    Manager.score.apparentScoreValue += JudgementStatusScore.GOOD;
-                    Manager.score.judgementStatus[JudgementStatus.Good]++;
+                    ShowScoreStatus(ScoreRank.Good);
+                    Manager.score.apparentScoreValue += ScoreRankValues.GOOD;
+                    Manager.score.judgementStatus[ScoreRank.Good]++;
                     Manager.score.combo++;
                     // 精度の問題もあり、Goodまではコンボ許容することにする
                 }
-                else if (timeLag <= JudgementThreshold[JudgementStatus.Bad])
+                else if (timeLag <= JudgementThreshold[ScoreRank.Bad])
                 {
                     Manager.audios.seManager.Play(SEManager.SE.GoodOrBad);
-                    ShowScoreStatus(JudgementStatus.Bad);
-                    Manager.score.apparentScoreValue += JudgementStatusScore.BAD;
-                    Manager.score.judgementStatus[JudgementStatus.Bad]++;
+                    ShowScoreStatus(ScoreRank.Bad);
+                    Manager.score.apparentScoreValue += ScoreRankValues.BAD;
+                    Manager.score.judgementStatus[ScoreRank.Bad]++;
                     Manager.score.combo = 0;
                 }
 
@@ -337,7 +337,8 @@ namespace FRONTIER.Game.Judgement
             notesGenerator.types.RemoveAt(index);
             notesGenerator.instances.RemoveAt(index);
 
-            noteJudged?.Invoke();
+            // FIXME: 仮設定
+            noteJudged?.Invoke(target);
         }
 
         /// <summary>
@@ -362,13 +363,16 @@ namespace FRONTIER.Game.Judgement
                     Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
 
                     // スコア計算
-                    ShowScoreStatus(JudgementStatus.Perfect);
-                    Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
-                    Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                    ShowScoreStatus(ScoreRank.Perfect);
+                    Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
+                    Manager.score.judgementStatus[ScoreRank.Perfect]++;
                     Manager.score.combo++;
                     Manager.score.CalculateScore();
                 }
-                else return;
+                else
+                {
+                    return;
+                }
             }
             else if (isMissed)
             {
@@ -383,7 +387,10 @@ namespace FRONTIER.Game.Judgement
                         {
                             break;
                         }
-                        else { i++; }
+                        else
+                        {
+                            i++;
+                        }
                     }
                     targetIndex -= i;
                 }
@@ -396,12 +403,13 @@ namespace FRONTIER.Game.Judgement
                 notesGenerator.instances.RemoveAt(targetIndex);
 
                 // スコア計算
-                ShowScoreStatus(JudgementStatus.Miss);
-                Manager.score.judgementStatus[JudgementStatus.Miss]++;
+                ShowScoreStatus(ScoreRank.Miss);
+                Manager.score.judgementStatus[ScoreRank.Miss]++;
                 Manager.score.combo = 0;
             }
-
-            noteJudged?.Invoke();
+    
+            // FIXME: 仮設定
+            noteJudged?.Invoke(notesGenerator.instances[targetIndex]);
         }
 
         /// <summary>
@@ -418,17 +426,17 @@ namespace FRONTIER.Game.Judgement
             {
                 // 押されていたまま判定線を超過したら、Perfectで判定をとる
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                ShowScoreStatus(JudgementStatus.Perfect);
-                Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
-                Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                ShowScoreStatus(ScoreRank.Perfect);
+                Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
+                Manager.score.judgementStatus[ScoreRank.Perfect]++;
                 Manager.score.combo++;
                 Manager.score.CalculateScore();
             }
             else
             {
                 // 押されてなかったらミス
-                ShowScoreStatus(JudgementStatus.Miss);
-                Manager.score.judgementStatus[JudgementStatus.Miss]++;
+                ShowScoreStatus(ScoreRank.Miss);
+                Manager.score.judgementStatus[ScoreRank.Miss]++;
                 Manager.score.combo = 0;
             }
 
@@ -450,7 +458,8 @@ namespace FRONTIER.Game.Judgement
                 longNotesGenerator.ribbons.RemoveAt(targetLongNoteListIndex);
             }
 
-            noteJudged?.Invoke();
+            // FIXME: 仮設定
+            noteJudged?.Invoke(longNotesGenerator.ribbons[targetLongNoteListIndex]);
         }
 
         /// <summary>
@@ -459,23 +468,23 @@ namespace FRONTIER.Game.Judgement
         /// <remarks>
         /// オブジェクトプール(<see cref = "ScoreObjectPool"/>)を利用する
         /// </remarks>
-        private void ShowScoreStatus(JudgementStatus status)
+        private void ShowScoreStatus(ScoreRank status)
         {
             switch (status)
             {
-                case JudgementStatus.Perfect:
+                case ScoreRank.Perfect:
                     score.Object = score.objectPool.perfect.Get();
                     break;
-                case JudgementStatus.Great:
+                case ScoreRank.Great:
                     score.Object = score.objectPool.great.Get();
                     break;
-                case JudgementStatus.Good:
+                case ScoreRank.Good:
                     score.Object = score.objectPool.good.Get();
                     break;
-                case JudgementStatus.Bad:
+                case ScoreRank.Bad:
                     score.Object = score.objectPool.bad.Get();
                     break;
-                case JudgementStatus.Miss:
+                case ScoreRank.Miss:
                     score.Object = score.objectPool.miss.Get();
                     break;
             }
@@ -509,12 +518,14 @@ namespace FRONTIER.Game.Judgement
 
                 // スコア計算
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                ShowScoreStatus(JudgementStatus.Perfect);
-                Manager.score.apparentScoreValue += JudgementStatusScore.PERFECT;
-                Manager.score.judgementStatus[JudgementStatus.Perfect]++;
+                ShowScoreStatus(ScoreRank.Perfect);
+                Manager.score.apparentScoreValue += ScoreRankValues.PERFECT;
+                Manager.score.judgementStatus[ScoreRank.Perfect]++;
                 Manager.score.combo++;
                 Manager.score.CalculateScore();
-                noteJudged?.Invoke();
+
+                // FIXME: 仮設定
+                noteJudged?.Invoke(notesGenerator.instances[index]);
             }
 
             if (Mathf.Abs(notesGenerator.instances[^1].transform.position.z - 7.3f) < 1.0f)

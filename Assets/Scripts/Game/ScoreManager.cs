@@ -73,42 +73,42 @@ namespace FRONTIER.Game
             score.SetText($"{Manager.score.ScoreValue}");
             combo.SetText($"{Manager.score.combo}");
 
-            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C)
+            if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C)
             {
                 scoreRankTexts.c.color = Reference.DifficultyUtilities.Colors.Lite;
                 scoreRankTexts.c.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.C;
-                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
                 {
                     Manager.score.clearRank = Reference.ClearRank.C_Plus;
                 }
             }
-            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.B)
+            if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.B)
             {
                 scoreRankTexts.b.color = Reference.DifficultyUtilities.Colors.Hard;
                 scoreRankTexts.b.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.B;
-                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
                 {
                     Manager.score.clearRank = Reference.ClearRank.B_Plus;
                 }
             }
-            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.A)
+            if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.A)
             {
                 scoreRankTexts.a.color = Reference.DifficultyUtilities.Colors.Ecstasy;
                 scoreRankTexts.a.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.A;
-                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
                 {
                     Manager.score.clearRank = Reference.ClearRank.A_Plus;
                 }
             }
-            if (Manager.score.ScoreValue >= Reference.ClearRankBorder.S)
+            if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.S)
             {
                 scoreRankTexts.s.color = Reference.DifficultyUtilities.Colors.Restricted;
                 scoreRankTexts.s.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.S;
-                if (Manager.score.ScoreValue >= Reference.ClearRankBorder.C_PLUS)
+                if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
                 {
                     Manager.score.clearRank = Reference.ClearRank.S_Plus;
                 }
