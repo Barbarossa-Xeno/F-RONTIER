@@ -104,9 +104,9 @@ namespace FRONTIER.Utility
         }
 
         /// <summary>
-        /// ノーツを押したタイミングで評価されるスコアのランク。
+        /// ノーツを押したタイミングで評価されるの判定ランク。
         /// </summary>
-        public enum ScoreRank
+        public enum JudgementRank
         {
             Perfect, Great, Good, Bad, Miss
         }
@@ -160,7 +160,7 @@ namespace FRONTIER.Utility
         /// <summary>
         /// スコアのランクに応じて加算される値。
         /// </summary>
-        public static class ScoreRankValues
+        public static class JudgementRankValues
         {
             public const int PERFECT = 5;
             public const int GREAT = 3;

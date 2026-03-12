@@ -187,7 +187,7 @@ namespace FRONTIER
             /// <summary>
             /// 各判定ステータスを獲得した回数を記録する
             /// </summary>
-            public Dictionary<Reference.ScoreRank, int> judgementStatus;
+            public Dictionary<Reference.JudgementRank, int> judgementStatus;
 
             public Reference.ClearRank clearRank;
 
@@ -220,11 +220,11 @@ namespace FRONTIER
                 clearRank = Reference.ClearRank.C;
                 judgementStatus = new()
                 {
-                    {Reference.ScoreRank.Perfect, 0},
-                    {Reference.ScoreRank.Great, 0},
-                    {Reference.ScoreRank.Good, 0},
-                    {Reference.ScoreRank.Bad, 0},
-                    {Reference.ScoreRank.Miss, 0}
+                    {Reference.JudgementRank.Perfect, 0},
+                    {Reference.JudgementRank.Great, 0},
+                    {Reference.JudgementRank.Good, 0},
+                    {Reference.JudgementRank.Bad, 0},
+                    {Reference.JudgementRank.Miss, 0}
                 };
             }
         }

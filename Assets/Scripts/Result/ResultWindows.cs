@@ -338,11 +338,11 @@ namespace FRONTIER.Result
             {
                 count.text = "0";
                 max.text = $"/{Manager.score.maxComboCount}";
-                perfect.text = $"{Manager.score.judgementStatus[Reference.ScoreRank.Perfect]}";
-                great.text = $"{Manager.score.judgementStatus[Reference.ScoreRank.Great]}";
-                good.text = $"{Manager.score.judgementStatus[Reference.ScoreRank.Good]}";
-                bad.text = $"{Manager.score.judgementStatus[Reference.ScoreRank.Bad]}";
-                miss.text = $"{Manager.score.judgementStatus[Reference.ScoreRank.Miss]}";
+                perfect.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Perfect]}";
+                great.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Great]}";
+                good.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Good]}";
+                bad.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Bad]}";
+                miss.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Miss]}";
 
                 int highCombo = SongSaveData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty).highCombo;
                 IsGotNewRecordOfCombo = Manager.score.maxCombo > highCombo;
@@ -352,7 +352,7 @@ namespace FRONTIER.Result
                 {
                     achivement.sprite = fullCombo;
                     IsGotFullCombo = true;
-                    if (Manager.score.judgementStatus[Reference.ScoreRank.Perfect] == Manager.score.maxComboCount)
+                    if (Manager.score.judgementStatus[Reference.JudgementRank.Perfect] == Manager.score.maxComboCount)
                     {
                         achivement.sprite = allPerfect;
                         IsGotAllPerfect = true;
