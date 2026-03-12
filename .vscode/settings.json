@@ -51,5 +51,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MusicGame01.slnx"
+    "dotnet.defaultSolution": "MusicGame01.slnx",
+    "cSpell.words": [
+        "UGUI"
+    ]
 }
