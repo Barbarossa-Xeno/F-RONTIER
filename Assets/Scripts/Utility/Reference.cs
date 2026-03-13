@@ -185,7 +185,19 @@ namespace FRONTIER.Utility
         }
 
         /// <summary>
-        /// ランクのボーダー。
+        /// 判定ランクのタイムラグの閾値。
+        /// </summary>
+        public static class JudgementRankLagThresholds
+        {
+            public const float PERFECT = 0.05f;
+            public const float GREAT = 0.1f;
+            public const float GOOD = 0.25f;
+            public const float BAD = 0.4f;
+            public const float MISS = 0.6f;
+        }
+
+        /// <summary>
+        /// ランクの閾値。
         /// </summary>
         public static class ClearRankThresholds
         {
