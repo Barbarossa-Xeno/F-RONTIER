@@ -13,44 +13,57 @@ namespace FRONTIER.Game.Notes
 
         /// <summary>
         /// このノーツの種類（インスペクタ確認用）。
+        /// ノーツの種類ごとにカウントされる。
         /// </summary>
-        [SerializeField] private Reference.NoteType type;
+        [SerializeField] protected Reference.NoteType type;
 
         /// <summary>
         /// このノーツが流れてくる順番。
         /// </summary>
-        [SerializeField] private int index;
+        [SerializeField] protected int index;
 
         /// <summary>
         /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/> ) でのインデックス。
         /// 最終的に、先に判定線に到達する方が番号が大きくなるような番号付けがされている。
         /// </summary>
-        [SerializeField] private int noteIndex;
+        [SerializeField] protected int noteIndex;
 
         /// <summary>
         /// このノーツが到達する時間。
         /// </summary>
-        [SerializeField] private float reachedTime;
+        [SerializeField] protected float reachedTime;
 
         /// <summary>
         /// このノーツが配置されているレーンのインデックス。
         /// </summary>
-        [SerializeField] private int laneIndex;
+        [SerializeField] protected int laneIndex;
 
         /// <summary>
-        /// このノーツが判定ラインを超過したときに発火するイベント。<br/>
+        /// このノーツが判定線ちょうどに到達したときに発火するイベント。<br/>
         /// </summary>
         /// <remarks>
-        /// <see cref="GameManager.PlayInfo.IsAutoPlay"/> が
-        /// <b><c>true</c> の時: 判定線から少し離れた位置 (<see cref="Reference.missJudgementPosition.z"/>) で発火</b><br/>
-        /// <b><c>false</c> の時: ノーツの判定線到達時間が経過すると発火</b><br/>
+        /// ノーツの判定線到達時間が経過すると発火
         /// </remarks>
-        public event Action<Note> ReachedLineEvent;
+        public event Action<Note> ReachedLine;
+
+        /// <summary>
+        /// このノーツが判定線を超過したときに発火するイベント。<br/>
+        /// </summary>
+        /// <remarks>
+        /// 判定線から少し離れた位置 (<see cref="Reference.missJudgementPosition.z"/>) で発火
+        /// </remarks>
+
+        public event Action<Note> PassedOverLine;
+
+        /// <summary>
+        /// 判定線に到達したか。
+        /// </summary>
+        [SerializeField] protected bool isReachedLine = false;
 
         /// <summary>
         /// 判定線を超過したか。
         /// </summary>
-        [SerializeField] protected bool isReachedLine = false;
+        [SerializeField] protected bool isPassedOverLine = false;
 
         #endregion
 
@@ -67,6 +80,7 @@ namespace FRONTIER.Game.Notes
 
         /// <summary>
         /// このノーツが流れてくる順番。
+        /// ノーツの種類ごとにカウントされるので通常ノーツとロングノーツで別々の順番になる。
         /// </summary>
         public int Index
         {
@@ -117,16 +131,8 @@ namespace FRONTIER.Game.Notes
                 // Z座標を移動させる
                 transform.position -= new Vector3(0, 0, Manager.info.NoteSpeed) * Time.deltaTime;
 
-                // 判定線を超過したかチェック
-                if (!isReachedLine
-                    // 通常プレイ: 画面外
-                    && ((!Manager.info.IsAutoPlay && transform.position.z <= Reference.missJudgementPosition.z)
-                        // オートプレイ: 到達時間で判定することで、ノーツの速さごとに毎フレームの変位が異なって実際の判定とギャップができるのを防ぐ
-                        || (Manager.info.IsAutoPlay && Time.time - Manager.startTime >= reachedTime)))
-                {
-                    isReachedLine = true;
-                    ReachedLineEvent?.Invoke(this);
-                }
+                OnReachedLine();
+                OnPassedOverLine();
             }
         }
 
@@ -144,6 +150,35 @@ namespace FRONTIER.Game.Notes
             this.Type = type;
             this.index = index;
         }
+
+        /// <summary>
+        /// ノーツが判定線を超過したときの処理。イベント <see cref="ReachedLine"/> を発火させる。
+        /// </summary>
+        protected virtual void OnReachedLine()
+        {
+            // このノーツの到達時間に達したかチェック
+            // 到達時間で判定することで、ノーツの速さごとに毎フレームの変位が異なって実際の判定とギャップができるのを防ぐ
+            if (!isReachedLine && Time.time - Manager.startTime >= reachedTime)
+            {
+                isReachedLine = true;
+                ReachedLine?.Invoke(this);
+            }
+        }
+
+        protected virtual void OnPassedOverLine()
+        {
+             // 画面外に出ていったかチェック
+            if (!isPassedOverLine && transform.position.z <= Reference.missJudgementPosition.z)
+            {
+                isPassedOverLine = true;
+                PassedOverLine?.Invoke(this);
+            }
+        }
+
+        /// <summary>
+        /// 子クラスで <see cref="ReachedLine"/> を発火させるときに呼び出すメソッド。
+        /// </summary>
+        protected virtual void InvokeReachedLine() => ReachedLine?.Invoke(this);
 
         #endregion
     }

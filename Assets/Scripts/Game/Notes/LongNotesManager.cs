@@ -62,7 +62,7 @@ namespace FRONTIER.Game.Notes
         /// 子に多数の分割メッシュがある場合、1まとまりで最後の分割メッシュが入力されたときに <c><see cref="CombineFragmentMesh"/></c> や
         //  <c><see cref="ReprintTexture"/><c/> によってメッシュとUVを適用しなおす。
         /// </remarks>
-        private GameObject ribbon;
+        private LongNote ribbon;
 
         #endregion
 
@@ -219,7 +219,7 @@ namespace FRONTIER.Game.Notes
             // ターゲットがない場合デフォルトで ribbon を使用
             if (target == null)
             {
-                target = ribbon;
+                target = ribbon.gameObject;
             }
             // MeshFilter のパラメータ
             MeshFilterParameters filterParams = new()
@@ -380,7 +380,7 @@ namespace FRONTIER.Game.Notes
                         Vector3[] linePositions = new Vector3[2] { start, end };
 
                         // ribbon に中心線描画のための LineRenderer を追加
-                        LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
+                        LineRenderer lineRenderer = ribbon.gameObject.AddComponent<LineRenderer>();
                         lineRenderer.SetPositions(linePositions);
                         lineRenderer.startWidth = lineRenderer.endWidth = 0.1f;
                         lineRenderer.material = ribbonMaterials.line;
@@ -396,8 +396,8 @@ namespace FRONTIER.Game.Notes
                         if (isLast)
                         {
                             // メッシュの結合とテクスチャの再貼付
-                            CombineFragmentMesh(ribbon);
-                            ReprintTexture(ribbon, split, Reference.LongNoteType.DirectCurved);
+                            CombineFragmentMesh(ribbon.gameObject);
+                            ReprintTexture(ribbon.gameObject, split, Reference.LongNoteType.DirectCurved);
                         }
                         break;
                     }
@@ -408,11 +408,11 @@ namespace FRONTIER.Game.Notes
                         if (isLast && anchors != null)
                         {
                             // メッシュの結合とテクスチャの再貼付
-                            CombineFragmentMesh(ribbon);
-                            ReprintTexture(ribbon, split, Reference.LongNoteType.IntermediateCurved);
+                            CombineFragmentMesh(ribbon.gameObject);
+                            ReprintTexture(ribbon.gameObject, split, Reference.LongNoteType.IntermediateCurved);
 
                             // ribbon に中心線描画のための LineRenderer を追加
-                            LineRenderer lineRenderer = ribbon.AddComponent<LineRenderer>();
+                            LineRenderer lineRenderer = ribbon.gameObject.AddComponent<LineRenderer>();
                             lineRenderer.positionCount = anchors.Length;
                             lineRenderer.widthMultiplier = 0.1f;
                             lineRenderer.SetPositions(anchors);
@@ -455,16 +455,17 @@ namespace FRONTIER.Game.Notes
             bool hasIntermediate = type is Reference.LongNoteType.IntermediateLinear or Reference.LongNoteType.IntermediateCurved;
 
             // ロングノーツ線にコンポーネントを付与
-            ribbon = new GameObject($"LongNoteRibbon-{index}");
-            ribbon.AddComponent<MeshRenderer>();
-            ribbon.AddComponent<MeshFilter>();
-            ribbon.AddComponent<MeshCollider>();
-            ribbon.tag = "LongNoteRibbon";
-            ribbon.layer = LayerMask.NameToLayer("LongNoteRibbon");
-            LongNote note = ribbon.AddComponent<LongNote>();
-            note.SetInfo(categorizedType, index, Reference.LongNotePart.Ribbon, hasIntermediate);
+            ribbon = new GameObject($"LongNoteRibbon-{index}").AddComponent<LongNote>();
 
-            ribbons.Add(note);
+            ribbon.gameObject.AddComponent<MeshRenderer>();
+            ribbon.gameObject.AddComponent<MeshFilter>();
+            ribbon.gameObject.AddComponent<MeshCollider>();
+            ribbon.gameObject.tag = "LongNoteRibbon";
+            ribbon.gameObject.layer = LayerMask.NameToLayer("LongNoteRibbon");
+            
+            ribbon.SetProperties(categorizedType, index, Reference.LongNotePart.Ribbon, hasIntermediate);
+
+            ribbons.Add(ribbon);
 
             // レーン番号からX座標を求め、パラメーターを元にノーツの始点と終点座標を計算
             Vector3 start = new(LANE_GAP * RIBBON_WIDTH + startLane * RIBBON_WIDTH + RIBBON_WIDTH / 2, Reference.specialNoteOrigin.y, startZ);
@@ -583,6 +584,7 @@ namespace FRONTIER.Game.Notes
                     {
                         // 1番最初以降のノーツは中間点のノーツとして管理
                         t_intermediates.Add(note);
+                        note.IsIntermediate = true;
 
                         // 中間点がある場合
                         if (intermediateNotesCounts[i] != 0)
@@ -818,7 +820,7 @@ namespace FRONTIER.Game.Notes
             for (int i = 0; i < duplicateIndexes.Length; i++)
             {
                 // さっきつけた LongNote を編集
-                parents[i].SetInfo(Reference.NoteType.LinearLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
+                parents[i].SetProperties(Reference.NoteType.LinearLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
                 
                 // 親には Collider を新しく設定する
                 parents[i].gameObject.AddComponent<MeshCollider>();
@@ -833,7 +835,7 @@ namespace FRONTIER.Game.Notes
                         // 入れ子にした断片がさらに子オブジェクトを持っているようならそれは曲線型
                         if (ribbons[j].transform.childCount > 0)
                         {
-                            parents[i].SetInfo(Reference.NoteType.CurvedLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
+                            parents[i].SetProperties(Reference.NoteType.CurvedLong, duplicateIndexes[i], Reference.LongNotePart.Ribbon, true);
                         }
                         // 入れ子にした欠片の方はコンポーネントを削除する
                         Destroy(ribbons[j]);
@@ -878,6 +880,20 @@ namespace FRONTIER.Game.Notes
             SetRibbonTransform();
 
             // インデックスを降順にソートし直したり、リストの中身を求め直す
+
+            // このクラスで管理するのはロングノーツの始点以外
+            instances = intermediateNotes.Values.ToList();
+            instances.Reverse();
+            foreach (var notes in instances)
+            {
+                notes.Reverse();
+                
+                for (int i = 0; i < notes.Count; i++)
+                {
+                    notes[i].NoteIndex = i;
+                }
+            }
+
             ribbons.Reverse();
             foreach (var ribbon in ribbons)
             {
@@ -885,13 +901,17 @@ namespace FRONTIER.Game.Notes
                 {
                     continue;
                 }
+
+                foreach (var note in intermediateNotes[ribbon.Index])
+                {
+                    ribbon.Pressed += isPressed => note.IsPressed = isPressed;
+                    note.ReachedLine += (_) => Debug.Log(note);
+                }
+                ribbon.Pressed += isPressed => intermediateNotes[ribbon.Index].ForEach(note => note.IsPressed = isPressed);
+
+                // レイヤー付与
                 ribbon.gameObject.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
             }
-
-            // このクラスで管理するのはロングノーツの始点以外
-            instances = intermediateNotes.Values.ToList();
-            instances.Reverse();
-            instances.ForEach(notes => notes.Reverse());
         }
 
         public override bool DeleteNote(List<LongNote> target)

@@ -100,16 +100,30 @@ namespace FRONTIER.Game.Judgement
                     if (!Manager.info.IsAutoPlay)
                     {
                         // 判定線を超過して画面の外に出たらミスにする
-                        note.ReachedLineEvent += (_) => DeleteNote(targetIndex: note.NoteIndex, isMissed: true);
+                        note.PassedOverLine += (_) =>
+                        {
+                            int currentNoteIndex = notesGenerator.instances.IndexOf(note);
+                            // ノーツをリストから削除
+                            notesGenerator.instances[currentNoteIndex].gameObject.SetActive(false);
+                            notesGenerator.reachedTimes.RemoveAt(currentNoteIndex);
+                            notesGenerator.laneIndexes.RemoveAt(currentNoteIndex);
+                            notesGenerator.types.RemoveAt(currentNoteIndex);
+                            notesGenerator.instances.RemoveAt(currentNoteIndex);
 
+                            // スコア計算
+                            ShowScoreStatus(JudgementRank.Miss);
+                            Manager.score.judgementStatus[JudgementRank.Miss]++;
+                            Manager.score.combo = 0;
+                        };
+                        
                         // FIXME: エラーが出るかも
                         // ロングノーツの判定のイベントを登録する
-                        longNotesGenerator.ribbons
-                            .Select(line => line.GetComponent<LongNote>())
-                            .ToList().ForEach
-                            (
-                                note => note.OnPressedUpdate += isOn => JudgeLongNote(isOn, note.IsIntermediate, note.NoteIndex)
-                            );
+                        // longNotesGenerator.ribbons
+                        //     .Select(line => line.GetComponent<LongNote>())
+                        //     .ToList().ForEach
+                        //     (
+                        //         note => note.OnPressedUpdate += isOn => JudgeLongNote(isOn, note.IsIntermediate, note.NoteIndex)
+                        //     );
                     }
                     // オート時
                     else
@@ -117,7 +131,7 @@ namespace FRONTIER.Game.Judgement
                         // 判定線あたりでノーツをPerfect判定する
                         // note.ReachedLineEvent += () => DeleteNote(note.NoteIndex, isAuto: true);
                         // TODO: 仮の削除処理、これで isAuto: true は必要ないしUpdateもいらない
-                        note.ReachedLineEvent += (n) =>
+                        note.ReachedLine += (n) =>
                         {
                             // ノーツをリストから削除せずに形だけ消す
                             n.gameObject.SetActive(false);
@@ -134,6 +148,20 @@ namespace FRONTIER.Game.Judgement
                     }
                 }
             );
+
+            longNotesGenerator.instances.ForEach(longNotes => 
+            {
+                if (!Manager.info.IsAutoPlay)
+                {
+                    longNotes.ForEach(longNote => 
+                    {
+                        longNote.ReachedLine += (_) => 
+                        {
+                            // longNotesGenerator.instances[]
+                        };
+                    });
+                }
+            });
         }
 
         // void Update()

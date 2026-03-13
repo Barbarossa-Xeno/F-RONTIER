@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -37,7 +37,7 @@ namespace FRONTIER.Game.Notes
         /// <summary>
         /// ロングノーツが押下されているときに発火するイベント。
         /// </summary>
-        public event Action<bool> OnPressed;
+        public event Action<bool> Pressed;
 
         /// <summary>
         /// ロングノーツの押下の状態に応じて、毎フレーム発火するイベント。
@@ -165,54 +165,67 @@ namespace FRONTIER.Game.Notes
         protected sealed override void Start()
         {
             // イベントの登録
-            OnPressed += isOn => isPressed = isOn;
+            Pressed += isOn => isPressed = isOn;
 
+            // TODO: この辺びみょい
             if (longNoteType == Reference.LongNoteType.DirectLinear || longNoteType == Reference.LongNoteType.DirectCurved)
             {
                 // 中間点がないLノーツの場合、自分のレンダラーを取得してマテリアルを設定する
                 linearTypeLongNoteMesh = GetComponent<MeshRenderer>();
-                OnPressed += isOn => linearTypeLongNoteMesh.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn));
+                Pressed += isOn => linearTypeLongNoteMesh.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn));
             }
             else if (longNoteType == Reference.LongNoteType.IntermediateLinear || longNoteType == Reference.LongNoteType.IntermediateCurved)
             {
                 // 中間点があるLノーツの場合、各種コンポーネントを取得してマテリアルを設定する
                 curveTypeComponent = new(transform, isIntermediate);
-                OnPressed += isOn =>
+                Pressed += isOn =>
                 {
                     curveTypeComponent.longNoteMeshes.ForEach(fragment => fragment.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn)));
                     curveTypeComponent.longNoteLines.ForEach(centerLine => centerLine.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn)));
                 };
             }
 
-            // オート時はずっと押された判定にする
+            // オート時はずっと押された判定になるよう、フラグを固定する
             if (Manager.info.IsAutoPlay)
             {
-                OnPressed.Invoke(true);
+                Pressed.Invoke(true);
             }
         }
 
         protected sealed override void Update()
         {
             base.Update();
-
-            Pressing();
         }
 
         #endregion
 
         #region メソッド
 
+        protected override void OnReachedLine()
+        {
+            if (part is Reference.LongNotePart.Intermediate or Reference.LongNotePart.End
+                && !isReachedLine
+                && isPressed
+                && Time.time - Manager.startTime >= reachedTime)
+            {
+                isReachedLine = true;
+                InvokeReachedLine();
+            }
+        }
+
         /// <summary>
         /// ロングノーツが押下されたときに行う処理。
         /// </summary>
-        /// <param name = "flag">押下の有無のフラグ。</param>
-        private void Pressing(bool flag)
+        /// <remarks>
+        /// マニュアルプレイ時のみ
+        /// </remarks>
+        /// <param name="flag">押下の有無のフラグ。</param>
+        private void OnPressed(bool flag)
         {
             if (!Manager.info.IsAutoPlay)
             {
-                OnPressed.Invoke(flag);
+                Pressed.Invoke(flag);
             }
-            else { OnPressed.Invoke(true); }
         }
 
         /// <summary>
@@ -239,7 +252,7 @@ namespace FRONTIER.Game.Notes
         /// <param name="index">順番</param>
         /// <param name="status">ロングノーツのステータス</param>
         /// <param name="isInner">中間点があるか</param>
-        public void SetInfo(Reference.NoteType noteType, int index, Reference.LongNotePart status, bool isInner)
+        public void SetProperties(Reference.NoteType noteType, int index, Reference.LongNotePart status, bool isInner)
         {
             SetProperties(noteType, index);
             this.part = status;
@@ -268,10 +281,10 @@ namespace FRONTIER.Game.Notes
             }
         }
 
-        public void OnPointerDown(PointerEventData pointerDownEvent) => Pressing(true);
-        public void OnPointerEnter(PointerEventData pointerEnterEvent) => Pressing(true);
-        public void OnPointerUp(PointerEventData pointerUpEvent) => Pressing(false);
-        public void OnPointerExit(PointerEventData pointerExitEvent) => Pressing(false);
+        public void OnPointerDown(PointerEventData eventData) => OnPressed(true);
+        public void OnPointerEnter(PointerEventData eventData) => OnPressed(true);
+        public void OnPointerUp(PointerEventData eventData) => OnPressed(false);
+        public void OnPointerExit(PointerEventData eventData) => OnPressed(false);
 
         #endregion
     }
