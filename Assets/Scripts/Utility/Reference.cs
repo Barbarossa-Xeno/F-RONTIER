@@ -148,12 +148,11 @@ namespace FRONTIER.Utility
         /// 特にヒエラルキーと同期されないので手動で変えること。
         /// </summary>
         public const float JUDGEMENT_LINE_THICKNESS = 0.2f;
-
-        // FIXME: Utility の中の Utilities てなんや、下に合わせて DifficultyValues に変える
+        
         /// <summary>
         /// 難易度のランクの名前とイメージカラー。
         /// </summary>
-        public static class DifficultyUtilities
+        public static class DifficultyValues
         {
             public const string LITE = "LITE";
             public const string HARD = "HARD";

@@ -118,7 +118,7 @@ namespace FRONTIER.Game
 
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C)
             {
-                scoreRankTexts.c.color = Reference.DifficultyUtilities.Colors.Lite;
+                scoreRankTexts.c.color = Reference.DifficultyValues.Colors.Lite;
                 scoreRankTexts.c.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.C;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
@@ -128,7 +128,7 @@ namespace FRONTIER.Game
             }
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.B)
             {
-                scoreRankTexts.b.color = Reference.DifficultyUtilities.Colors.Hard;
+                scoreRankTexts.b.color = Reference.DifficultyValues.Colors.Hard;
                 scoreRankTexts.b.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.B;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
@@ -138,7 +138,7 @@ namespace FRONTIER.Game
             }
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.A)
             {
-                scoreRankTexts.a.color = Reference.DifficultyUtilities.Colors.Ecstasy;
+                scoreRankTexts.a.color = Reference.DifficultyValues.Colors.Ecstasy;
                 scoreRankTexts.a.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.A;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
@@ -148,7 +148,7 @@ namespace FRONTIER.Game
             }
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.S)
             {
-                scoreRankTexts.s.color = Reference.DifficultyUtilities.Colors.Restricted;
+                scoreRankTexts.s.color = Reference.DifficultyValues.Colors.Restricted;
                 scoreRankTexts.s.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.S;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)

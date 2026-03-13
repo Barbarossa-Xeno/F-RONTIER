@@ -55,20 +55,20 @@ namespace FRONTIER
             switch (_difficulty)
             {
                 case Reference.DifficultyRank.Lite:
-                    instance.Item1 = Reference.DifficultyUtilities.LITE;
-                    instance.Item2 = Reference.DifficultyUtilities.Colors.Lite;
+                    instance.Item1 = Reference.DifficultyValues.LITE;
+                    instance.Item2 = Reference.DifficultyValues.Colors.Lite;
                     break;
                 case Reference.DifficultyRank.Hard:
-                    instance.Item1 = Reference.DifficultyUtilities.HARD;
-                    instance.Item2 = Reference.DifficultyUtilities.Colors.Hard;
+                    instance.Item1 = Reference.DifficultyValues.HARD;
+                    instance.Item2 = Reference.DifficultyValues.Colors.Hard;
                     break;
                 case Reference.DifficultyRank.Ecstasy:
-                    instance.Item1 = Reference.DifficultyUtilities.ECSTASY;
-                    instance.Item2 = Reference.DifficultyUtilities.Colors.Ecstasy;
+                    instance.Item1 = Reference.DifficultyValues.ECSTASY;
+                    instance.Item2 = Reference.DifficultyValues.Colors.Ecstasy;
                     break;
                 case Reference.DifficultyRank.Restricted:
-                    instance.Item1 = Reference.DifficultyUtilities.RESTRICTED;
-                    instance.Item2 = Reference.DifficultyUtilities.Colors.Restricted;
+                    instance.Item1 = Reference.DifficultyValues.RESTRICTED;
+                    instance.Item2 = Reference.DifficultyValues.Colors.Restricted;
                     break;
                 default: return ("", Color.white);
             }
