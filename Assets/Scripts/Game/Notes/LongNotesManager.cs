@@ -565,6 +565,7 @@ namespace FRONTIER.Game.Notes
                     note.Type = (Reference.NoteType)types[i];
                     note.Index = i;
                     note.ReachedTime = reachedTimes[i][j];
+                    note.LaneIndex = laneIndexes[i][j];
 
                     // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）

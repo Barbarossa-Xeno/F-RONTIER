@@ -33,6 +33,11 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private float reachedTime;
 
         /// <summary>
+        /// このノーツが配置されているレーンのインデックス。
+        /// </summary>
+        [SerializeField] private int laneIndex;
+
+        /// <summary>
         /// このノーツが判定ラインを超過したときに発火するイベント。<br/>
         /// </summary>
         /// <remarks>
@@ -79,10 +84,22 @@ namespace FRONTIER.Game.Notes
             set => noteIndex = value;
         }
 
+        /// <summary>
+        /// このノーツが到達する時間。
+        /// </summary>
         public float ReachedTime
         {
             get => reachedTime;
             set => reachedTime = value;
+        }
+
+        /// <summary>
+        /// このノーツが配置されているレーンのインデックス。
+        /// </summary>
+        public int LaneIndex
+        {
+            get => laneIndex;
+            set => laneIndex = value;
         }
 
         #endregion

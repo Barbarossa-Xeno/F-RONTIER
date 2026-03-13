@@ -101,6 +101,9 @@ namespace FRONTIER.Game
                     break;
                 }
             }
+
+            // スコア計算
+            Manager.score.CalculateScore();
         }
 
         /// <summary>

@@ -141,6 +141,7 @@ namespace FRONTIER.Game.Notes
                     instances[^1].Type = Reference.NoteType.Normal;
                     instances[^1].Index = i;
                     instances[^1].ReachedTime = reachedTimes[^1];
+                    instances[^1].LaneIndex = laneIndexes[^1];
                     instances[^1].name = $"Note-{i}";
                 }
             }
@@ -176,6 +177,7 @@ namespace FRONTIER.Game.Notes
             // 早く着くものから順に入れたので、逆順にすればいい
             reachedTimes.Reverse();
 
+            // TODO: これも時間でやれる
             // Z座標の降順（＝到達順）でソートしたインデックスを取得し、各リストに適用する
             // OrderbyDescending が遅延評価のため、ToList でインスタンスを生成して確定させる
             var orderedByReachingIndexes = Enumerable.Range(0, instances.Count)
