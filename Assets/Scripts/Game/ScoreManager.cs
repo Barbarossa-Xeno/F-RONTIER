@@ -34,6 +34,10 @@ namespace FRONTIER.Game
         /// </summary>
         [SerializeField] private TextMeshProUGUI combo;
 
+        [SerializeField] private JudgementRank currentRank;
+
+        private JudgementEffectPool judgementEffect;
+
         #endregion
 
         #region 構造体
@@ -49,8 +53,6 @@ namespace FRONTIER.Game
             public TextMeshProUGUI b;
             public TextMeshProUGUI c;
         }
-
-        private JudgementEffectPool judgementEffect;
 
         #endregion
 
@@ -69,12 +71,37 @@ namespace FRONTIER.Game
         #region メソッド
 
         /// <summary>
-        /// スコアを計算して、値を更新する。
+        /// ノーツが押されたときのラグにより、判定ランクを評価する。
+        /// また、スコア計算、エフェクト表示やUIへの反映も行う。
         /// </summary>
-        /// <param name="rank"></param>
-        public void Calculate(JudgementRank rank)
+        /// <param name="timeLag">実際にノーツが押された時間と押されるべき時間とのラグ。</param>
+        public void Evaluate(float timeLag)
         {
-            switch (rank)
+            currentRank = timeLag switch
+            {
+                // 0.05s 以内: Perfect
+                <= JudgementRankLagThresholds.PERFECT => JudgementRank.Perfect,
+                // 0.1s 以内: Great
+                <= JudgementRankLagThresholds.GREAT => JudgementRank.Great,
+                // 0.25s 以内: Good
+                <= JudgementRankLagThresholds.GOOD => JudgementRank.Good,
+                // 0.4s 以内: Bad
+                <= JudgementRankLagThresholds.BAD => JudgementRank.Bad,
+                // その他: Miss
+                _ => JudgementRank.Miss
+            };
+
+            Calculate();
+            ShowEffect();
+            Reflect();
+        }
+
+        /// <summary>
+        /// 直近の判定評価でスコアを計算して、値を更新する。
+        /// </summary>
+        private void Calculate()
+        {
+            switch (currentRank)
             {
                 case JudgementRank.Perfect:
                 {
@@ -121,15 +148,14 @@ namespace FRONTIER.Game
         }
 
         /// <summary>
-        /// 判定ステータスを画面上に表示する。
+        /// 直近の判定評価を画面上に表示する。
         /// </summary>
-        /// <param name="rank"></param>
         /// <remarks>
         /// オブジェクトプール(<see cref = "JudgementEffectPool"/>)を利用する
         /// </remarks>
-        public void ShowScoreStatus(JudgementRank rank)
+        private void ShowEffect()
         {
-            switch (rank)
+            switch (currentRank)
             {
                 case JudgementRank.Perfect:
                 {
@@ -163,9 +189,20 @@ namespace FRONTIER.Game
         /// スコアをアップデートする。
         /// </summary>
         // UnityEventから発火する
-        public void Reflect()
+        private void Reflect()
         {
-            scoreGauge.value = (float)Manager.score.ScoreValue / (float)GameManager.ScoreData.THEORETICAL_SCORE_VALUE;
+            if (currentRank == JudgementRank.Miss)
+            {
+                return;
+            }
+
+            Manager.audios.seManager.Play(currentRank switch
+            {
+                JudgementRank.Perfect or JudgementRank.Great => Audio.SEManager.SE.GreatOrPerfect,
+                _ => Audio.SEManager.SE.GoodOrBad,
+            });
+
+            scoreGauge.value = (float)Manager.score.ScoreValue / (float)Reference.THEORETICAL_SCORE_VALUE;
             score.SetText($"{Manager.score.ScoreValue}");
             combo.SetText($"{Manager.score.combo}");
 
