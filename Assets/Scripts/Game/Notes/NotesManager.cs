@@ -177,15 +177,21 @@ namespace FRONTIER.Game.Notes
             // 早く着くものから順に入れたので、逆順にすればいい
             reachedTimes.Reverse();
 
-            // TODO: これも時間でやれる
-            // Z座標の降順（＝到達順）でソートしたインデックスを取得し、各リストに適用する
+            // 到達順の降順でソートしたインデックスを取得し、各リストに適用する
             // OrderbyDescending が遅延評価のため、ToList でインスタンスを生成して確定させる
             var orderedByReachingIndexes = Enumerable.Range(0, instances.Count)
-                .OrderByDescending(i => instances[i].transform.position.z).ToList();
+                .OrderByDescending(i => instances[i].ReachedTime).ToList();
 
-            var sortedInstances = orderedByReachingIndexes.Select(i => instances[i]).ToList();
-            var sortedLanes     = orderedByReachingIndexes.Select(i => laneIndexes[i]).ToList();
-            var sortedTypes     = orderedByReachingIndexes.Select(i => types[i]).ToList();
+            // ソートしたインデックスをもとに、各リストの要素を並び替える
+            var sortedInstances = orderedByReachingIndexes.Select((i, noteIndex) => 
+            {
+                // instances は、この並び替えと同時に各ノーツのインデックスの情報も更新する
+                // iが並び替え前、noteIndexが並び替え後に相当する
+                instances[i].NoteIndex = noteIndex;
+                return instances[i];
+            }).ToList();
+            var sortedLanes = orderedByReachingIndexes.Select(i => laneIndexes[i]).ToList();
+            var sortedTypes = orderedByReachingIndexes.Select(i => types[i]).ToList();
 
             instances.Clear();
             laneIndexes.Clear();
@@ -195,12 +201,6 @@ namespace FRONTIER.Game.Notes
             instances.AddRange(sortedInstances);
             laneIndexes.AddRange(sortedLanes);
             types.AddRange(sortedTypes);
-
-            // 各ノーツにリスト内でのインデックスの情報を渡す
-            for (int i = 0; i < instances.Count; i++)
-            {
-                instances[i].NoteIndex = i;
-            }
         }
 
         public override bool DeleteNote(Note target)
