@@ -192,11 +192,6 @@ namespace FRONTIER
             public Reference.ClearRank clearRank;
 
             /// <summary>
-            /// スコアの理論値
-            /// </summary>
-            public const int THEORETICAL_SCORE_VALUE = 1000000;
-
-            /// <summary>
             /// スコアを計算する
             /// </summary>
             public void CalculateScore()
@@ -208,7 +203,7 @@ namespace FRONTIER
                 {
                     return;
                 }
-                ScoreValue = Mathf.RoundToInt(THEORETICAL_SCORE_VALUE * Mathf.Floor(apparentScoreValue / maxScoreValue * THEORETICAL_SCORE_VALUE) / THEORETICAL_SCORE_VALUE);
+                ScoreValue = Mathf.RoundToInt(Reference.THEORETICAL_SCORE_VALUE * Mathf.Floor(apparentScoreValue / maxScoreValue * Reference.THEORETICAL_SCORE_VALUE) / Reference.THEORETICAL_SCORE_VALUE);
             }
 
             public ScoreData()

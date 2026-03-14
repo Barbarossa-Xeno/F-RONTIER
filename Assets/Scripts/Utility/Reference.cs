@@ -148,6 +148,11 @@ namespace FRONTIER.Utility
         /// 特にヒエラルキーと同期されないので手動で変えること。
         /// </summary>
         public const float JUDGEMENT_LINE_THICKNESS = 0.2f;
+
+        /// <summary>
+        /// スコアの理論値
+        /// </summary>
+        public const int THEORETICAL_SCORE_VALUE = 1000000;
         
         /// <summary>
         /// 難易度のランクの名前とイメージカラー。
