@@ -150,7 +150,7 @@ namespace FRONTIER.Result
                 // 経過時間とアニメーション時間の比で正規化した時間
                 float normalizedTime = 0;
                 // ゲージの終端の値
-                float gaugeFinalValue = (float)Manager.score.ScoreValue / (float)GameManager.ScoreData.THEORETICAL_SCORE_VALUE;
+                float gaugeFinalValue = (float)Manager.score.ScoreValue / (float)Reference.THEORETICAL_SCORE_VALUE;
 
                 // アニメーション時間に到達するまで繰り返す
                 while (elapsedTime < ANIMATION_DURATION)
@@ -167,7 +167,7 @@ namespace FRONTIER.Result
 
                     // ゲージとスコア値に適用する
                     gauge.value = val;
-                    value.text = $"{(int)(val * GameManager.ScoreData.THEORETICAL_SCORE_VALUE)}";
+                    value.text = $"{(int)(val * Reference.THEORETICAL_SCORE_VALUE)}";
                 }
             }
 
