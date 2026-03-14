@@ -1612,7 +1612,6 @@ GameObject:
   m_Component:
   - component: {fileID: 336479141}
   - component: {fileID: 336479142}
-  - component: {fileID: 336479144}
   m_Layer: 0
   m_Name: JudgementManager
   m_TagString: Untagged
@@ -1647,46 +1646,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c8cd3c050e50e4aaa866eb869d3474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score:
-    objectPool: {fileID: 336479144}
-    parent: {fileID: 2106285031}
   notesGenerator: {fileID: 963748245}
   longNotesGenerator: {fileID: 963748247}
   laneManager: {fileID: 461476169}
+  scoreManager: {fileID: 1279732031}
   noteJudged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1279732031}
-        m_TargetAssemblyTypeName: FRONTIER.Game.ScoreManager, Assembly-CSharp
-        m_MethodName: UpdateScore
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   target: {fileID: 0}
---- !u!114 &336479144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 336479139}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b4960ff768e0844d8073cdb7176843b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scoreObjects:
-    perfect: {fileID: 6468092039810781438, guid: ea1dac2d28b9a6449b09ff097dca07ac, type: 3}
-    great: {fileID: 417130826592768319, guid: ded301ed7d3c77d43bc43c77455152d7, type: 3}
-    good: {fileID: 6674282747751949387, guid: 97034a5312407f24bb1d5adb8a9c587c, type: 3}
-    bad: {fileID: 7759270345713178872, guid: 2771b0248d9140040bc7a3c460c2c702, type: 3}
-    miss: {fileID: 6147740308423456393, guid: fcbf335cedc830c43b5cffeb0f8386ef, type: 3}
 --- !u!1 &433323802
 GameObject:
   m_ObjectHideFlags: 0
@@ -2447,9 +2414,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00038820505
+    y: 0.0003143847
     width: 1
-    height: 0.9992236
+    height: 0.99937123
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -8657,9 +8624,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00038820505
+    y: 0.0003143847
     width: 1
-    height: 0.9992236
+    height: 0.99937123
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -10431,6 +10398,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1279732032}
   - component: {fileID: 1279732031}
+  - component: {fileID: 1279732033}
   m_Layer: 0
   m_Name: ScoreManager
   m_TagString: Untagged
@@ -10473,6 +10441,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1279732033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1279732030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b4960ff768e0844d8073cdb7176843b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabs:
+    perfect: {fileID: 6468092039810781438, guid: ea1dac2d28b9a6449b09ff097dca07ac, type: 3}
+    great: {fileID: 417130826592768319, guid: ded301ed7d3c77d43bc43c77455152d7, type: 3}
+    good: {fileID: 6674282747751949387, guid: 97034a5312407f24bb1d5adb8a9c587c, type: 3}
+    bad: {fileID: 7759270345713178872, guid: 2771b0248d9140040bc7a3c460c2c702, type: 3}
+    miss: {fileID: 6147740308423456393, guid: fcbf335cedc830c43b5cffeb0f8386ef, type: 3}
+  effectParent: {fileID: 2106285031}
 --- !u!1 &1288592783
 GameObject:
   m_ObjectHideFlags: 0
@@ -10951,7 +10938,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1415855445}
   m_Layer: 0
-  m_Name: NoteInstanceParent
+  m_Name: NoteInstances
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12777,7 +12764,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2106285031}
   m_Layer: 9
-  m_Name: ScoreInstancesParent
+  m_Name: JudgementEffectInstances
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

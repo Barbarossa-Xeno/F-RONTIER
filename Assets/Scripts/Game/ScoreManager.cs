@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using FRONTIER.Utility;
 using TMPro;
@@ -9,6 +9,7 @@ namespace FRONTIER.Game
     /// <summary>
     /// スコアを計算し、ゲーム中のUIにスコアを表示する。
     /// </summary>
+    [RequireComponent(typeof(JudgementEffectPool))]
     public class ScoreManager : GameUtilityBase
     {
         #region フィールド
@@ -49,12 +50,15 @@ namespace FRONTIER.Game
             public TextMeshProUGUI c;
         }
 
+        private JudgementEffectPool judgementEffect;
+
         #endregion
 
         #region MonoBehaviourメソッド
 
         void Start()
         {
+            judgementEffect = GetComponent<JudgementEffectPool>();
             scoreGauge.value = 0;
             score.SetText("0000000");
             combo.SetText("0");
@@ -64,9 +68,13 @@ namespace FRONTIER.Game
 
         #region メソッド
 
-        public void UpdateScore(JudgementRank judgementRank)
+        /// <summary>
+        /// スコアを計算して、値を更新する。
+        /// </summary>
+        /// <param name="rank"></param>
+        public void Calculate(JudgementRank rank)
         {
-            switch (judgementRank)
+            switch (rank)
             {
                 case JudgementRank.Perfect:
                 {
@@ -96,6 +104,12 @@ namespace FRONTIER.Game
                     Manager.score.combo = 0;
                     break;
                 }
+                case JudgementRank.Miss:
+                {
+                    Manager.score.judgementStatus[JudgementRank.Miss]++;
+                    Manager.score.combo = 0;
+                    break;
+                }
                 default:
                 {
                     break;
@@ -107,10 +121,49 @@ namespace FRONTIER.Game
         }
 
         /// <summary>
+        /// 判定ステータスを画面上に表示する。
+        /// </summary>
+        /// <param name="rank"></param>
+        /// <remarks>
+        /// オブジェクトプール(<see cref = "JudgementEffectPool"/>)を利用する
+        /// </remarks>
+        public void ShowScoreStatus(JudgementRank rank)
+        {
+            switch (rank)
+            {
+                case JudgementRank.Perfect:
+                {
+                    judgementEffect.Perfect.Get();
+                    break;
+                }
+                case JudgementRank.Great:
+                {
+                    judgementEffect.Great.Get();
+                    break;
+                }
+                case JudgementRank.Good:
+                {
+                    judgementEffect.Good.Get();
+                    break;
+                }
+                case JudgementRank.Bad:
+                {
+                    judgementEffect.Bad.Get();
+                    break;
+                }
+                case JudgementRank.Miss:
+                {
+                    judgementEffect.Miss.Get();
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
         /// スコアをアップデートする。
         /// </summary>
         // UnityEventから発火する
-        public void UpdateScore()
+        public void Reflect()
         {
             scoreGauge.value = (float)Manager.score.ScoreValue / (float)GameManager.ScoreData.THEORETICAL_SCORE_VALUE;
             score.SetText($"{Manager.score.ScoreValue}");

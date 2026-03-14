@@ -19,11 +19,6 @@ namespace FRONTIER.Game.Judgement
         #region フィールド
 
         /// <summary>
-        /// スコア表示に関する様々な情報。
-        /// </summary>
-        [SerializeField] private Score score;
-
-        /// <summary>
         /// <see cref = "NotesManager"/>
         /// </summary>
         [SerializeField] private NotesManager notesGenerator;
@@ -39,6 +34,11 @@ namespace FRONTIER.Game.Judgement
         [SerializeField] private LaneManager laneManager;
 
         /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField] private ScoreManager scoreManager;
+
+        /// <summary>
         /// ノーツが判定されたタイミングで発火するイベント。
         /// </summary>
         [Header("ノーツが判定されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent<Note> noteJudged;
@@ -52,32 +52,6 @@ namespace FRONTIER.Game.Judgement
         /// 1次元目にレーン番号、2次元目にそのレーンを流れるノーツを格納するリスト。
         /// </summary>
         private readonly List<List<Note>> EachLanesNotes = Enumerable.Range(0, 6).Select(_ => new List<Note>()).ToList();
-
-        #endregion
-
-        #region クラス・構造体
-
-        /// <summary>
-        /// スコア表示を管理する。
-        /// </summary>
-        [Serializable]
-        private struct Score
-        {
-            /// <summary>
-            /// 判定ステータス表示のオブジェクトプール。
-            /// </summary>
-            public ScoreObjectPool objectPool;
-
-            /// <summary>
-            /// 生成される判定ステータスのオブジェクト。
-            /// </summary>
-            public GameObject Object { get; set; }
-
-            /// <summary>
-            /// <see cref="Object"/>を配置するときの親オブジェクト。
-            /// </summary>
-            public Transform parent;
-        }
 
         #endregion
 
@@ -100,7 +74,7 @@ namespace FRONTIER.Game.Judgement
                     if (!Manager.info.IsAutoPlay)
                     {
                         // 判定線を超過して画面の外に出たらミスにする
-                        note.PassedOverLine += (_) =>
+                        note.PassedOverLine += () =>
                         {
                             int currentNoteIndex = notesGenerator.instances.IndexOf(note);
                             // ノーツをリストから削除
@@ -111,9 +85,15 @@ namespace FRONTIER.Game.Judgement
                             notesGenerator.instances.RemoveAt(currentNoteIndex);
 
                             // スコア計算
-                            ShowScoreStatus(JudgementRank.Miss);
-                            Manager.score.judgementStatus[JudgementRank.Miss]++;
-                            Manager.score.combo = 0;
+                            // ShowScoreStatus(JudgementRank.Miss);
+                            // Manager.score.judgementStatus[JudgementRank.Miss]++;
+                            // Manager.score.combo = 0;
+                        };
+                        note.PassedOverLine += () =>
+                        {
+                            scoreManager.Calculate(JudgementRank.Miss);
+                            scoreManager.ShowScoreStatus(JudgementRank.Miss);
+                            scoreManager.Reflect();
                         };
                         
                         // FIXME: エラーが出るかも
@@ -131,19 +111,25 @@ namespace FRONTIER.Game.Judgement
                         // 判定線あたりでノーツをPerfect判定する
                         // note.ReachedLineEvent += () => DeleteNote(note.NoteIndex, isAuto: true);
                         // TODO: 仮の削除処理、これで isAuto: true は必要ないしUpdateもいらない
-                        note.ReachedLine += (n) =>
+                        note.ReachedLine += () =>
                         {
                             // ノーツをリストから削除せずに形だけ消す
-                            n.gameObject.SetActive(false);
+                            note.gameObject.SetActive(false);
 
                             Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
 
                             // スコア計算
-                            ShowScoreStatus(JudgementRank.Perfect);
-                            Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
-                            Manager.score.judgementStatus[JudgementRank.Perfect]++;
-                            Manager.score.combo++;
-                            Manager.score.CalculateScore();
+                            // ShowScoreStatus(JudgementRank.Perfect);
+                            // Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
+                            // Manager.score.judgementStatus[JudgementRank.Perfect]++;
+                            // Manager.score.combo++;
+                            // Manager.score.CalculateScore();
+                        };
+                        note.ReachedLine += () =>
+                        {
+                            scoreManager.Calculate(JudgementRank.Perfect);
+                            scoreManager.ShowScoreStatus(JudgementRank.Perfect);
+                            scoreManager.Reflect(); 
                         };
                     }
                 }
@@ -155,7 +141,7 @@ namespace FRONTIER.Game.Judgement
                 {
                     longNotes.ForEach(longNote => 
                     {
-                        longNote.ReachedLine += (_) => 
+                        longNote.ReachedLine += () => 
                         {
                             // longNotesGenerator.instances[]
                         };
@@ -209,7 +195,7 @@ namespace FRONTIER.Game.Judgement
             // ターゲットノーツをセットする。見つからなかったときは null
             target = bestIndex != -1 ? notesGenerator.instances[^bestIndex] : null;
 
-            JudgeStatus(bestLag);
+            Evaluate(bestLag);
         }
 
         /// <summary>
@@ -268,10 +254,10 @@ namespace FRONTIER.Game.Judgement
         }
 
         /// <summary>
-        /// ノーツが押されたときのラグに合わせて、判定をする。
+        /// ノーツが押されたときのラグに合わせて、判定ランクを評価する。
         /// </summary>
         /// <param name="timeLag">実際にノーツが押された時間と押されるべき時間とのラグ。</param>
-        private void JudgeStatus(float timeLag)
+        private void Evaluate(float timeLag)
         {
             JudgementRank scoreRank = timeLag switch
             {
@@ -371,68 +357,68 @@ namespace FRONTIER.Game.Judgement
         /// </param>
         /// <param name="isAuto">オートプレイの判定の時、<c>true</c>を指定する。</param>
         /// <param name="isMissed">ノーツのミス判定をとるとき、<c>true</c>を指定する。</param>
-        private void DeleteNote(int targetIndex, bool isAuto = false, bool isMissed = false)
-        {
-            // if (isAuto)
-            // {
-            //     // 同じノーツを二度判定することがないように、ノーツのアクティブ状態を確認する
-            //     if (notesGenerator.instances[targetIndex].gameObject.activeSelf)
-            //     {
-            //         // ノーツをリストから削除せずに形だけ消す
-            //         notesGenerator.instances[targetIndex].gameObject.SetActive(false);
+        // private void DeleteNote(int targetIndex, bool isAuto = false, bool isMissed = false)
+        // {
+        //     // if (isAuto)
+        //     // {
+        //     //     // 同じノーツを二度判定することがないように、ノーツのアクティブ状態を確認する
+        //     //     if (notesGenerator.instances[targetIndex].gameObject.activeSelf)
+        //     //     {
+        //     //         // ノーツをリストから削除せずに形だけ消す
+        //     //         notesGenerator.instances[targetIndex].gameObject.SetActive(false);
 
-            //         Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
+        //     //         Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
 
-            //         // スコア計算
-            //         ShowScoreStatus(JudgementRank.Perfect);
-            //         Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
-            //         Manager.score.judgementStatus[JudgementRank.Perfect]++;
-            //         Manager.score.combo++;
-            //         Manager.score.CalculateScore();
-            //     }
-            //     else
-            //     {
-            //         return;
-            //     }
-            // }
-            // else 
-            if (isMissed)
-            {
-                // 同タイミングで判定線を通過するノーツは、インデックスが被って上手くリストから削除できないことがあるので
-                // リストのカウントを超えないようにtargetIndexを予め調整する
-                if (targetIndex <= notesGenerator.instances.Count)
-                {
-                    int i = 0;
-                    while (true)
-                    {
-                        if (targetIndex - i < notesGenerator.instances.Count)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            i++;
-                        }
-                    }
-                    targetIndex -= i;
-                }
+        //     //         // スコア計算
+        //     //         ShowScoreStatus(JudgementRank.Perfect);
+        //     //         Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
+        //     //         Manager.score.judgementStatus[JudgementRank.Perfect]++;
+        //     //         Manager.score.combo++;
+        //     //         Manager.score.CalculateScore();
+        //     //     }
+        //     //     else
+        //     //     {
+        //     //         return;
+        //     //     }
+        //     // }
+        //     // else 
+        //     if (isMissed)
+        //     {
+        //         // 同タイミングで判定線を通過するノーツは、インデックスが被って上手くリストから削除できないことがあるので
+        //         // リストのカウントを超えないようにtargetIndexを予め調整する
+        //         if (targetIndex <= notesGenerator.instances.Count)
+        //         {
+        //             int i = 0;
+        //             while (true)
+        //             {
+        //                 if (targetIndex - i < notesGenerator.instances.Count)
+        //                 {
+        //                     break;
+        //                 }
+        //                 else
+        //                 {
+        //                     i++;
+        //                 }
+        //             }
+        //             targetIndex -= i;
+        //         }
 
-                // ノーツをリストから削除
-                notesGenerator.instances[targetIndex].gameObject.SetActive(false);
-                notesGenerator.reachedTimes.RemoveAt(targetIndex);
-                notesGenerator.laneIndexes.RemoveAt(targetIndex);
-                notesGenerator.types.RemoveAt(targetIndex);
-                notesGenerator.instances.RemoveAt(targetIndex);
+        //         // ノーツをリストから削除
+        //         notesGenerator.instances[targetIndex].gameObject.SetActive(false);
+        //         notesGenerator.reachedTimes.RemoveAt(targetIndex);
+        //         notesGenerator.laneIndexes.RemoveAt(targetIndex);
+        //         notesGenerator.types.RemoveAt(targetIndex);
+        //         notesGenerator.instances.RemoveAt(targetIndex);
 
-                // スコア計算
-                ShowScoreStatus(JudgementRank.Miss);
-                Manager.score.judgementStatus[JudgementRank.Miss]++;
-                Manager.score.combo = 0;
-            }
+        //         // スコア計算
+        //         ShowScoreStatus(JudgementRank.Miss);
+        //         Manager.score.judgementStatus[JudgementRank.Miss]++;
+        //         Manager.score.combo = 0;
+        //     }
     
-            // FIXME: 仮設定
-            // noteJudged?.Invoke(notesGenerator.instances[targetIndex]);
-        }
+        //     // FIXME: 仮設定
+        //     // noteJudged?.Invoke(notesGenerator.instances[targetIndex]);
+        // }
 
         /// <summary>
         /// 判定線を超過したロングノーツの中間点・終点を削除する。
@@ -448,7 +434,7 @@ namespace FRONTIER.Game.Judgement
             {
                 // 押されていたまま判定線を超過したら、Perfectで判定をとる
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                ShowScoreStatus(JudgementRank.Perfect);
+                // ShowScoreStatus(JudgementRank.Perfect);
                 Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
                 Manager.score.judgementStatus[JudgementRank.Perfect]++;
                 Manager.score.combo++;
@@ -457,7 +443,7 @@ namespace FRONTIER.Game.Judgement
             else
             {
                 // 押されてなかったらミス
-                ShowScoreStatus(JudgementRank.Miss);
+                // ShowScoreStatus(JudgementRank.Miss);
                 Manager.score.judgementStatus[JudgementRank.Miss]++;
                 Manager.score.combo = 0;
             }
@@ -488,32 +474,32 @@ namespace FRONTIER.Game.Judgement
         /// 判定ステータスを画面上に表示する。
         /// </summary>
         /// <remarks>
-        /// オブジェクトプール(<see cref = "ScoreObjectPool"/>)を利用する
+        /// オブジェクトプール(<see cref = "JudgementEffectPool"/>)を利用する
         /// </remarks>
-        private void ShowScoreStatus(JudgementRank status)
-        {
-            switch (status)
-            {
-                case JudgementRank.Perfect:
-                    score.Object = score.objectPool.perfect.Get();
-                    break;
-                case JudgementRank.Great:
-                    score.Object = score.objectPool.great.Get();
-                    break;
-                case JudgementRank.Good:
-                    score.Object = score.objectPool.good.Get();
-                    break;
-                case JudgementRank.Bad:
-                    score.Object = score.objectPool.bad.Get();
-                    break;
-                case JudgementRank.Miss:
-                    score.Object = score.objectPool.miss.Get();
-                    break;
-            }
-            score.Object.transform.SetParent(score.parent);
-            score.Object.transform.position = new(0, 0, 0);
-            score.Object.transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
+        // private void ShowScoreStatus(JudgementRank status)
+        // {
+        //     switch (status)
+        //     {
+        //         case JudgementRank.Perfect:
+        //             score.Object = score.objectPool.perfect.Get();
+        //             break;
+        //         case JudgementRank.Great:
+        //             score.Object = score.objectPool.great.Get();
+        //             break;
+        //         case JudgementRank.Good:
+        //             score.Object = score.objectPool.good.Get();
+        //             break;
+        //         case JudgementRank.Bad:
+        //             score.Object = score.objectPool.bad.Get();
+        //             break;
+        //         case JudgementRank.Miss:
+        //             score.Object = score.objectPool.miss.Get();
+        //             break;
+        //     }
+        //     score.Object.transform.SetParent(score.parent);
+        //     score.Object.transform.position = new(0, 0, 0);
+        //     score.Object.transform.rotation = Quaternion.Euler(0, 0, 0);
+        // }
 
         /// <summary>
         /// 実際にノーツがタップされた時間と、本来ノーツをタップすべき時間との差を求める。
@@ -541,7 +527,7 @@ namespace FRONTIER.Game.Judgement
 
                 // スコア計算
                 Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-                ShowScoreStatus(JudgementRank.Perfect);
+                // ShowScoreStatus(JudgementRank.Perfect);
                 Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
                 Manager.score.judgementStatus[JudgementRank.Perfect]++;
                 Manager.score.combo++;
