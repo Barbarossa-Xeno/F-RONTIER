@@ -5,13 +5,16 @@ using FRONTIER.Utility;
 
 namespace FRONTIER.Game.Notes
 {
-    // このクラスでの ribbon はロングノーツ間に生成する「帯」状のメッシュのことを指します。
+    // 注意書き：
+    // - このクラスでの ribbon はロングノーツ間に生成する「帯」状のメッシュのことを指します。
+    // - このクラスは分割定義されており、このファイルではフィールドやオーバーライドするメソッドを定義しています。
+    //   その他のメソッドは <c>LongNotesManagerExtraMethods.cs</c> に定義しています。
 
     /// <summary>
     /// ロングノーツの生成と管理を行うクラス。
     /// </summary>
     [System.Serializable]
-    public partial class LongNotesManager : NotesManagerBase<List<int>, List<float>, List<LongNote>>
+    public partial class LongNotesManager : NotesManagerBase<List<int>, List<float>, LongNote>
     {
         #region フィールド
 
@@ -36,12 +39,12 @@ namespace FRONTIER.Game.Notes
         public List<int> intermediateNotesCounts = new();
 
         /// <summary>
-        /// 生成したロングノーツの中間点を管理しておく辞書。
+        /// 生成した各ロングノーツの始点、中間点、終点のすべてを、そのロングノーツのインデックスと紐づけて格納しておく辞書。
         /// </summary>
         /// <remarks>
-        /// Keyにロングノーツのインデックス、Valueにそのインデックスのロングノーツが含む中間ノーツのリストを代入して管理する。
+        /// Keyにロングノーツのインデックス、Valueにそのインデックスのロングノーツが含む全てのノーツのリストを代入して管理する。
         /// </remarks>
-        public Dictionary<int, List<LongNote>> intermediateNotes = new();
+        public Dictionary<int, List<LongNote>> instantiatedNotes = new();
 
         /// <summary>
         /// 生成したロングノーツの帯を格納したリスト。
@@ -259,12 +262,14 @@ namespace FRONTIER.Game.Notes
                     note.ReachedTime = reachedTimes[i][j];
                     note.LaneIndex = laneIndexes[i][j];
 
+                    t_intermediates.Add(note);
+                    // TODO: 後で消す
                     // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
                     // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
-                    if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
-                    {
-                        notesGenerator.instances.Add(note);
-                    }
+                    // if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
+                    // {
+                    //     notesGenerator.instances.Add(note);
+                    // }
                     // ループ回数（中間点の数）で処理する部分
                     if (j == 0)
                     {
@@ -274,7 +279,7 @@ namespace FRONTIER.Game.Notes
                     else
                     {
                         // 1番最初以降のノーツは中間点のノーツとして管理
-                        t_intermediates.Add(note);
+                        // t_intermediates.Add(note);
                         note.IsIntermediate = true;
 
                         // 中間点がある場合
@@ -296,7 +301,7 @@ namespace FRONTIER.Game.Notes
                         if (j == laneIndexes[i].Count - 1)
                         {
                             // 今までの中間点のノーツをまとめて管理するリストに入れる
-                            intermediateNotes.Add(i, t_intermediates);
+                            instantiatedNotes.Add(i, t_intermediates);
 
                             // 終点のノーツに設定
                             note.Part = Reference.LongNotePart.End;
@@ -331,19 +336,19 @@ namespace FRONTIER.Game.Notes
         {
             SetRibbonTransform();
 
-            // インデックスを降順にソートし直したり、リストの中身を求め直す
-
-            // このクラスで管理するのはロングノーツの始点以外
-            instances = intermediateNotes.Values.ToList();
-            instances.Reverse();
-            foreach (var notes in instances)
+            // 一旦キーバリューで管理していた生成ノーツを、シンプルに1次元のリストに入れなおす
+            foreach (var notes in instantiatedNotes.Values)
             {
-                notes.Reverse();
-                
-                for (int i = 0; i < notes.Count; i++)
-                {
-                    notes[i].NoteIndex = i;
-                }
+                instances.AddRange(notes);
+            }
+
+            // 到達時間の降順にソートして早いものが最後尾になるように
+            instances.Sort((a, b) => b.ReachedTime.CompareTo(a.ReachedTime));
+
+            // ソート後のリストに合わせてノーツのインデックスを振りなおす
+            for (int i = 0; i < instances.Count; i++)
+            {
+                instances[i].NoteIndex = i;
             }
 
             ribbons.Reverse();
@@ -354,19 +359,19 @@ namespace FRONTIER.Game.Notes
                     continue;
                 }
 
-                foreach (var note in instances[ribbon.Index])
+                foreach (var note in instantiatedNotes[ribbon.Index])
                 {
                     ribbon.Pressed += isPressed => note.IsPressed = isPressed;
                     note.ReachedLine += () => Debug.Log(note);
                 }
-                ribbon.Pressed += isPressed => instances[ribbon.Index].ForEach(note => note.IsPressed = isPressed);
+                ribbon.Pressed += isPressed => instantiatedNotes[ribbon.Index].ForEach(note => note.IsPressed = isPressed);
 
                 // レイヤー付与
                 ribbon.gameObject.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
             }
         }
 
-        public override bool DeleteNote(List<LongNote> target)
+        public override bool DeleteNote(LongNote target)
         {
             
             throw new System.NotImplementedException();

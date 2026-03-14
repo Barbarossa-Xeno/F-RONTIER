@@ -15,7 +15,7 @@ namespace FRONTIER.Game.Notes
         /// <summary>
         /// 楽曲に含まれる総ノーツ数。
         /// </summary>
-        public int notesCount;
+        [SerializeField] private int notesCount;
 
         /// <summary>
         /// 通常ノーツのプレハブ。
@@ -67,49 +67,53 @@ namespace FRONTIER.Game.Notes
                     || patternData.notes[i].type == (int)Reference.NoteType.CurvedLong)
                 {
                     // ロングノーツのプロパティ（レーン番号や到達時間等）だけを格納するリスト
-                    List<float> longNoteTimes = new();
-                    List<int> longNoteLaneNumbers = new();
+                    List<float> longNoteReachedTimes = new();
+                    List<int> longNoteLaneIndexes = new();
 
                     // ノーツの到達時間（再生時間）
-                    float noteTime = CalculateNoteTime(patternData.notes[i].LPB, patternData.notes[i].num);
+                    float reachedTime = CalculateNoteTime(patternData.notes[i].LPB, patternData.notes[i].num);
 
+                    // TODO: 後で消す?
                     // 各リストへの追加
                     // Lノーツの始点はマニュアル・オートプレイに拘わらず、通常ノーツのリストへ追加する（始点は到達時間で判定するため）
-                    reachedTimes.Add(noteTime);
-                    laneIndexes.Add(patternData.notes[i].block);
-                    types.Add(patternData.notes[i].type);
+                    // reachedTimes.Add(reachedTime);
+                    // laneIndexes.Add(patternData.notes[i].block);
+                    // types.Add((Reference.NoteType)patternData.notes[i].type);
 
                     // ロングノーツ専用のリストにも追加
-                    longNoteTimes.Add(noteTime);
-                    longNoteLaneNumbers.Add(patternData.notes[i].block);
+                    longNoteReachedTimes.Add(reachedTime);
+                    longNoteLaneIndexes.Add(patternData.notes[i].block);
 
                     // ロングノーツ１まとまりに存在する中間点の数だけループさせる
                     // [ループ②]
                     for (int j = 0; j < patternData.notes[i].notes.Length; j++)
                     {
-                        float _noteTime = CalculateNoteTime(patternData.notes[i].notes[j].LPB, patternData.notes[i].notes[j].num);
+                        float _reachedTime = CalculateNoteTime(patternData.notes[i].notes[j].LPB, patternData.notes[i].notes[j].num);
 
+                        // TODO: 後で消す?
                         // ゲームをオートでプレイするときは、中間点ノーツの情報も通常ノーツのリストに追加する
-                        if (PlayInfo.IsAutoPlay)
-                        {
-                            reachedTimes.Add(_noteTime);
-                            laneIndexes.Add(patternData.notes[i].notes[j].block);
-                            types.Add(patternData.notes[i].notes[j].type);
-                        }
+                        // if (PlayInfo.IsAutoPlay)
+                        // {
+                        //     reachedTimes.Add(_reachedTime);
+                        //     laneIndexes.Add(patternData.notes[i].notes[j].block);
+                        //     types.Add((Reference.NoteType)patternData.notes[i].notes[j].type);
+                        // }
 
-                        longNoteTimes.Add(_noteTime);
-                        longNoteLaneNumbers.Add(patternData.notes[i].notes[j].block);
+                        longNoteReachedTimes.Add(_reachedTime);
+                        longNoteLaneIndexes.Add(patternData.notes[i].notes[j].block);
+
+                        longNotesGenerator.types.Add((Reference.NoteType)patternData.notes[i].type);
                     }
 
                     // 始点・終点以外にいくつかの中間点が存在するノーツは生成時に処理を分岐させたい
                     // そこで、中間点の数を格納するリストを生成側の LongNotesGenerator に作成しておく
                     // notes[i].notes の長さから1引くと中間点の数になる（終点を除外している。）
                     longNotesGenerator.intermediateNotesCounts.Add(patternData.notes[i].notes.Length - 1);
-                    longNotesGenerator.types.Add(patternData.notes[i].type);
+                    longNotesGenerator.types.Add((Reference.NoteType)patternData.notes[i].type);
 
                     // 各リストへの追加
-                    longNotesGenerator.reachedTimes.Add(longNoteTimes);
-                    longNotesGenerator.laneIndexes.Add(longNoteLaneNumbers);
+                    longNotesGenerator.reachedTimes.Add(longNoteReachedTimes);
+                    longNotesGenerator.laneIndexes.Add(longNoteLaneIndexes);
 
                     // ノーツ総数に追加
                     notesCount += patternData.notes[i].notes.Length;
@@ -122,7 +126,7 @@ namespace FRONTIER.Game.Notes
                 {
                     reachedTimes.Add(CalculateNoteTime(patternData.notes[i].LPB, patternData.notes[i].num));
                     laneIndexes.Add(patternData.notes[i].block);
-                    types.Add(patternData.notes[i].type);
+                    types.Add((Reference.NoteType)patternData.notes[i].type);
 
                     // 座標計算
                     // X座標の振り分け
@@ -201,6 +205,23 @@ namespace FRONTIER.Game.Notes
             instances.AddRange(sortedInstances);
             laneIndexes.AddRange(sortedLanes);
             types.AddRange(sortedTypes);
+
+            foreach (var note in instances)
+            {
+                if (PlayInfo.IsAutoPlay)
+                {
+                    // ノーツが判定線に到達したときのイベントを登録
+
+                    // 判定しないのでリスト操作の必要はなく、非アクティブにするだけ
+                    note.ReachedLine += () => note.gameObject.SetActive(false);
+
+                    
+                }
+                else
+                {
+                    
+                }
+            }
         }
 
         public override bool DeleteNote(Note target)
@@ -208,10 +229,15 @@ namespace FRONTIER.Game.Notes
             if (instances.Contains(target))
             {
                 target.gameObject.SetActive(false);
-                reachedTimes.RemoveAt(target.NoteIndex);
-                laneIndexes.RemoveAt(target.NoteIndex);
-                types.RemoveAt(target.NoteIndex);
-                instances.RemoveAt(target.NoteIndex);
+
+                // Miss 等の理由でリストから削除したタイミングが前後する場合があるので
+                // 現在のインデックスを取得するのが安全
+                int index = instances.IndexOf(target);
+
+                reachedTimes.RemoveAt(index);
+                laneIndexes.RemoveAt(index);
+                types.RemoveAt(index);
+                instances.RemoveAt(index);
 
                 return true;
             }

@@ -1646,14 +1646,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c8cd3c050e50e4aaa866eb869d3474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  notesGenerator: {fileID: 963748245}
-  longNotesGenerator: {fileID: 963748247}
+  notesManager: {fileID: 963748245}
+  longNotesManager: {fileID: 963748247}
   laneManager: {fileID: 461476169}
   scoreManager: {fileID: 1279732031}
   noteJudged:
     m_PersistentCalls:
       m_Calls: []
-  target: {fileID: 0}
+  judgementResult:
+    target: {fileID: 0}
+    timeLag: 0
 --- !u!1 &433323802
 GameObject:
   m_ObjectHideFlags: 0
@@ -2413,10 +2415,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.0003143847
-    width: 1
-    height: 0.99937123
+    x: 0.00006484985
+    y: 0
+    width: 0.9998703
+    height: 1
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -8623,10 +8625,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.0003143847
-    width: 1
-    height: 0.99937123
+    x: 0.00006484985
+    y: 0
+    width: 0.9998703
+    height: 1
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -8765,6 +8767,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   instanceParent: {fileID: 1415855445}
   types: 
+  instances: []
   intermediateNotePrefab: {fileID: 7652398199858680092, guid: a015d6a663a79f44fa3d2aa4abd465da, type: 3}
   directNotePrefab: {fileID: 7652398199858680092, guid: 068c76dfac48bdb4e95ce35d8bb7a4a5, type: 3}
   notesGenerator: {fileID: 963748245}
@@ -10426,6 +10429,7 @@ MonoBehaviour:
     b: {fileID: 862620400}
     c: {fileID: 1999095060}
   combo: {fileID: 939685606}
+  currentRank: 0
 --- !u!4 &1279732032
 Transform:
   m_ObjectHideFlags: 0

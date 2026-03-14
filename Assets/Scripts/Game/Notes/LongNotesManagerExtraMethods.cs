@@ -5,6 +5,9 @@ using static FRONTIER.Utility.Reference;
 
 namespace FRONTIER.Game.Notes
 {
+    // 注意書き：
+    // - このクラスは分割定義されており、このクラスでは継承されたメソッド以外の追加分を定義しています。
+    //   フィールドや継承メソッドについては、<c>LongNotesManager.cs</c>で定義しています。
     public partial class LongNotesManager
     {
         #region セットアップ系メソッド

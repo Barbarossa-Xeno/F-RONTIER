@@ -52,7 +52,7 @@ namespace FRONTIER.Game.Notes
         /// 各ノーツの種類を <see cref="Reference.NoteType"/> を <c>int</c> に変換した値で格納する。（インスペクタ確認用）
         /// 種類の仕分けに利用する
         /// </summary>
-        public List<int> types = new();
+        public List<Reference.NoteType> types = new();
 
         /// <summary>
         /// 各ノーツを<c>GameObject</c>として生成したインスタンスを格納する。
@@ -92,6 +92,8 @@ namespace FRONTIER.Game.Notes
         /// ノーツのリスト等をソート・整理する。
         /// </summary>
         public abstract void SortNotes();
+
+        // public abstract void JudgeNote(int laneIndex, float tappedTime);
 
         public abstract bool DeleteNote(TInstances target);
 
