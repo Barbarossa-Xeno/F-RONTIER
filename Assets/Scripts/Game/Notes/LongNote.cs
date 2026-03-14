@@ -203,14 +203,23 @@ namespace FRONTIER.Game.Notes
 
         protected override void OnReachedLine()
         {
-            if (part is Reference.LongNotePart.Intermediate or Reference.LongNotePart.End
-                && !isReachedLine
-                && isPressed
-                && Time.time - Manager.startTime >= reachedTime)
+            // 中間点と終点のみ、押されているかつ到達時間に達したときに到達イベントを発火させる
+            if (part is Reference.LongNotePart.Intermediate or Reference.LongNotePart.End)
             {
-                isReachedLine = true;
-                InvokeReachedLine();
+                if (!isReachedLine
+                    // オートプレイの時は isPressed = true で固定なので、オートプレイ時の条件も内包
+                    && isPressed
+                    && Time.time - Manager.startTime >= reachedTime)
+                {
+                    isReachedLine = true;
+                    InvokeReachedLine();
+                }
             }
+            // 始点は通常ノーツと同じ条件と処理
+            else
+            {
+                base.OnReachedLine();
+            }                
         }
 
         /// <summary>
