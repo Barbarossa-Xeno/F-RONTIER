@@ -44,7 +44,7 @@ namespace FRONTIER.Game.Notes
         /// <remarks>
         /// ノーツの判定線到達時間が経過すると発火
         /// </remarks>
-        public event Action<Note> ReachedLine;
+        public event Action ReachedLine;
 
         /// <summary>
         /// このノーツが判定線を超過したときに発火するイベント。<br/>
@@ -53,7 +53,7 @@ namespace FRONTIER.Game.Notes
         /// 判定線から少し離れた位置 (<see cref="Reference.missJudgementPosition.z"/>) で発火
         /// </remarks>
 
-        public event Action<Note> PassedOverLine;
+        public event Action PassedOverLine;
 
         /// <summary>
         /// 判定線に到達したか。
@@ -161,7 +161,7 @@ namespace FRONTIER.Game.Notes
             if (!isReachedLine && Time.time - Manager.startTime >= reachedTime)
             {
                 isReachedLine = true;
-                ReachedLine?.Invoke(this);
+                ReachedLine?.Invoke();
             }
         }
 
@@ -171,14 +171,14 @@ namespace FRONTIER.Game.Notes
             if (!isPassedOverLine && transform.position.z <= Reference.missJudgementPosition.z)
             {
                 isPassedOverLine = true;
-                PassedOverLine?.Invoke(this);
+                PassedOverLine?.Invoke();
             }
         }
 
         /// <summary>
         /// 子クラスで <see cref="ReachedLine"/> を発火させるときに呼び出すメソッド。
         /// </summary>
-        protected virtual void InvokeReachedLine() => ReachedLine?.Invoke(this);
+        protected virtual void InvokeReachedLine() => ReachedLine?.Invoke();
 
         #endregion
     }

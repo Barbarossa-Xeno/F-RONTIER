@@ -191,6 +191,7 @@ namespace FRONTIER.Game
         // UnityEventから発火する
         private void Reflect()
         {
+            // Miss の場合はSE鳴らしたりスコアを加算したりしないので、ここで処理を終える
             if (currentRank == JudgementRank.Miss)
             {
                 return;
