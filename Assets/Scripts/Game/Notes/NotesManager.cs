@@ -8,6 +8,7 @@ namespace FRONTIER.Game.Notes
     /// <summary>
     /// ノーツの生成と管理を行うクラス。
     /// </summary>
+    [RequireComponent(typeof(LongNotesManager))]
     public class NotesManager : NotesManagerBase<int, float, Note>
     {
         #region フィールド
