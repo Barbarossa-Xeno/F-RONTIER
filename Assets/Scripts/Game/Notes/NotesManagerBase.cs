@@ -16,12 +16,13 @@ namespace FRONTIER.Game.Notes
     /// リスト <c>reachedTimes</c> の型。基本は<c>float</c><br/>
     /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
     /// </typeparam>
-    /// <typeparam name="TInstances">
-    /// リスト <c>instances</c> の型。基本は<c><see cref="Note"/></c><br/>
-    /// 通常ノーツを収めるなら1次元を、ロングノーツを収めるなら2次元のリストになるようにする
+    /// <typeparam name="TNote">
+    /// リスト <c>instances</c> に収めるノーツの型。<br/>
+    /// 通常ノーツを収めるなら<c><see cref="Note"/></c>を、ロングノーツを収めるなら<c><see cref="LongNote"/></c>にする
     /// </typeparam>
     [Serializable]
-    public abstract class NotesManagerBase<TLaneIndexes, TReachedTimes, TInstances> : GameUtilityBase
+    public abstract class NotesManagerBase<TLaneIndexes, TReachedTimes, TNote> : GameUtilityBase
+        where TNote : Note
     {
         #region フィールド
 
@@ -55,13 +56,12 @@ namespace FRONTIER.Game.Notes
         public List<Reference.NoteType> types = new();
 
         /// <summary>
-        /// 各ノーツを<c>GameObject</c>として生成したインスタンスを格納する。
+        /// 各ノーツを<c>GameObject</c>として生成し、<c>TNote</c>を付与したインスタンスを格納する。
         /// </summary>
         /// <remarks>
-        /// ノーマルノーツの場合：<c>GameObject</c>型リスト。順にオブジェクトを格納<br/>
-        /// ロングノーツの場合：<c>List(GameObject)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツのオブジェクトを格納
+        /// 最終的にこのクラスで生成したノーツが到達時間の降順に格納されるようにする。
         /// </remarks>
-        public List<TInstances> instances = new();
+        public List<TNote> instances = new();
 
         #endregion
 
@@ -93,9 +93,35 @@ namespace FRONTIER.Game.Notes
         /// </summary>
         public abstract void SortNotes();
 
-        // public abstract void JudgeNote(int laneIndex, float tappedTime);
+        /// <summary>
+        /// 指定されたノーツを削除する。
+        /// 削除に成功した場合は<c>true</c>、失敗した場合は<c>false</c>を返す。<br/>
+        /// </summary>
+        /// <remarks>
+        /// - GameObject は非アクティブ化<br/>
+        /// - TNote型のインスタンスは関連情報を各リストから削除
+        /// </remarks>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public bool DeleteNote(TNote target)
+        {
+            if (instances.Contains(target))
+            {
+                target.gameObject.SetActive(false);
 
-        public abstract bool DeleteNote(TInstances target);
+                // Miss 等の理由でリストから削除したタイミングが前後する場合があるので
+                // 現在のインデックスを取得するのが安全
+                int index = instances.IndexOf(target);
+                
+                instances.RemoveAt(index);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         #endregion
 

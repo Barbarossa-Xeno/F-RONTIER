@@ -331,7 +331,7 @@ namespace FRONTIER.Game.Notes
                 return;
             }
             // 各ロングノーツに設定された、流れてくる順番 (LongNote.index) を抽出
-            List<int> meshIndexList = ribbons.Select(mesh => mesh.Index).ToList();
+            List<int> meshIndexList = ribbons.Select(mesh => mesh.ArrivalOrder).ToList();
 
             // ロングノーツのまとまりの個数を取得するために、その最後のインデックス (= インデックスリストの中で一番大きい値) を取得する。
             // (これは0から始まるインデックス番号なので実際はこれに+1した個数)
@@ -361,7 +361,7 @@ namespace FRONTIER.Game.Notes
 
                 for (int j = 0; j < meshIndexList.Count; j++)
                 {
-                    if (ribbons[j].Index == duplicateIndexes[i])
+                    if (ribbons[j].ArrivalOrder == duplicateIndexes[i])
                     {
                         // インデックスが重複しているLノーツの断片を、同じインデックスをもつ親オブジェクトの子にする
                         ribbons[j].transform.SetParent(parents[i].transform);

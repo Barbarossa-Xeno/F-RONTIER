@@ -258,18 +258,13 @@ namespace FRONTIER.Game.Notes
                     instance.name = objectName;
                     LongNote note = instance.GetComponent<LongNote>();
                     note.Type = (Reference.NoteType)types[i];
-                    note.Index = i;
+                    note.LongNoteType = longNoteType;
+                    note.ArrivalOrder = i;
                     note.ReachedTime = reachedTimes[i][j];
                     note.LaneIndex = laneIndexes[i][j];
 
                     t_intermediates.Add(note);
-                    // TODO: 後で消す
-                    // オートプレイの時は通常ノーツと同じ括りにするために、NotesGenerator のほうに全部入れる
-                    // 通常プレイの時は、1番最初のノーツだけ入れる（判定の仕組みによる）
-                    // if (PlayInfo.IsAutoPlay || !PlayInfo.IsAutoPlay && j == 0)
-                    // {
-                    //     notesGenerator.instances.Add(note);
-                    // }
+
                     // ループ回数（中間点の数）で処理する部分
                     if (j == 0)
                     {
@@ -334,6 +329,7 @@ namespace FRONTIER.Game.Notes
 
         public override void SortNotes()
         {
+            // 帯を適切な配置にする
             SetRibbonTransform();
 
             // 一旦キーバリューで管理していた生成ノーツを、シンプルに1次元のリストに入れなおす
@@ -351,7 +347,24 @@ namespace FRONTIER.Game.Notes
                 instances[i].NoteIndex = i;
             }
 
+            // 2次元で管理しているリスト
+            // まずロングノーツ1まとまりを逆順にソート
+            reachedTimes.Reverse();
+            laneIndexes.Reverse();
+
+            // 1まとまりの中も逆順にする
+            for (int i = 0; i < reachedTimes.Count; i++)
+            {
+                reachedTimes[i].Reverse();
+                laneIndexes[i].Reverse();
+            }
+
+            // これは1次元 シンプルにソート
+            types.Reverse();
+
+            // 帯も逆にする
             ribbons.Reverse();
+            
             foreach (var ribbon in ribbons)
             {
                 if (ribbon == null)
@@ -359,23 +372,17 @@ namespace FRONTIER.Game.Notes
                     continue;
                 }
 
-                foreach (var note in instantiatedNotes[ribbon.Index])
+                foreach (var note in instantiatedNotes[ribbon.ArrivalOrder])
                 {
                     ribbon.Pressed += isPressed => note.IsPressed = isPressed;
                     note.ReachedLine += () => Debug.Log(note);
                 }
-                ribbon.Pressed += isPressed => instantiatedNotes[ribbon.Index].ForEach(note => note.IsPressed = isPressed);
+                ribbon.Pressed += isPressed => instantiatedNotes[ribbon.ArrivalOrder].ForEach(note => note.IsPressed = isPressed);
 
                 // レイヤー付与
                 ribbon.gameObject.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));
             }
-        }
-
-        public override bool DeleteNote(LongNote target)
-        {
-            
-            throw new System.NotImplementedException();
-        }
+        }        
 
         #endregion
     }

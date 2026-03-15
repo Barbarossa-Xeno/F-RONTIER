@@ -113,10 +113,8 @@ namespace FRONTIER.Game.Judgement
                         {
                             int currentNoteIndex = notesManager.instances.IndexOf(note);
                             // ノーツをリストから削除
-                            notesManager.instances[currentNoteIndex].gameObject.SetActive(false);
-                            notesManager.reachedTimes.RemoveAt(currentNoteIndex);
-                            notesManager.laneIndexes.RemoveAt(currentNoteIndex);
-                            notesManager.types.RemoveAt(currentNoteIndex);
+                            note.gameObject.SetActive(false);
+
                             notesManager.instances.RemoveAt(currentNoteIndex);
 
                             // スコア計算

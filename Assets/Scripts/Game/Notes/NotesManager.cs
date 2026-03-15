@@ -73,13 +73,6 @@ namespace FRONTIER.Game.Notes
                     // ノーツの到達時間（再生時間）
                     float reachedTime = CalculateNoteTime(patternData.notes[i].LPB, patternData.notes[i].num);
 
-                    // TODO: 後で消す?
-                    // 各リストへの追加
-                    // Lノーツの始点はマニュアル・オートプレイに拘わらず、通常ノーツのリストへ追加する（始点は到達時間で判定するため）
-                    // reachedTimes.Add(reachedTime);
-                    // laneIndexes.Add(patternData.notes[i].block);
-                    // types.Add((Reference.NoteType)patternData.notes[i].type);
-
                     // ロングノーツ専用のリストにも追加
                     longNoteReachedTimes.Add(reachedTime);
                     longNoteLaneIndexes.Add(patternData.notes[i].block);
@@ -89,15 +82,6 @@ namespace FRONTIER.Game.Notes
                     for (int j = 0; j < patternData.notes[i].notes.Length; j++)
                     {
                         float _reachedTime = CalculateNoteTime(patternData.notes[i].notes[j].LPB, patternData.notes[i].notes[j].num);
-
-                        // TODO: 後で消す?
-                        // ゲームをオートでプレイするときは、中間点ノーツの情報も通常ノーツのリストに追加する
-                        // if (PlayInfo.IsAutoPlay)
-                        // {
-                        //     reachedTimes.Add(_reachedTime);
-                        //     laneIndexes.Add(patternData.notes[i].notes[j].block);
-                        //     types.Add((Reference.NoteType)patternData.notes[i].notes[j].type);
-                        // }
 
                         longNoteReachedTimes.Add(_reachedTime);
                         longNoteLaneIndexes.Add(patternData.notes[i].notes[j].block);
@@ -143,7 +127,7 @@ namespace FRONTIER.Game.Notes
 
                     // プロパティを渡す
                     instances[^1].Type = Reference.NoteType.Normal;
-                    instances[^1].Index = i;
+                    instances[^1].ArrivalOrder = i;
                     instances[^1].ReachedTime = reachedTimes[^1];
                     instances[^1].LaneIndex = laneIndexes[^1];
                     instances[^1].name = $"Note-{i}";
@@ -178,42 +162,23 @@ namespace FRONTIER.Game.Notes
         public override void SortNotes()
         {
             // ノーツの到達時間を降順にソートする
-            // 早く着くものから順に入れたので、逆順にすればいい
+            // 早く着くものから順に入れたので、すべて逆順にすればいい
             reachedTimes.Reverse();
+            laneIndexes.Reverse();
+            types.Reverse();
+            instances.Reverse();
 
-            // 到達順の降順でソートしたインデックスを取得し、各リストに適用する
-            // OrderbyDescending が遅延評価のため、ToList でインスタンスを生成して確定させる
-            var orderedByReachingIndexes = Enumerable.Range(0, instances.Count)
-                .OrderByDescending(i => instances[i].ReachedTime).ToList();
-
-            // ソートしたインデックスをもとに、各リストの要素を並び替える
-            var sortedInstances = orderedByReachingIndexes.Select((i, noteIndex) => 
+            for (int i = 0; i < instances.Count; i++)
             {
-                // instances は、この並び替えと同時に各ノーツのインデックスの情報も更新する
-                // iが並び替え前、noteIndexが並び替え後に相当する
-                instances[i].NoteIndex = noteIndex;
-                return instances[i];
-            }).ToList();
-            var sortedLanes = orderedByReachingIndexes.Select(i => laneIndexes[i]).ToList();
-            var sortedTypes = orderedByReachingIndexes.Select(i => types[i]).ToList();
+                // 全インスタンス内での順番をセット
+                instances[i].NoteIndex = i;
 
-            instances.Clear();
-            laneIndexes.Clear();
-            types.Clear();
-
-            // 指定しなおし
-            instances.AddRange(sortedInstances);
-            laneIndexes.AddRange(sortedLanes);
-            types.AddRange(sortedTypes);
-
-            foreach (var note in instances)
-            {
                 if (PlayInfo.IsAutoPlay)
                 {
                     // ノーツが判定線に到達したときのイベントを登録
 
                     // 判定しないのでリスト操作の必要はなく、非アクティブにするだけ
-                    note.ReachedLine += () => note.gameObject.SetActive(false);
+                    instances[i].ReachedLine += () => instances[i].gameObject.SetActive(false);
 
                     
                 }
@@ -221,29 +186,6 @@ namespace FRONTIER.Game.Notes
                 {
                     
                 }
-            }
-        }
-
-        public override bool DeleteNote(Note target)
-        {
-            if (instances.Contains(target))
-            {
-                target.gameObject.SetActive(false);
-
-                // Miss 等の理由でリストから削除したタイミングが前後する場合があるので
-                // 現在のインデックスを取得するのが安全
-                int index = instances.IndexOf(target);
-
-                reachedTimes.RemoveAt(index);
-                laneIndexes.RemoveAt(index);
-                types.RemoveAt(index);
-                instances.RemoveAt(index);
-
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
 

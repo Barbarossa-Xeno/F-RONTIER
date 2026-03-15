@@ -20,7 +20,7 @@ namespace FRONTIER.Game.Notes
         /// <summary>
         /// このノーツが流れてくる順番。
         /// </summary>
-        [SerializeField] protected int index;
+        [SerializeField] protected int arrivalOrder;
 
         /// <summary>
         /// このノーツが含まれているリスト (<see cref="NotesManagerBase.instances"/> ) でのインデックス。
@@ -82,10 +82,10 @@ namespace FRONTIER.Game.Notes
         /// このノーツが流れてくる順番。
         /// ノーツの種類ごとにカウントされるので通常ノーツとロングノーツで別々の順番になる。
         /// </summary>
-        public int Index
+        public int ArrivalOrder
         {
-            get => index;
-            set => index = value;
+            get => arrivalOrder;
+            set => arrivalOrder = value;
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace FRONTIER.Game.Notes
         public void SetProperties(Reference.NoteType type, int index)
         {
             this.Type = type;
-            this.index = index;
+            this.arrivalOrder = index;
         }
 
         /// <summary>
