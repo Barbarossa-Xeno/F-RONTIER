@@ -25,6 +25,11 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private Reference.LongNoteType longNoteType = default;
 
         /// <summary>
+        /// ロングノーツ1まとまりの中でのインデックス。始点が0で、そこから順に番号が振られる。
+        /// </summary>
+        [SerializeField] private int longNoteIndex;
+
+        /// <summary>
         /// このロングノーツが中間点であるか。
         /// </summary>
         [SerializeField] private bool isIntermediate;
@@ -76,6 +81,15 @@ namespace FRONTIER.Game.Notes
             set => longNoteType = value;
         }
 
+        /// <summary>
+        /// ロングノーツ1まとまりの中でのインデックス。始点が0で、そこから順に番号が振られる。
+        /// </summary>
+        public int LongNoteIndex
+        {
+            get => longNoteIndex;
+            set => longNoteIndex = value;
+        }
+        
         /// <summary>
         /// このロングノーツが中間点であるか。
         /// </summary>
