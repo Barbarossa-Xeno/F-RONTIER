@@ -29,11 +29,6 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private GameObject directNotePrefab;
 
         /// <summary>
-        /// <see cref = "NotesManager"/>
-        /// </summary>
-        [SerializeField] private NotesManager notesGenerator;
-
-        /// <summary>
         /// 各ロングノーツごとの中間点の数をインデックス順に格納するリスト。
         /// </summary>
         public List<int> intermediateNotesCounts = new();
@@ -335,16 +330,16 @@ namespace FRONTIER.Game.Notes
             // 一旦キーバリューで管理していた生成ノーツを、シンプルに1次元のリストに入れなおす
             foreach (var notes in instantiatedNotes.Values)
             {
-                instances.AddRange(notes);
+                base.notes.AddRange(notes);
             }
 
             // 到達時間の降順にソートして早いものが最後尾になるように
-            instances.Sort((a, b) => b.ReachedTime.CompareTo(a.ReachedTime));
+            notes.Sort((a, b) => b.ReachedTime.CompareTo(a.ReachedTime));
 
             // ソート後のリストに合わせてノーツのインデックスを振りなおす
-            for (int i = 0; i < instances.Count; i++)
+            for (int i = 0; i < notes.Count; i++)
             {
-                instances[i].NoteIndex = i;
+                notes[i].NoteIndex = i;
             }
 
             // 2次元で管理しているリスト

@@ -262,59 +262,59 @@ namespace FRONTIER.Game.Notes
             switch (type)
             {
                 case LongNoteType.DirectLinear:
-                    {
-                        target.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
-                        break;
-                    }
+                {
+                    target.GetComponent<MeshRenderer>().material = ribbonMaterials.direct;
+                    break;
+                }
                 // 中間点があればラインレンダラーで中心線を描画する
                 case LongNoteType.IntermediateLinear:
+                {
+                    Vector3[] linePositions = new Vector3[2] { start, end };
+
+                    // ribbon に中心線描画のための LineRenderer を追加
+                    LineRenderer centerLine = ribbon.gameObject.AddComponent<LineRenderer>();
+                    centerLine.SetPositions(linePositions);
+                    centerLine.startWidth = centerLine.endWidth = 0.1f;
+                    centerLine.material = ribbonMaterials.line;
+                    centerLine.useWorldSpace = false;
+
+                    target.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
+                    target.transform.SetParent(ribbon.transform);
+                    break;
+                }
+                case LongNoteType.DirectCurved:
+                {
+                    // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
+                    if (isLast)
                     {
-                        Vector3[] linePositions = new Vector3[2] { start, end };
+                        // メッシュの結合とテクスチャの再貼付
+                        CombineFragmentMesh(ribbon.gameObject);
+                        ReprintTexture(ribbon.gameObject, split, LongNoteType.DirectCurved);
+                    }
+                    break;
+                }
+                case LongNoteType.IntermediateCurved:
+                {
+                    // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
+                    // 曲線の座標を収めた配列がnullでないことを確認して
+                    if (isLast && anchors != null)
+                    {
+                        // メッシュの結合とテクスチャの再貼付
+                        CombineFragmentMesh(ribbon.gameObject);
+                        ReprintTexture(ribbon.gameObject, split, LongNoteType.IntermediateCurved);
 
                         // ribbon に中心線描画のための LineRenderer を追加
                         LineRenderer centerLine = ribbon.gameObject.AddComponent<LineRenderer>();
-                        centerLine.SetPositions(linePositions);
-                        centerLine.startWidth = centerLine.endWidth = 0.1f;
-                        centerLine.material = ribbonMaterials.line;
+                        centerLine.positionCount = anchors.Length;
+                        centerLine.widthMultiplier = 0.1f;
+                        centerLine.SetPositions(anchors);
                         centerLine.useWorldSpace = false;
 
-                        target.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
+                        centerLine.material = ribbonMaterials.line;
                         target.transform.SetParent(ribbon.transform);
-                        break;
                     }
-                case LongNoteType.DirectCurved:
-                    {
-                        // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
-                        if (isLast)
-                        {
-                            // メッシュの結合とテクスチャの再貼付
-                            CombineFragmentMesh(ribbon.gameObject);
-                            ReprintTexture(ribbon.gameObject, split, LongNoteType.DirectCurved);
-                        }
-                        break;
-                    }
-                case LongNoteType.IntermediateCurved:
-                    {
-                        // そのロングノーツのまとまりにおいて、最後となるノーツの断片を受け取ったら
-                        // 曲線の座標を収めた配列がnullでないことを確認して
-                        if (isLast && anchors != null)
-                        {
-                            // メッシュの結合とテクスチャの再貼付
-                            CombineFragmentMesh(ribbon.gameObject);
-                            ReprintTexture(ribbon.gameObject, split, LongNoteType.IntermediateCurved);
-
-                            // ribbon に中心線描画のための LineRenderer を追加
-                            LineRenderer centerLine = ribbon.gameObject.AddComponent<LineRenderer>();
-                            centerLine.positionCount = anchors.Length;
-                            centerLine.widthMultiplier = 0.1f;
-                            centerLine.SetPositions(anchors);
-                            centerLine.useWorldSpace = false;
-
-                            centerLine.material = ribbonMaterials.line;
-                            target.transform.SetParent(ribbon.transform);
-                        }
-                        break;
-                    }
+                    break;
+                }
             }
         }
 

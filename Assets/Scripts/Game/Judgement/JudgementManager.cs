@@ -19,29 +19,24 @@ namespace FRONTIER.Game.Judgement
         #region フィールド
 
         /// <summary>
-        /// <see cref = "NotesManager"/>
+        /// <see cref="NotesManager"/>
         /// </summary>
         [SerializeField] private NotesManager notesManager;
 
         /// <summary>
-        /// <see cref = "LongNotesManager"/>
+        /// <see cref="LongNotesManager"/>
         /// </summary>
         [SerializeField] private LongNotesManager longNotesManager;
 
         /// <summary>
-        /// <see cref = "LaneManager"/>
+        /// <see cref="LaneManager"/>
         /// </summary>
         [SerializeField] private LaneManager laneManager;
 
         /// <summary>
-        /// 
+        /// <see cref="ScoreManager"/>
         /// </summary>
         [SerializeField] private ScoreManager scoreManager;
-
-        /// <summary>
-        /// ノーツが判定されたタイミングで発火するイベント。
-        /// </summary>
-        [Header("ノーツが判定されたタイミングで発火するイベントを登録する"), SerializeField] private UnityEvent<Note> noteJudged;
 
         /// <summary>
         /// 判定の対象とするノーツ。
@@ -106,10 +101,10 @@ namespace FRONTIER.Game.Judgement
 
                 // ロングノーツの中間点、終点ノーツはタップ判定の対象外
                 // 帯が押されている状態で判定線に到達したときに Perfect 判定
-                longNotesManager.Instances
-                .Where(note => note.IsIntermediate)
-                .ToList()
-                .ForEach(note => note.ReachedLine += () =>
+                longNotesManager.Notes
+                    .Where(note => note.IsIntermediate)
+                    .ToList()
+                    .ForEach(note => note.ReachedLine += () =>
                 {
                     if (note.IsPressed)
                     {
@@ -126,7 +121,7 @@ namespace FRONTIER.Game.Judgement
                 });
                 
                 // 判定線を超過したときのミス判定をすべてのノーツに登録する
-                notesManager.Instances.ForEach(note => note.PassedOverLine += () =>
+                notesManager.Notes.ForEach(note => note.PassedOverLine += () =>
                 {
                     if (notesManager.DeleteNote(note))
                     {
@@ -138,7 +133,7 @@ namespace FRONTIER.Game.Judgement
                     }
                 });
 
-                longNotesManager.Instances.ForEach(note => note.PassedOverLine += () => 
+                longNotesManager.Notes.ForEach(note => note.PassedOverLine += () => 
                 {
                     if (longNotesManager.DeleteNote(note))
                     {
@@ -157,7 +152,7 @@ namespace FRONTIER.Game.Judgement
                 #region オートプレイ時の初期化
 
                 // 判定線に到達したときの Perfect 判定を登録する
-                notesManager.Instances.ForEach(note => note.ReachedLine += () =>
+                notesManager.Notes.ForEach(note => note.ReachedLine += () =>
                 {
                     if (notesManager.DeleteNote(note))
                     {
@@ -170,7 +165,7 @@ namespace FRONTIER.Game.Judgement
                     }
                 });
 
-                longNotesManager.Instances.ForEach(note => note.ReachedLine += () =>
+                longNotesManager.Notes.ForEach(note => note.ReachedLine += () =>
                 {
                     if (longNotesManager.DeleteNote(note))
                     {
@@ -205,7 +200,7 @@ namespace FRONTIER.Game.Judgement
 
             // まずは通常ノーツから調べていく
             // そのレーンを流れるノーツの中で直近のを20個くらい調べる
-            int searchCount = notesManager.Instances.Count > MAX_SEARCH_NOTES_COUNT ? MAX_SEARCH_NOTES_COUNT : notesManager.Instances.Count;
+            int searchCount = notesManager.Notes.Count > MAX_SEARCH_NOTES_COUNT ? MAX_SEARCH_NOTES_COUNT : notesManager.Notes.Count;
 
             // 一番小さいラグとその時のインデックスを記録
             float bestLag = float.MaxValue;
@@ -215,31 +210,31 @@ namespace FRONTIER.Game.Judgement
             // タップされた時間とノーツの到達時間のラグを計算して、最も小さいラグのノーツをターゲットにする
             for (int i = 1; i <= searchCount; i++)
             {
-                if (notesManager.Instances[^i].LaneIndex == laneIndex)
+                if (notesManager.Notes[^i].LaneIndex == laneIndex)
                 {
-                    float lag = CalculateLag(tapTime, notesManager.Instances[^i].ReachedTime);
+                    float lag = CalculateLag(tapTime, notesManager.Notes[^i].ReachedTime);
                     if (lag <= JudgementRankLagThresholds.BAD && lag < bestLag)
                     {
                         bestLag = lag;
-                        target = notesManager.Instances[^i];
+                        target = notesManager.Notes[^i];
                     }
                 }
             }
 
             // 次はロングノーツ
-            searchCount = longNotesManager.Instances.Count > MAX_SEARCH_NOTES_COUNT ? MAX_SEARCH_NOTES_COUNT : longNotesManager.Instances.Count;
+            searchCount = longNotesManager.Notes.Count > MAX_SEARCH_NOTES_COUNT ? MAX_SEARCH_NOTES_COUNT : longNotesManager.Notes.Count;
 
             for (int i = 1; i <= searchCount; i++)
             {
-                if (longNotesManager.Instances[^i].LaneIndex == laneIndex
+                if (longNotesManager.Notes[^i].LaneIndex == laneIndex
                     // 中間点、終点ノーツは判定の対象外
-                    && !longNotesManager.Instances[^i].IsIntermediate)
+                    && !longNotesManager.Notes[^i].IsIntermediate)
                 {
-                    float lag = CalculateLag(tapTime, longNotesManager.Instances[^i].ReachedTime);
+                    float lag = CalculateLag(tapTime, longNotesManager.Notes[^i].ReachedTime);
                     if (lag <= JudgementRankLagThresholds.BAD && lag < bestLag)
                     {
                         bestLag = lag;
-                        target = longNotesManager.Instances[^i];
+                        target = longNotesManager.Notes[^i];
                     }
                 }
             }

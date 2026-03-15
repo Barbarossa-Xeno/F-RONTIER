@@ -42,7 +42,7 @@ namespace FRONTIER.Game.Judgement
         #region プロパティ
         
         /// <summary>
-        /// レーンがタップされたときの時間。InputManagerに渡すためのプロパティ。
+        /// レーンがタップされたときの時間。
         /// </summary>
         public float TappedTime
         {
@@ -51,7 +51,7 @@ namespace FRONTIER.Game.Judgement
         }
 
         /// <summary>
-        /// レーンがタップされたか。InputManagerに渡すためのプロパティ。
+        /// レーンがタップされたか。
         /// </summary>
         public bool IsTapped
         {

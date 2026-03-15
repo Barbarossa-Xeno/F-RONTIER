@@ -38,8 +38,10 @@ namespace FRONTIER.Game.Notes
 
         void Awake()
         {
-            patternData = base.LoadNotePattern(PlayInfo.ID, PlayInfo.DifficultyTo(PlayInfo.Difficulty).Item1);
+            patternData = LoadNotePattern(PlayInfo.ID, PlayInfo.FromDifficulty(PlayInfo.Difficulty).Item1);
+
             GenerateNotes();
+
             // 最大スコアの計算
             Manager.score.maxScoreValue = notesCount * Reference.JudgementRankValues.PERFECT;
             Manager.score.maxComboCount = notesCount;
@@ -55,11 +57,11 @@ namespace FRONTIER.Game.Notes
 
         public override void GenerateNotes()
         {
+            // ロングノーツがあれば随時加算される
             notesCount = patternData.notes.Length;
             
             // 読み込んだデータからノーツを生成する
             // ノーツの数だけループさせる
-            // [ループ①]
             for (int i = 0; i < patternData.notes.Length; i++)
             {
                 // もし、ノーツのタイプが「2」または「3」=> いずれかのロングノーツであった時
@@ -70,22 +72,17 @@ namespace FRONTIER.Game.Notes
                     List<float> longNoteReachedTimes = new();
                     List<int> longNoteLaneIndexes = new();
 
-                    // ノーツの到達時間（再生時間）
-                    float reachedTime = CalculateNoteTime(patternData.notes[i].LPB, patternData.notes[i].num);
-
-                    // ロングノーツ専用のリストにも追加
-                    longNoteReachedTimes.Add(reachedTime);
+                    // ロングノーツ専用のリストに追加
+                    longNoteReachedTimes.Add(CalculateReachedTime(patternData.notes[i].LPB, patternData.notes[i].num));
                     longNoteLaneIndexes.Add(patternData.notes[i].block);
 
                     // ロングノーツ１まとまりに存在する中間点の数だけループさせる
-                    // [ループ②]
                     for (int j = 0; j < patternData.notes[i].notes.Length; j++)
                     {
-                        float _reachedTime = CalculateNoteTime(patternData.notes[i].notes[j].LPB, patternData.notes[i].notes[j].num);
-
-                        longNoteReachedTimes.Add(_reachedTime);
+                        longNoteReachedTimes.Add(CalculateReachedTime(patternData.notes[i].notes[j].LPB, patternData.notes[i].notes[j].num));
                         longNoteLaneIndexes.Add(patternData.notes[i].notes[j].block);
 
+                        // タイプをロングノーツ専用のリストに追加
                         longNotesGenerator.AddToTypes((Reference.NoteType)patternData.notes[i].type);
                     }
 
@@ -108,7 +105,7 @@ namespace FRONTIER.Game.Notes
                 // ノーツのタイプが通常ノーツであった時
                 else if (patternData.notes[i].type == (int)Reference.NoteType.Normal)
                 {
-                    reachedTimes.Add(CalculateNoteTime(patternData.notes[i].LPB, patternData.notes[i].num));
+                    reachedTimes.Add(CalculateReachedTime(patternData.notes[i].LPB, patternData.notes[i].num));
                     laneIndexes.Add(patternData.notes[i].block);
                     types.Add((Reference.NoteType)patternData.notes[i].type);
 
@@ -123,14 +120,14 @@ namespace FRONTIER.Game.Notes
                     GameObject instance = Instantiate(notePrefab, new(x, Reference.noteOrigin.y, z), Quaternion.identity, instanceParent);
 
                     // そのコンポーネントを追加
-                    instances.Add(instance.GetComponent<Note>());
+                    notes.Add(instance.GetComponent<Note>());
 
                     // プロパティを渡す
-                    instances[^1].Type = Reference.NoteType.Normal;
-                    instances[^1].ArrivalOrder = i;
-                    instances[^1].ReachedTime = reachedTimes[^1];
-                    instances[^1].LaneIndex = laneIndexes[^1];
-                    instances[^1].name = $"Note-{i}";
+                    notes[^1].Type = Reference.NoteType.Normal;
+                    notes[^1].ArrivalOrder = i;
+                    notes[^1].ReachedTime = reachedTimes[^1];
+                    notes[^1].LaneIndex = laneIndexes[^1];
+                    notes[^1].name = $"Note-{i}";
                 }
             }
 
@@ -140,13 +137,23 @@ namespace FRONTIER.Game.Notes
             longNotesGenerator.SortNotes();
         }
 
+        public override void SortNotes()
+        {
+            // ノーツの到達時間を降順にソートする
+            // 早く着くものから順に入れたので、すべて逆順にすればいい
+            reachedTimes.Reverse();
+            laneIndexes.Reverse();
+            types.Reverse();
+            notes.Reverse();
+        }
+
         /// <summary>
         /// ノーツの判定線への到達時間を求める。
         /// </summary>
         /// <param name="lpb">そのノーツの小説位置</param>
         /// <param name="index">そのノーツのインデックス</param>
         /// <returns>到達時間</returns>
-        private float CalculateNoteTime(int lpb, int index)
+        private float CalculateReachedTime(int lpb, int index)
         {
             // 1拍あたりの秒数
             float secPerBeat = 60f / patternData.BPM;
@@ -157,16 +164,6 @@ namespace FRONTIER.Game.Notes
             float noteTime = index * minDistance + PlayInfo.JudgingTiming;
 
             return noteTime + patternData.offset / 50000f;
-        }
-
-        public override void SortNotes()
-        {
-            // ノーツの到達時間を降順にソートする
-            // 早く着くものから順に入れたので、すべて逆順にすればいい
-            reachedTimes.Reverse();
-            laneIndexes.Reverse();
-            types.Reverse();
-            instances.Reverse();
         }
 
         #endregion

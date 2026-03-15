@@ -61,7 +61,7 @@ namespace FRONTIER.Game.Notes
         /// <remarks>
         /// 最終的にこのクラスで生成したノーツが到達時間の降順に格納されるようにする。
         /// </remarks>
-        [SerializeField] protected List<TNote> instances = new();
+        [SerializeField] protected List<TNote> notes = new();
 
         #endregion
 
@@ -73,7 +73,7 @@ namespace FRONTIER.Game.Notes
         /// <remarks>
         /// 最終的にこのクラスで生成したノーツが到達時間の降順に格納されるようにする。
         /// </remarks>
-        public List<TNote> Instances => instances;
+        public List<TNote> Notes => notes;
 
         /// <summary>
         /// ゲームの準備に際して必要な情報。
@@ -113,15 +113,15 @@ namespace FRONTIER.Game.Notes
         /// <returns></returns>
         public bool DeleteNote(TNote target)
         {
-            if (instances.Contains(target))
+            if (notes.Contains(target))
             {
                 target.gameObject.SetActive(false);
 
                 // Miss 等の理由でリストから削除したタイミングが前後する場合があるので
                 // 現在のインデックスを取得するのが安全
-                int index = instances.IndexOf(target);
+                int index = notes.IndexOf(target);
                 
-                instances.RemoveAt(index);
+                notes.RemoveAt(index);
 
                 return true;
             }

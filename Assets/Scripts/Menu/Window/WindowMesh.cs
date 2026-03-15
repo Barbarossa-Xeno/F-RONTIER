@@ -104,7 +104,7 @@ namespace FRONTIER.Menu.Window
                           );
             }
             
-            BackMeshColor.SetColor("_Color", FixColorForBlur(MenuInfo.menuInfo.DifficultyTo(difficulty).Item2));
+            BackMeshColor.SetColor("_Color", FixColorForBlur(MenuInfo.menuInfo.FromDifficulty(difficulty).Item2));
         }
 
         #endregion

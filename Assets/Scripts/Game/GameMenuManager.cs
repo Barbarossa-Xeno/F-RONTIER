@@ -134,9 +134,9 @@ namespace FRONTIER.Game
             {
                 cover.sprite = Manager.info.Cover;
                 name.text = Manager.info.Name;
-                difficulty.text = Manager.info.DifficultyTo(Manager.info.Difficulty).Item1;
+                difficulty.text = Manager.info.FromDifficulty(Manager.info.Difficulty).Item1;
                 level.text = Manager.info.Level;
-                coverBorder.color = Manager.info.DifficultyTo(Manager.info.Difficulty).Item2;
+                coverBorder.color = Manager.info.FromDifficulty(Manager.info.Difficulty).Item2;
                 levelBorder.color = coverBorder.color;
             }
 

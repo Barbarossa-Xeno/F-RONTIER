@@ -253,7 +253,7 @@ namespace FRONTIER.Result
             {
                 cover.sprite = Manager.info.Cover;
                 songName.Text = Manager.info.Name;
-                (difficulty.text, difficultyBackground.color) = Manager.info.DifficultyTo(Manager.info.Difficulty);
+                (difficulty.text, difficultyBackground.color) = Manager.info.FromDifficulty(Manager.info.Difficulty);
             }
         }
 

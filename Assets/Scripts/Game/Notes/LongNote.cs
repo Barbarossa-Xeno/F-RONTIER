@@ -31,6 +31,7 @@ namespace FRONTIER.Game.Notes
 
         /// <summary>
         /// このロングノーツが中間点（及び終点）であるか。
+        /// 自身が帯の場合は、自身を含めたロングノーツ1まとまりが中間点を持つかどうかを示す。
         /// </summary>
         [SerializeField] private bool isIntermediate;
 
@@ -86,7 +87,8 @@ namespace FRONTIER.Game.Notes
         }
 
         /// <summary>
-        /// このロングノーツが中間点であるか。
+        /// このロングノーツが中間点（及び終点）であるか。
+        /// 自身が帯の場合は、自身を含めたロングノーツ1まとまりが中間点を持つかどうかを示す。
         /// </summary>
         public bool IsIntermediate
         {
@@ -188,24 +190,6 @@ namespace FRONTIER.Game.Notes
             }
         }
 
-        private static class ShaderParameter
-        {
-            /// <summary>
-            /// シェーダーのプロパティID
-            /// </summary>
-            public static readonly int _isPressed = Shader.PropertyToID("_isPressed");
-
-            /// <summary>
-            /// bool型をint型の数値に対応させて返す。
-            /// </summary>
-            /// <param name="flag">真偽値</param>
-            /// <returns>
-            /// <c>true</c> => 1<br/>
-            /// <c>false</c> => 0
-            /// </returns>
-            public static int SetFlag(bool flag) => flag ? 1 : 0;
-        }
-
         #endregion
 
         #region MonoBehaviorメソッド
@@ -235,6 +219,7 @@ namespace FRONTIER.Game.Notes
         protected sealed override void Update()
         {
             base.Update();
+            // TODO: 将来的にロングノーツの押下の状態に応じたエフェクトなどを実装する際は、ここで Pressing イベントを発火させる
         }
 
         #endregion
@@ -280,13 +265,13 @@ namespace FRONTIER.Game.Notes
         /// <param name="noteType">ノーツの種類</param>
         /// <param name="index">順番</param>
         /// <param name="status">ロングノーツのステータス</param>
-        /// <param name="isInner">中間点があるか</param>
-        public void SetProperties(Reference.NoteType noteType, int index, Reference.LongNotePart status, bool isInner)
+        /// <param name="isIntermediate">中間点があるか</param>
+        public void SetProperties(Reference.NoteType noteType, int index, Reference.LongNotePart status, bool isIntermediate)
         {
             SetProperties(noteType, index);
             this.part = status;
-            this.isIntermediate = isInner;
-            if (isInner)
+            this.isIntermediate = isIntermediate;
+            if (isIntermediate)
             {
                 if (noteType == Reference.NoteType.LinearLong)
                 {

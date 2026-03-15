@@ -149,7 +149,7 @@ namespace FRONTIER.Menu.Window
         /// <param name="difficulty">曲の難易度</param>
         public override void SetColorTrigger(Reference.DifficultyRank difficulty)
         {
-            gradientOption.colorKey[1].color = MenuInfo.menuInfo.DifficultyTo(difficulty).Item2;
+            gradientOption.colorKey[1].color = MenuInfo.menuInfo.FromDifficulty(difficulty).Item2;
             gradient.SetKeys(gradientOption.colorKey, gradientOption.alphaKey);
         }
 

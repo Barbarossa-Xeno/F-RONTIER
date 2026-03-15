@@ -1,8 +1,10 @@
 using UnityEngine;
-using Reference = FRONTIER.Utility.Reference;
+using static FRONTIER.Utility.Reference;
 
 namespace FRONTIER
 {
+    // TODO: 別で SongData 等も存在しているため、このクラスの役割や命名については要検討
+
     /// <summary>
     /// 選択された曲の情報を保持するためのクラス。
     /// </summary>
@@ -31,7 +33,7 @@ namespace FRONTIER
         /// <summary>
         /// 選択中の難易度。
         /// </summary>
-        public virtual Reference.DifficultyRank Difficulty { get; set; }
+        public virtual DifficultyRank Difficulty { get; set; }
 
         /// <summary>
         /// その曲のレベル。
@@ -44,36 +46,20 @@ namespace FRONTIER
         public virtual Sprite Cover { get; set; }
 
         /// <summary>
-        /// 難易度（<see cref="difficulty"/>）からその難易度の文字列とイメージカラーへ変換する。
+        /// 難易度からその難易度のテキストとイメージカラーを取得する。
         /// </summary>
-        /// <param name="_difficulty">難易度</param>
+        /// <param name="difficulty">難易度</param>
         /// <returns><c>Item1</c>: <c>string</c>, <c>Item2</c>: <c>Color32</c> 型になるタプル</returns>
-        public (string, Color32) DifficultyTo(Reference.DifficultyRank _difficulty)
-        {
-            (string, Color32) instance = new();
-
-            switch (_difficulty)
+        public (string, Color32) FromDifficulty(DifficultyRank difficulty)
+        {            
+            return difficulty switch
             {
-                case Reference.DifficultyRank.Lite:
-                    instance.Item1 = Reference.DifficultyValues.LITE;
-                    instance.Item2 = Reference.DifficultyValues.Colors.Lite;
-                    break;
-                case Reference.DifficultyRank.Hard:
-                    instance.Item1 = Reference.DifficultyValues.HARD;
-                    instance.Item2 = Reference.DifficultyValues.Colors.Hard;
-                    break;
-                case Reference.DifficultyRank.Ecstasy:
-                    instance.Item1 = Reference.DifficultyValues.ECSTASY;
-                    instance.Item2 = Reference.DifficultyValues.Colors.Ecstasy;
-                    break;
-                case Reference.DifficultyRank.Restricted:
-                    instance.Item1 = Reference.DifficultyValues.RESTRICTED;
-                    instance.Item2 = Reference.DifficultyValues.Colors.Restricted;
-                    break;
-                default: return ("", Color.white);
-            }
-            
-            return instance;
+                DifficultyRank.Lite => (DifficultyValues.LITE, DifficultyValues.Colors.Lite),
+                DifficultyRank.Hard => (DifficultyValues.HARD, DifficultyValues.Colors.Hard),
+                DifficultyRank.Ecstasy => (DifficultyValues.ECSTASY, DifficultyValues.Colors.Ecstasy),
+                DifficultyRank.Restricted => (DifficultyValues.RESTRICTED, DifficultyValues.Colors.Restricted),
+                _ => ("", Color.white)
+            };
         }
     }
 }

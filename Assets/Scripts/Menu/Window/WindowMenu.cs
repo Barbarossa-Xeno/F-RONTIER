@@ -193,7 +193,7 @@ namespace FRONTIER.Menu.Window
             windowBorderCurve.SetColorTrigger(difficulty);
             // メニューウィンドウの更新
             levelAndDifficulty.level.text = MenuInfo.menuInfo.Level;
-            levelAndDifficulty.Difficulty.text = MenuInfo.menuInfo.DifficultyTo(difficulty).Item1;
+            levelAndDifficulty.Difficulty.text = MenuInfo.menuInfo.FromDifficulty(difficulty).Item1;
 
             // アチーブメントウィンドウの更新
             var data = SongSaveData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(difficulty);

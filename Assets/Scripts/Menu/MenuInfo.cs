@@ -45,7 +45,7 @@ namespace FRONTIER.Menu
         /// <returns></returns>
         public (string, Color32) DifficultyTo()
         {
-            return DifficultyTo(menuInfo.Difficulty);
+            return FromDifficulty(menuInfo.Difficulty);
         }
 
         /// <summary>
