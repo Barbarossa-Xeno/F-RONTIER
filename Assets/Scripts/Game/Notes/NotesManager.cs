@@ -167,26 +167,6 @@ namespace FRONTIER.Game.Notes
             laneIndexes.Reverse();
             types.Reverse();
             instances.Reverse();
-
-            for (int i = 0; i < instances.Count; i++)
-            {
-                // 全インスタンス内での順番をセット
-                instances[i].NoteIndex = i;
-
-                if (PlayInfo.IsAutoPlay)
-                {
-                    // ノーツが判定線に到達したときのイベントを登録
-
-                    // 判定しないのでリスト操作の必要はなく、非アクティブにするだけ
-                    instances[i].ReachedLine += () => instances[i].gameObject.SetActive(false);
-
-                    
-                }
-                else
-                {
-                    
-                }
-            }
         }
 
         #endregion

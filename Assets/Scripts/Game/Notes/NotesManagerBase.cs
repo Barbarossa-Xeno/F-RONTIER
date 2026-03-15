@@ -61,7 +61,7 @@ namespace FRONTIER.Game.Notes
         /// <remarks>
         /// 最終的にこのクラスで生成したノーツが到達時間の降順に格納されるようにする。
         /// </remarks>
-        protected List<TNote> instances = new();
+        [SerializeField] protected List<TNote> instances = new();
 
         #endregion
 

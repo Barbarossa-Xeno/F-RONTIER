@@ -30,7 +30,7 @@ namespace FRONTIER.Game.Notes
         [SerializeField] private int longNoteIndex;
 
         /// <summary>
-        /// このロングノーツが中間点であるか。
+        /// このロングノーツが中間点（及び終点）であるか。
         /// </summary>
         [SerializeField] private bool isIntermediate;
 
@@ -47,17 +47,12 @@ namespace FRONTIER.Game.Notes
         /// <summary>
         /// ロングノーツの押下の状態に応じて、毎フレーム発火するイベント。
         /// </summary>
-        public event Action<bool> OnPressedUpdate;
+        public event Action<bool> Pressing;
 
         /// <summary>
-        /// 直線型ロングノーツのマテリアル。（直線なので一個だけ）
+        /// 自身がロングノーツの帯であるときに使用されるマテリアル。
         /// </summary>
-        private MeshRenderer linearTypeLongNoteMesh;
-
-        /// <summary>
-        /// 曲線型ロングノーツで必要なコンポーネントなどを取得するインスタンス。
-        /// </summary>
-        private CurveTypeComponent curveTypeComponent;
+        private RibbonMaterial ribbonMaterial;
 
         #endregion
 
@@ -89,7 +84,7 @@ namespace FRONTIER.Game.Notes
             get => longNoteIndex;
             set => longNoteIndex = value;
         }
-        
+
         /// <summary>
         /// このロングノーツが中間点であるか。
         /// </summary>
@@ -115,42 +110,81 @@ namespace FRONTIER.Game.Notes
         /// <summary>
         /// 曲線型ロングノーツのコンポーネントなど。
         /// </summary>
-        private class CurveTypeComponent
+        private class RibbonMaterial
         {
-            /// <summary>
-            /// ロングノーツの分割された断片のゲームオブジェクト。
-            /// </summary>
-            private GameObject[] fragmentLongNotes;
-
             /// <summary>
             /// 曲線型ロングノーツのマテリアル（曲線なので複数）
             /// </summary>
-            public List<MeshRenderer> longNoteMeshes;
+            public Material[] ribbons = null;
             
             /// <summary>
             /// 曲線型ロングノーツの中心
             /// </summary>
-            public List<LineRenderer> longNoteLines;
+            public Material[] centerLines = null;
 
-            public CurveTypeComponent(Transform longNotesTransform, bool isInner)
+            /// <summary>
+            /// ロングノーツの分割された断片のゲームオブジェクト。
+            /// </summary>
+            private Transform[] fragments = null;
+
+            /// <summary>
+            /// 中間点を持っているか。
+            /// </summary>
+            private bool hasIntermediate;
+
+            /// <summary>
+            /// 使用するシェーダーのパラメータID
+            /// </summary>
+            private static readonly int _isPressed = Shader.PropertyToID("_isPressed");
+
+            public RibbonMaterial(LongNote longNote, bool hasIntermediate)
             {
-                fragmentLongNotes = new GameObject[longNotesTransform.childCount];
-                longNoteMeshes = new(longNotesTransform.childCount);
-                longNoteLines = isInner ? new(longNotesTransform.childCount) : null;
-                GetComponents(longNotesTransform);
+                this.hasIntermediate = hasIntermediate;
+
+                // 中間点がある場合
+                if (hasIntermediate)
+                {
+                    // longNote (Ribbon) の子オブジェクトにあるはずの分割された断片を取得
+                    fragments = Enumerable.Range(0, longNote.transform.childCount).Select(longNote.transform.GetChild).ToArray();
+                    ribbons = new Material[longNote.transform.childCount];
+                    centerLines = hasIntermediate ? new Material[longNote.transform.childCount] : null;
+                    
+                    // 帯の MeshRenderer からマテリアルを取り出す
+                    for (int i = 0; i < ribbons.Length; i++)
+                    {
+                        ribbons[i] = fragments[i].GetComponent<MeshRenderer>().material;
+                    }
+
+                    // 中心線の LineRenderer からマテリアルを取り出す
+                    for (int i = 0; i < centerLines.Length; i++)
+                    {
+                        centerLines[i] = fragments[i].GetComponent<LineRenderer>().material;
+                    }
+                }
+                // 中間点がない場合
+                else
+                {
+                    // longNote 自身が帯のオブジェクトになっているはずなので、その MeshRenderer からマテリアルを取り出す
+                    ribbons = new Material[1] { longNote.GetComponent<MeshRenderer>().material };
+                }
             }
 
             /// <summary>
-            /// 各配列に取得したコンポーネントを代入する。
+            /// ロングノーツの押下の状態を、帯と中心線のマテリアルに反映させる。
             /// </summary>
-            /// <param name="parent">親のトランスフォーム（ロングノーツ１まとまり）</param>
-            private void GetComponents(Transform parent)
+            /// <param name="isPressed">押下されているかどうか</param>
+            public void SetIsPressed(bool isPressed)
             {
-                fragmentLongNotes = Enumerable.Range(0, fragmentLongNotes.Length).Select(i => parent.GetChild(i).gameObject).ToArray();
-                longNoteMeshes = Enumerable.Range(0, longNoteMeshes.Capacity).Select(i => fragmentLongNotes[i].GetComponent<MeshRenderer>()).ToList();
-                longNoteLines = longNoteLines != null
-                                ? Enumerable.Range(0, longNoteLines.Capacity).Select(i => fragmentLongNotes[i].GetComponent<LineRenderer>()).ToList()
-                                : null;
+                // 中間点がある場合は帯と中心線の両方すべてに、ない場合は帯のみに反映させる
+                if (hasIntermediate)
+                {
+                    Array.ForEach(ribbons, material => material.SetFloat(_isPressed, isPressed ? 1 : 0));
+                    Array.ForEach(centerLines, line => line.SetFloat(_isPressed, isPressed ? 1 : 0));
+                }
+                else
+                {
+                    ribbons[0].SetFloat(_isPressed, isPressed ? 1 : 0);
+                }
             }
         }
 
@@ -179,25 +213,17 @@ namespace FRONTIER.Game.Notes
         protected sealed override void Start()
         {
             // イベントの登録
-            Pressed += isOn => isPressed = isOn;
+            Pressed += isPressed => this.isPressed = isPressed;
 
-            // TODO: この辺びみょい
-            if (longNoteType == Reference.LongNoteType.DirectLinear || longNoteType == Reference.LongNoteType.DirectCurved)
+            if (part != Reference.LongNotePart.Ribbon)
             {
-                // 中間点がないLノーツの場合、自分のレンダラーを取得してマテリアルを設定する
-                linearTypeLongNoteMesh = GetComponent<MeshRenderer>();
-                Pressed += isOn => linearTypeLongNoteMesh.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn));
+                return;
             }
-            else if (longNoteType == Reference.LongNoteType.IntermediateLinear || longNoteType == Reference.LongNoteType.IntermediateCurved)
-            {
-                // 中間点があるLノーツの場合、各種コンポーネントを取得してマテリアルを設定する
-                curveTypeComponent = new(transform, isIntermediate);
-                Pressed += isOn =>
-                {
-                    curveTypeComponent.longNoteMeshes.ForEach(fragment => fragment.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn)));
-                    curveTypeComponent.longNoteLines.ForEach(centerLine => centerLine.material.SetFloat(ShaderParameter._isPressed, ShaderParameter.SetFlag(isOn)));
-                };
-            }
+            // 以降の設定は、自身が帯であるときにのみ行う
+
+            // 帯の場合はマテリアルの設定を行う
+            ribbonMaterial = new(this, hasIntermediate: isIntermediate);
+            Pressed += ribbonMaterial.SetIsPressed;
 
             // オート時はずっと押された判定になるよう、フラグを固定する
             if (Manager.info.IsAutoPlay)
@@ -215,27 +241,6 @@ namespace FRONTIER.Game.Notes
 
         #region メソッド
 
-        protected override void OnReachedLine()
-        {
-            // 中間点と終点のみ、押されているかつ到達時間に達したときに到達イベントを発火させる
-            if (part is Reference.LongNotePart.Intermediate or Reference.LongNotePart.End)
-            {
-                if (!isReachedLine
-                    // オートプレイの時は isPressed = true で固定なので、オートプレイ時の条件も内包
-                    && isPressed
-                    && Time.time - Manager.startTime >= reachedTime)
-                {
-                    isReachedLine = true;
-                    InvokeReachedLine();
-                }
-            }
-            // 始点は通常ノーツと同じ条件と処理
-            else
-            {
-                base.OnReachedLine();
-            }                
-        }
-
         /// <summary>
         /// ロングノーツが押下されたときに行う処理。
         /// </summary>
@@ -251,20 +256,21 @@ namespace FRONTIER.Game.Notes
             }
         }
 
+        // TODO: 将来の機能追加に使えるかもしれない
         /// <summary>
         /// ロングノーツが押下されているかどうかを毎フレーム監視してメソッド及びイベントを処理する。
         /// </summary>
-        private void Pressing()
+        private void OnPressing()
         {
             // ゲーム中に押されていた時
             if (isPressed && GameManager.Instance.gamePlayState == GameManager.GamePlayState.Playing)
             {
-                OnPressedUpdate?.Invoke(true);
+                Pressing?.Invoke(true);
             }
             // ゲーム中に押されていない時
             else if (!isPressed && GameManager.Instance.gamePlayState == GameManager.GamePlayState.Playing)
             {
-                OnPressedUpdate?.Invoke(false);
+                Pressing?.Invoke(false);
             }
         }
 

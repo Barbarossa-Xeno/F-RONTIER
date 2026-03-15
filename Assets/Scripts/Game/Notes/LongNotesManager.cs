@@ -372,12 +372,11 @@ namespace FRONTIER.Game.Notes
                     continue;
                 }
 
-                foreach (var note in instantiatedNotes[ribbon.ArrivalOrder])
+                // 始点以外のノーツにおいて、帯の入力状況を伝播させるためのイベント登録
+                foreach (var note in instantiatedNotes[ribbon.ArrivalOrder].Skip(1))
                 {
                     ribbon.Pressed += isPressed => note.IsPressed = isPressed;
-                    note.ReachedLine += () => Debug.Log(note);
                 }
-                ribbon.Pressed += isPressed => instantiatedNotes[ribbon.ArrivalOrder].ForEach(note => note.IsPressed = isPressed);
 
                 // レイヤー付与
                 ribbon.gameObject.SetLayerSelfChildren(LayerMask.NameToLayer("LongNoteRibbon"));

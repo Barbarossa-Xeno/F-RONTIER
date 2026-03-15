@@ -75,12 +75,12 @@ namespace FRONTIER.Game.Judgement
 
         #endregion
 
-        #region MonoBehaviorメソッド
-
         void Start()
         {
             if (!Manager.info.IsAutoPlay)
             {
+                #region 通常プレイ時の初期化
+
                 // タップしたときのイベントを登録する
                 Array.ForEach(laneManager.Lanes, lane => lane.TappedEvent += (index, time) => 
                 {
@@ -100,77 +100,92 @@ namespace FRONTIER.Game.Judgement
                     }
                     else
                     {
-                        Debug.LogWarning("ターゲットノーツがリストに存在しません");
+                        Debug.LogWarning($"ターゲットノーツがリストに存在しません: {judgementResult.target}");
+                    }
+                });
+
+                // ロングノーツの中間点、終点ノーツはタップ判定の対象外
+                // 帯が押されている状態で判定線に到達したときに Perfect 判定
+                longNotesManager.Instances
+                .Where(note => note.IsIntermediate)
+                .ToList()
+                .ForEach(note => note.ReachedLine += () =>
+                {
+                    if (note.IsPressed)
+                    {
+                        if (longNotesManager.DeleteNote(note))
+                        {
+                            // スコア計算
+                            scoreManager.Evaluate(JudgementRankLagThresholds.PERFECT);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"ターゲットノーツがリストに存在しません: {note}");
+                        }
+                    }
+                });
+                
+                // 判定線を超過したときのミス判定をすべてのノーツに登録する
+                notesManager.Instances.ForEach(note => note.PassedOverLine += () =>
+                {
+                    if (notesManager.DeleteNote(note))
+                    {
+                        scoreManager.Evaluate(JudgementRankLagThresholds.MISS);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"ターゲットノーツがリストに存在しません: {note}");
+                    }
+                });
+
+                longNotesManager.Instances.ForEach(note => note.PassedOverLine += () => 
+                {
+                    if (longNotesManager.DeleteNote(note))
+                    {
+                        scoreManager.Evaluate(JudgementRankLagThresholds.MISS);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"ターゲットノーツがリストに存在しません: {note}");
+                    }
+                });
+
+                #endregion
+            }
+            else
+            {
+                #region オートプレイ時の初期化
+
+                // 判定線に到達したときの Perfect 判定を登録する
+                notesManager.Instances.ForEach(note => note.ReachedLine += () =>
+                {
+                    if (notesManager.DeleteNote(note))
+                    {
+                    // スコア計算
+                        scoreManager.Evaluate(JudgementRankLagThresholds.PERFECT);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"ターゲットノーツがリストに存在しません: {note}");
+                    }
+                });
+
+                longNotesManager.Instances.ForEach(note => note.ReachedLine += () =>
+                {
+                    if (longNotesManager.DeleteNote(note))
+                    {
+                        // スコア計算
+                        scoreManager.Evaluate(JudgementRankLagThresholds.PERFECT);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"ターゲットノーツがリストに存在しません: {note}");
                     }
                 });
             }
 
-            // ノーツが判定線を越えたときのイベントを登録する
-            notesManager.Instances.ForEach
-            (
-                note =>
-                {
-                    // 通常時
-                    if (!Manager.info.IsAutoPlay)
-                    {
-                        // 判定線を超過して画面の外に出たらミスにする
-                        note.PassedOverLine += () =>
-                        {
-                            int currentNoteIndex = notesManager.Instances.IndexOf(note);
-                            // ノーツをリストから削除
-                            note.gameObject.SetActive(false);
-
-                            notesManager.Instances.RemoveAt(currentNoteIndex);
-
-                            // スコア計算
-                            // ShowScoreStatus(JudgementRank.Miss);
-                            // Manager.score.judgementStatus[JudgementRank.Miss]++;
-                            // Manager.score.combo = 0;
-                        };
-                        note.PassedOverLine += () =>
-                        {
-                            scoreManager.Evaluate(JudgementRankLagThresholds.MISS);
-                        };
-                        
-                        // FIXME: エラーが出るかも
-                        // ロングノーツの判定のイベントを登録する
-                        // longNotesGenerator.ribbons
-                        //     .Select(line => line.GetComponent<LongNote>())
-                        //     .ToList().ForEach
-                        //     (
-                        //         note => note.OnPressedUpdate += isOn => JudgeLongNote(isOn, note.IsIntermediate, note.NoteIndex)
-                        //     );
-                    }
-                    // オート時
-                    else
-                    {
-                        // 判定線あたりでノーツをPerfect判定する
-                        // note.ReachedLineEvent += () => DeleteNote(note.NoteIndex, isAuto: true);
-                        // TODO: 仮の削除処理、これで isAuto: true は必要ないしUpdateもいらない
-                        note.ReachedLine += () =>
-                        {
-                            // ノーツをリストから削除せずに形だけ消す
-                            note.gameObject.SetActive(false);
-
-                            Manager.audios.seManager.Play(SEManager.SE.GreatOrPerfect);
-
-                            // スコア計算
-                            // ShowScoreStatus(JudgementRank.Perfect);
-                            // Manager.score.apparentScoreValue += JudgementRankValues.PERFECT;
-                            // Manager.score.judgementStatus[JudgementRank.Perfect]++;
-                            // Manager.score.combo++;
-                            // Manager.score.CalculateScore();
-                        };
-                        note.ReachedLine += () =>
-                        {
-                            scoreManager.Evaluate(JudgementRankLagThresholds.PERFECT);
-                        };
-                    }
-                }
-            );
+            #endregion
         }
-
-        #endregion
 
         #region メソッド
 
@@ -182,7 +197,11 @@ namespace FRONTIER.Game.Judgement
         /// <returns>ターゲットノーツが見つかったか</returns>
         private bool JudgeNote(int laneIndex, float tapTime)
         {
-            // FIXME: instances しか使わずに済んでしまったので、これをゲッターとして公開されたのを使うようにすれば完璧かも
+            // ゲームプレイ中でなければ判定しない
+            if (Manager.gamePlayState != GameManager.GamePlayState.Playing)
+            {
+                return false;
+            }
 
             // まずは通常ノーツから調べていく
             // そのレーンを流れるノーツの中で直近のを20個くらい調べる
