@@ -38,7 +38,7 @@ namespace FRONTIER.Game.Notes
         /// ノーマルノーツの場合：<c>int</c>型リスト。順にレーン番号を格納<br/>
         /// ロングノーツの場合：<c>List(int)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツのレーン番号を格納
         /// </remarks>
-        public List<TLaneIndexes> laneIndexes = new();
+        [SerializeField] protected List<TLaneIndexes> laneIndexes = new();
 
         /// <summary>
         /// 各ノーツの楽曲が判定線に接触する時間を格納する。
@@ -47,13 +47,13 @@ namespace FRONTIER.Game.Notes
         /// ノーマルノーツの場合：<c>float</c>型リスト。順に時間を格納<br/>
         /// ロングノーツの場合：<c>List(float)</c>型リスト（二次元リスト）。ロングノーツ１まとまり毎にその中間点ノーツの時間を格納
         /// </remarks>
-        public List<TReachedTimes> reachedTimes = new();
+        [SerializeField] protected List<TReachedTimes> reachedTimes = new();
 
         /// <summary>
         /// 各ノーツの種類を <see cref="Reference.NoteType"/> を <c>int</c> に変換した値で格納する。（インスペクタ確認用）
         /// 種類の仕分けに利用する
         /// </summary>
-        public List<Reference.NoteType> types = new();
+        [SerializeField] protected List<Reference.NoteType> types = new();
 
         /// <summary>
         /// 各ノーツを<c>GameObject</c>として生成し、<c>TNote</c>を付与したインスタンスを格納する。
@@ -61,16 +61,24 @@ namespace FRONTIER.Game.Notes
         /// <remarks>
         /// 最終的にこのクラスで生成したノーツが到達時間の降順に格納されるようにする。
         /// </remarks>
-        public List<TNote> instances = new();
+        protected List<TNote> instances = new();
 
         #endregion
 
         #region プロパティ
 
         /// <summary>
+        /// 各ノーツを<c>GameObject</c>として生成し、<c>TNote</c>を付与したインスタンスを格納する。
+        /// </summary>
+        /// <remarks>
+        /// 最終的にこのクラスで生成したノーツが到達時間の降順に格納されるようにする。
+        /// </remarks>
+        public List<TNote> Instances => instances;
+
+        /// <summary>
         /// ゲームの準備に際して必要な情報。
         /// </summary>
-        public GameManager.PlayInfo PlayInfo => Manager.info;
+        protected GameManager.PlayInfo PlayInfo => Manager.info;
 
         #endregion
 

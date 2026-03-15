@@ -86,18 +86,18 @@ namespace FRONTIER.Game.Notes
                         longNoteReachedTimes.Add(_reachedTime);
                         longNoteLaneIndexes.Add(patternData.notes[i].notes[j].block);
 
-                        longNotesGenerator.types.Add((Reference.NoteType)patternData.notes[i].type);
+                        longNotesGenerator.AddToTypes((Reference.NoteType)patternData.notes[i].type);
                     }
 
                     // 始点・終点以外にいくつかの中間点が存在するノーツは生成時に処理を分岐させたい
                     // そこで、中間点の数を格納するリストを生成側の LongNotesGenerator に作成しておく
                     // notes[i].notes の長さから1引くと中間点の数になる（終点を除外している。）
                     longNotesGenerator.intermediateNotesCounts.Add(patternData.notes[i].notes.Length - 1);
-                    longNotesGenerator.types.Add((Reference.NoteType)patternData.notes[i].type);
+                    longNotesGenerator.AddToTypes((Reference.NoteType)patternData.notes[i].type);
 
                     // 各リストへの追加
-                    longNotesGenerator.reachedTimes.Add(longNoteReachedTimes);
-                    longNotesGenerator.laneIndexes.Add(longNoteLaneIndexes);
+                    longNotesGenerator.AddToReachedTimes(longNoteReachedTimes);
+                    longNotesGenerator.AddToLaneIndexes(longNoteLaneIndexes);
 
                     // ノーツ総数に追加
                     notesCount += patternData.notes[i].notes.Length;

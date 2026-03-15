@@ -562,5 +562,24 @@ namespace FRONTIER.Game.Notes
         }
 
         #endregion
+
+        #region NotesManagerから触るためのAPI
+
+        public void AddToLaneIndexes(List<int> laneIndex)
+        {
+            laneIndexes.Add(laneIndex);
+        }
+
+        public void AddToReachedTimes(List<float> reachedTime)
+        {
+            reachedTimes.Add(reachedTime);
+        }
+
+        public void AddToTypes(NoteType type)
+        {
+            types.Add(type);
+        }
+
+        #endregion
     }
 }
