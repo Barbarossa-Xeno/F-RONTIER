@@ -272,11 +272,11 @@ namespace FRONTIER.Game.Notes
                         Vector3[] linePositions = new Vector3[2] { start, end };
 
                         // ribbon に中心線描画のための LineRenderer を追加
-                        LineRenderer lineRenderer = ribbon.gameObject.AddComponent<LineRenderer>();
-                        lineRenderer.SetPositions(linePositions);
-                        lineRenderer.startWidth = lineRenderer.endWidth = 0.1f;
-                        lineRenderer.material = ribbonMaterials.line;
-                        lineRenderer.useWorldSpace = false;
+                        LineRenderer centerLine = ribbon.gameObject.AddComponent<LineRenderer>();
+                        centerLine.SetPositions(linePositions);
+                        centerLine.startWidth = centerLine.endWidth = 0.1f;
+                        centerLine.material = ribbonMaterials.line;
+                        centerLine.useWorldSpace = false;
 
                         target.GetComponent<MeshRenderer>().material = ribbonMaterials.intermediate;
                         target.transform.SetParent(ribbon.transform);
@@ -304,13 +304,13 @@ namespace FRONTIER.Game.Notes
                             ReprintTexture(ribbon.gameObject, split, LongNoteType.IntermediateCurved);
 
                             // ribbon に中心線描画のための LineRenderer を追加
-                            LineRenderer lineRenderer = ribbon.gameObject.AddComponent<LineRenderer>();
-                            lineRenderer.positionCount = anchors.Length;
-                            lineRenderer.widthMultiplier = 0.1f;
-                            lineRenderer.SetPositions(anchors);
-                            lineRenderer.useWorldSpace = false;
+                            LineRenderer centerLine = ribbon.gameObject.AddComponent<LineRenderer>();
+                            centerLine.positionCount = anchors.Length;
+                            centerLine.widthMultiplier = 0.1f;
+                            centerLine.SetPositions(anchors);
+                            centerLine.useWorldSpace = false;
 
-                            lineRenderer.material = ribbonMaterials.line;
+                            centerLine.material = ribbonMaterials.line;
                             target.transform.SetParent(ribbon.transform);
                         }
                         break;
