@@ -386,26 +386,27 @@ namespace FRONTIER.Game.Notes
 
             // 1つしかないLノーツインデックスをもつメッシュの配列たち
             // 新しいリストは順番で代入できるように一旦配列で確保
-            LongNote[] newMeshes = new LongNote[maxNumberOfLongNotes + 1];
+            LongNote[] newRibbons = new LongNote[maxNumberOfLongNotes + 1];
 
             // 新しいリスト（配列）に、Lノーツインデックス順にメッシュを追加。
             // duplicateIndexes と uniqueIndexes は互いに重複しない実際のLノーツインデックスなので、直接キーとして代入できる
             for (int i = 0; i < duplicateIndexes.Length; i++)
             {
-                newMeshes[duplicateIndexes[i]] = parents[i].GetComponent<LongNote>();
+                newRibbons[duplicateIndexes[i]] = parents[i].GetComponent<LongNote>();
             }
 
             for (int i = 0; i < uniqueIndexes.Length; i++)
             {
-                newMeshes[uniqueIndexes[i].Note] = ribbons[uniqueIndexes[i].OnRibbons];
+                newRibbons[uniqueIndexes[i].Note] = ribbons[uniqueIndexes[i].OnRibbons];
             }
 
             // 新しいリストへ変更を反映する
             ribbons.Clear();
-            ribbons = newMeshes.ToList();
+            ribbons = newRibbons.Where(ribbon => ribbon != null).ToList();
 
             // 共通の親にまとめる
             // FIXME: ribbon が ぬるりになるときがあるよう
+            // ロングノーツが単独で存在してしまっているらしい。この場合譜面データの作り方に問題がある
             ribbons.ForEach(ribbon => ribbon.transform.SetParent(instanceParent));
         }
 
