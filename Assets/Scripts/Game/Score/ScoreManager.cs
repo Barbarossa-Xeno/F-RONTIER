@@ -4,7 +4,7 @@ using FRONTIER.Utility;
 using TMPro;
 using static FRONTIER.Utility.Reference;
 
-namespace FRONTIER.Game
+namespace FRONTIER.Game.Score
 {
     /// <summary>
     /// スコアを計算し、ゲーム中のUIにスコアを表示する。

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using FRONTIER.Game.Notes;
-using FRONTIER.Game.Judgement;
+using FRONTIER.Game.Score;
 using FRONTIER.Audio;
 using FRONTIER.Utility;
 using static FRONTIER.Utility.Reference;

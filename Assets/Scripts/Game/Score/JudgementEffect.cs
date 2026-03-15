@@ -1,7 +1,7 @@
 using UnityEngine;
 using JudgementRank = FRONTIER.Utility.Reference.JudgementRank;
 
-namespace FRONTIER.Game
+namespace FRONTIER.Game.Score
 {
     /// <summary>
     /// 判定エフェクトを制御するクラス。
