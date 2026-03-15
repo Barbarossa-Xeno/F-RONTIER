@@ -28,7 +28,7 @@ namespace FRONTIER.Menu.Window
         /// <summary>
         /// 親の幅や高さを取得する。
         /// </summary>
-        protected static ParentRect parentRect;
+        protected static WindowRectSize parentRect;
 
         /// <summary>
         /// キャンバスの大きさ。
@@ -59,9 +59,13 @@ namespace FRONTIER.Menu.Window
         #region クラス
 
         /// <summary>
-        /// 親（このクラス(<see cref = "WindowBorder"/>)からすると自分だが）の幅や高さ、トランスフォームを保持するクラス。
+        /// このクラス（コンポーネント）の幅や高さを保持するクラス。
         /// </summary>
-        protected class ParentRect
+        /// <remarks>
+        /// <b>アタッチするコンポーネントの Transform の Anchor 構成に強く依存する。</b>
+        /// そのため、常に親の Transform に対して相対的な値で扱えるようにする。 
+        /// </remarks> 
+        protected class WindowRectSize
         {
             /// <summary>
             /// Canvasに対するメニューウィンドウの幅
@@ -76,7 +80,17 @@ namespace FRONTIER.Menu.Window
             /// <summary>
             /// Canvasに対するメニューウィンドウの幅の割合
             /// </summary>
-            public float widthToParent;
+            public float parentWidthRatio;
+            
+            public WindowRectSize(WindowBorder windowBorder)
+            {
+                CanvasScaler rootCanvasScaler = windowBorder.transform.root.GetComponent<CanvasScaler>();
+                RectTransform rectTransform = windowBorder.transform.GetComponent<RectTransform>();
+
+                width = rootCanvasScaler.referenceResolution.x * rectTransform.anchorMin.x;
+                height = rootCanvasScaler.referenceResolution.y * rectTransform.anchorMax.y;
+                parentWidthRatio = rectTransform.anchorMin.x;
+            }
         }
 
         #endregion
@@ -103,12 +117,7 @@ namespace FRONTIER.Menu.Window
         public virtual void Initialize()
         {
             canvasSize = CanvasSize;
-            parentRect = new()
-            {
-                width = transform.root.GetComponent<CanvasScaler>().referenceResolution.x * transform.GetComponent<RectTransform>().anchorMin.x,
-                height = transform.root.GetComponent<CanvasScaler>().referenceResolution.y * transform.GetComponent<RectTransform>().anchorMax.y,
-                widthToParent = GetComponent<RectTransform>().anchorMin.x
-            };
+            parentRect = new WindowRectSize(this);
 
             InitializeEvents?.Invoke();
         }
@@ -122,7 +131,7 @@ namespace FRONTIER.Menu.Window
         /// <summary>
         /// オブジェクトのスケールを変更する。（画面の高さが変わった時に）
         /// </summary>
-        public virtual void ReScaleObject() { }
+        public virtual void RescaleObject() { }
 
         #endregion
     }

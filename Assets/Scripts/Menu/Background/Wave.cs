@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using FRONTIER.Utility;
 using FRONTIER.Utility.Development;

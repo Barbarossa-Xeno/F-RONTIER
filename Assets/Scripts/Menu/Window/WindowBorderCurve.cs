@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using FRONTIER.Utility;
 using FRONTIER.Utility.Easing;
 using System;
@@ -18,7 +18,7 @@ namespace FRONTIER.Menu.Window
         /// <summary>
         /// 曲線を描く領域を取得する。
         /// </summary>
-        private CurvePosition curvePosition = null;
+        private CurveRectSize curveRectSize = null;
 
         /// <summary>
         /// グラデーション
@@ -28,7 +28,7 @@ namespace FRONTIER.Menu.Window
         /// <summary>
         /// グラデーションの変化速度。
         /// </summary>
-        [SerializeField][Range(0.1f, 1f)] private float gradientChangeSpeed;
+        [SerializeField, Range(0.1f, 1f)] private float gradientChangeSpeed;
 
         /// <summary>
         /// 曲線の幅。
@@ -38,7 +38,7 @@ namespace FRONTIER.Menu.Window
         /// <summary>
         /// 曲線の精密さの値。
         /// </summary>
-        [SerializeField][Header("曲線の精密さ")] private int curveDetailed;
+        [SerializeField, Header("曲線の精密さ")] private int curveDetailed;
 
         /// <summary>
         /// グラデーションのオプションを適用するために、値を書き込むインスタンス。
@@ -51,20 +51,16 @@ namespace FRONTIER.Menu.Window
         [SerializeField] private GradientColor gradientColor = default;
 
         /// <summary>
-        /// 自分のRectTransform。
-        /// </summary>
-        private RectTransform rectTransform => this.transform.GetComponent<RectTransform>();
-
-        /// <summary>
         /// 曲線を描くエリア（曲線の各点の位置を計算するための最大幅・高さ）を保持するクラス。
         /// </summary>
-        private class CurvePosition : ParentRect
+        private class CurveRectSize : WindowRectSize
         {
             public float maxWidth;
             public float maxHeight;
-            public CurvePosition(float widthFactor)
+            public CurveRectSize(WindowBorderCurve windowBorderCurve) : base(windowBorderCurve)
             {
-                // 最大幅は親の幅に対してある割合 =>  ある割合は、このゲームオブジェクトのRectTransformに指定されている AnchorMax の xの値
+                // 最大幅は親の幅に対してこのゲームオブジェクトの RectTransform に指定されている AnchorMax.x を掛けた値
+                float widthFactor = windowBorderCurve.GetComponent<RectTransform>().anchorMax.x;
                 this.maxWidth = parentRect.width * widthFactor;
                 this.maxHeight = parentRect.height;
             }
@@ -154,7 +150,7 @@ namespace FRONTIER.Menu.Window
         }
 
         /// <summary>
-        /// ボーダーのグラデーションを動かす。
+        /// ボーダーのグラデーションを EaseInOutSine で動かす。
         /// </summary>
         /// <param name="time">経過時間</param>
         private void MoveGradient(float time)
@@ -200,7 +196,7 @@ namespace FRONTIER.Menu.Window
             {
                 // トランスフォームを計算する
                 origin = new(parentRect.width / 2, parentRect.height / 2);
-                curvePosition = new(rectTransform.anchorMax.x);
+                curveRectSize = new(this);
             }
             catch (NullReferenceException)
             {
@@ -215,7 +211,7 @@ namespace FRONTIER.Menu.Window
             SetCurve(curveLocalPositions);
         }
 
-        public override void ReScaleObject()
+        public override void RescaleObject()
         {
             transform.localScale = new(1, canvasSize.y / parentRect.height, 1);
         }
@@ -228,9 +224,9 @@ namespace FRONTIER.Menu.Window
         /// <returns>曲線の点の配列</returns>
         private Vector3[] GenerateCurve(int split)
         {
-            Vector3 start = new(0, curvePosition.maxHeight * CURVE_HEIGHT_SCALE / 2, 0);
-            Vector3 control = new(curvePosition.maxWidth * 2, 0, 0);
-            Vector3 end = new(0, curvePosition.maxHeight * CURVE_HEIGHT_SCALE / -2, 0); ;
+            Vector3 start = new(0, curveRectSize.maxHeight * CURVE_HEIGHT_SCALE / 2, 0);
+            Vector3 control = new(curveRectSize.maxWidth * 2, 0, 0);
+            Vector3 end = new(0, curveRectSize.maxHeight * CURVE_HEIGHT_SCALE / -2, 0); ;
 
             // 点の数は分割数より1大きい（当然）
             Vector3[] v = new Vector3[split + 1];

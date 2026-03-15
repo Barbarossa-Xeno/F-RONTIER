@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using FRONTIER.Utility.Mesh;
 using static FRONTIER.Utility.Reference;
 
 namespace FRONTIER.Game.Notes
@@ -114,15 +115,19 @@ namespace FRONTIER.Game.Notes
                 target = ribbon.gameObject;
             }
             // MeshFilter のパラメータ
-            MeshFilterParameters filterParams = new()
+            FilterParameters filterParams = new()
             {
+                // 1面あたり4頂点 x 6面
                 vertices = new Vector3[4 * 6],
+
+                // 1面辺り2三角形（=6頂点） x 6面
                 triangles = new int[6 * 6],
+                
                 uvs = new Vector2[4 * 6]
             };
 
             // MeshColliderのパラメータ
-            MeshColliderParameters colliderParams = new()
+            ColliderParameters colliderParams = new()
             {
                 vertices = new Vector3[4 * 6],
                 triangles = new int[6 * 6]

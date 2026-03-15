@@ -1,5 +1,6 @@
-using FRONTIER.Utility;
 using UnityEngine;
+using FRONTIER.Utility;
+using FRONTIER.Utility.Mesh;
 
 namespace FRONTIER.Menu.Window
 {
@@ -12,59 +13,24 @@ namespace FRONTIER.Menu.Window
         #region フィールド
 
         /// <summary>
-        /// 使用するレンダラー。
+        /// 使用するメッシュレンダラー。
         /// </summary>
         [SerializeField] private MeshRenderer meshRenderer;
 
         /// <summary>
-        /// 使用するフィルター。
+        /// 使用するメッシュフィルター。
         /// </summary>
         [SerializeField] private MeshFilter meshFilter;
 
         /// <summary>
-        /// 生成するメッシュ。
+        /// 生成する背景メッシュ。
         /// </summary>
-        private Mesh backMesh;
+        private Mesh backgroundMesh;
 
         /// <summary>
-        /// 生成するメッシュのプロパティ。
+        /// 生成する背景メッシュのプロパティ。
         /// </summary>
-        private BackMeshPropaties backMeshProp;
-
-        #endregion
-
-        #region プロパティ
-
-        /// <summary>
-        /// メッシュのマテリアルを変更するためのプロパティ。
-        /// </summary>
-        public Material BackMeshColor
-        {
-            get => meshRenderer.material;
-            private set => meshRenderer.material = value;
-        }
-
-        #endregion
-
-        #region クラス
-
-        /// <summary>
-        /// メッシュにプロパティを適用するためのクラス。
-        /// </summary>
-        private class BackMeshPropaties
-        {
-            public Vector3[] vertices;
-
-            public Vector2[] uvs;
-
-            public int[] triangles;
-
-            public BackMeshPropaties(int verticesCount)
-            {
-                vertices = new Vector3[verticesCount + 1];
-                triangles = new int[verticesCount * 3];
-            }
-        }
+        private FilterParameters backgroundMeshParams;
 
         #endregion
 
@@ -85,7 +51,7 @@ namespace FRONTIER.Menu.Window
             SetMesh();
         }
 
-        public override void ReScaleObject()
+        public override void RescaleObject()
         {
             transform.localScale = new(1, canvasSize.y / parentRect.height, 1);
         }
@@ -96,15 +62,16 @@ namespace FRONTIER.Menu.Window
             // ブラー背景には、元々のRGBを1.4で割ったものを適用すると外見が元々の色に程近くなる
             static Color32 FixColorForBlur(Color32 color)
             {
-                return new(
-                            r:(byte)((float)color.r / 1.4f), 
-                            g:(byte)((float)color.g / 1.4f), 
-                            b:(byte)((float)color.b / 1.4f), 
-                            a:255
-                          );
+                return new
+                (
+                    r: (byte)((float)color.r / 1.4f), 
+                    g: (byte)((float)color.g / 1.4f), 
+                    b: (byte)((float)color.b / 1.4f), 
+                    a: 255
+                );
             }
             
-            BackMeshColor.SetColor("_Color", FixColorForBlur(MenuInfo.menuInfo.FromDifficulty(difficulty).Item2));
+            meshRenderer.material.SetColor("_Color", FixColorForBlur(MenuInfo.menuInfo.FromDifficulty(difficulty).Item2));
         }
 
         #endregion
@@ -117,46 +84,74 @@ namespace FRONTIER.Menu.Window
         private void GenerateMesh()
         {
             // メッシュとその設定のインスタンスを作成
-            backMesh = new();
-            backMeshProp = new(curveLocalPositions.Length + 2);
-            // メッシュ生成
-            CalculateMesh();
-        }
+            backgroundMesh = new();
 
-        /// <summary>
-        /// 曲線に合わせたメッシュを計算して生成する。
-        /// </summary>
-        private void CalculateMesh()
-        {
-            //端の頂点の座標（左上と左下は使わないけど）
+            // 背景メッシュの周りの頂点の数
+            // 曲線 (BorderCurve) の点の数 + 右端の頂点の数（右上と右下）
+            int borderVerticesCount = curveLocalPositions.Length + 2;
+
+            backgroundMeshParams = new()
+            {
+                // +1 は、メッシュの中心点を追加するため
+                vertices = new Vector3[borderVerticesCount + 1],
+
+                // ポリゴンはメッシュの中心点と、メッシュ周りの各点を結んで作る
+                // 周りの頂点の数の分だけ三角形ができるので、3倍する
+                triangles = new int[borderVerticesCount * 3]
+            };
+
+            // 端の頂点の座標（左上と左下は使わないけど）
             Vector3 topLeft, bottomLeft, topRight, bottomRight;
-            // カウンタ変数
-            int j = 0;
 
             // 端の頂点の座標を指定
             topLeft = curveLocalPositions[0];
             bottomLeft = curveLocalPositions[^1];
-            float rootWidth = parentRect.width / parentRect.widthToParent;
-            topRight = new(parentRect.width + rootWidth * ((1 - parentRect.widthToParent) - parentRect.widthToParent), topLeft.y);
-            bottomRight = new(parentRect.width + rootWidth * ((1 - parentRect.widthToParent) - parentRect.widthToParent), -topLeft.y);
+            float rootWidth = parentRect.width / parentRect.parentWidthRatio;
+            topRight = new(parentRect.width + rootWidth * ((1 - parentRect.parentWidthRatio) - parentRect.parentWidthRatio), topLeft.y);
+            bottomRight = new(parentRect.width + rootWidth * ((1 - parentRect.parentWidthRatio) - parentRect.parentWidthRatio), -topLeft.y);
 
-            // メッシュの中心となる基準点を設定（曲線を描画するときに、画面領域よりも少し大きく描画しているので、基準点の高さもそれに依存する）
-            backMeshProp.vertices[0] = new(origin.x, topLeft.y / 2);
+            // 頂点の座標を指定するためのループ
+            for (int i = 0; i < backgroundMeshParams.vertices.Length; i++)
+            {
+                // 先頭: 中心点
+                if (i == 0)
+                {
+                    // 曲線を描画するときに少し大きく描画しているため、中心点の高さもそれに依存する
+                    backgroundMeshParams.vertices[i] = new(origin.x, topLeft.y / 2);
+                }
+                // 中間 (1 ~ curveLocalPositions.Length (= vertices.Length - 3)): 曲線の点
+                else if (i <= curveLocalPositions.Length)
+                {
+                    backgroundMeshParams.vertices[i] = curveLocalPositions[i - 1];
+                }
+                // 末尾1つ前: 右下
+                else if (i == backgroundMeshParams.vertices.Length - 2)
+                {
+                    backgroundMeshParams.vertices[i] = bottomRight;
+                }
+                // 末尾: 右上
+                else
+                {
+                    backgroundMeshParams.vertices[i] = topRight;
+                }
+            }
 
-            // 曲線のローカル座標を参照してメッシュの各頂点を指定
-            for (j = 1; j <= curveLocalPositions.Length; j++) { backMeshProp.vertices[j] = curveLocalPositions[j - 1]; }
-
-            // 頂点の最後の２つの要素は右下と右上
-            backMeshProp.vertices[j] = bottomRight;
-            backMeshProp.vertices[j + 1] = topRight;
-            CorrectVerticePositions(topRight.x);
+            // ローカル座標からメッシュの位置を補正する
+            for (int i = 0; i < backgroundMeshParams.vertices.Length; i++)
+            {
+                // 全頂点のx座標を、メッシュの横幅の半分だけマイナス方向（左向き）にずらして補正する
+                // （つまり、中心点をローカル座標の原点にする操作）
+                // curveLocalPositionsは、一番左端が0になっているので、
+                // 右端のローカルX座標はメッシュの横幅に相当する
+                backgroundMeshParams.vertices[i] -= new Vector3(topRight.x / 2, 0);
+            }
 
             // インデックスの適用
-            for (int k = 0, l = -1; k < backMeshProp.triangles.Length; k += 3, l += 2)
+            for (int k = 0, l = -1; k < backgroundMeshParams.triangles.Length; k += 3, l += 2)
             {
-                backMeshProp.triangles[k] = 0;
-                backMeshProp.triangles[k + 1] = (k + 1) - l == backMeshProp.vertices.Length ? 1 : (k + 1) - l;
-                backMeshProp.triangles[k + 2] = (k + 1) - l - 1;
+                backgroundMeshParams.triangles[k] = 0;
+                backgroundMeshParams.triangles[k + 1] = (k + 1) - l == backgroundMeshParams.vertices.Length ? 1 : (k + 1) - l;
+                backgroundMeshParams.triangles[k + 2] = (k + 1) - l - 1;
             }
         }
 
@@ -165,40 +160,41 @@ namespace FRONTIER.Menu.Window
         /// </summary>
         private void SetMesh()
         {
-            backMesh.vertices = backMeshProp.vertices;
-            backMesh.triangles = backMeshProp.triangles;
-            backMesh.RecalculateNormals();
+            backgroundMesh.vertices = backgroundMeshParams.vertices;
+            backgroundMesh.triangles = backgroundMeshParams.triangles;
+            backgroundMesh.RecalculateNormals();
 
-            meshFilter.mesh = backMesh;
+            meshFilter.mesh = backgroundMesh;
         }
 
         /// <summary>
         /// メッシュの頂点（<see cref="backMeshProp.vertices"/> ）の値を補正する。
         /// </summary>
         /// <param name="meshWidth">メッシュの横幅</param>
-        private void CorrectVerticePositions(float meshWidth)
+        private void CorrectVertexPositions(float meshWidth)
         {
-            for (int i = 0; i < backMeshProp.vertices.Length; i++)
+            for (int i = 0; i < backgroundMeshParams.vertices.Length; i++)
             {
                 // 全頂点のx座標を、メッシュの横幅の半分だけマイナス方向（左向き）にずらす
-                backMeshProp.vertices[i] -= new Vector3(meshWidth / 2, 0);
+                backgroundMeshParams.vertices[i] -= new Vector3(meshWidth / 2, 0);
             }
         }
 
         /// <summary>
         /// ブラー係数を調整する。
         /// </summary>
+        // インスペクタから自身の Initialize Events に登録
         public void SetBlurFactor()
         {
-            // スマホでブラー処理がとても重かったので、スマホではブラーしない（自棄）
+            // スマホでブラー処理がとても重かったので、スマホではブラーを軽くする
 
             #if UNITY_EDITOR || UNITY_STANDALONE_WIN
 
-            BackMeshColor.SetFloat("_Blur", 100f);
+            meshRenderer.material.SetFloat("_Blur", 100f);
 
             #elif UNITY_ANDROID
 
-            BackMeshColor.SetFloat("_Blur", 0);
+            meshRenderer.material.SetFloat("_Blur", 10f);
 
             #endif
         }
