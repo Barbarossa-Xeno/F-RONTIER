@@ -100,7 +100,7 @@ namespace FRONTIER.Utility
         /// </summary>
         public enum DifficultyRank
         {
-            Lite, Hard, Ecstasy, Restricted
+            Lite, Heavy, Vivid, Beyond
         }
 
         /// <summary>
@@ -160,9 +160,9 @@ namespace FRONTIER.Utility
         public static class DifficultyValues
         {
             public const string LITE = "LITE";
-            public const string HARD = "HARD";
-            public const string ECSTASY = "ECSTASY";
-            public const string RESTRICTED = "RESTRICTED";
+            public const string HEAVY = "HEAVY";
+            public const string VIVID = "VIVID";
+            public const string BEYOND = "BEYOND";
 
             /// <summary>
             /// 各難易度に対応したイメージカラー。
@@ -170,9 +170,9 @@ namespace FRONTIER.Utility
             public readonly struct Colors
             {
                 public static readonly Color32 Lite = new(76, 199, 255, 255);
-                public static readonly Color32 Hard = new(255, 157, 13, 255);
-                public static readonly Color32 Ecstasy = new(254, 101, 205, 255);
-                public static readonly Color32 Restricted = new(238, 39, 55, 255);
+                public static readonly Color32 Heavy = new(255, 157, 13, 255);
+                public static readonly Color32 Vivid = new(254, 101, 205, 255);
+                public static readonly Color32 Beyond = new(238, 39, 55, 255);
             }
         }
 

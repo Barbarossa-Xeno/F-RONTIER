@@ -31,7 +31,7 @@ namespace FRONTIER.Title
                 // 透明度
                 float alpha = 0;
                 // 変化させるカラー
-                Color changingColor = Reference.DifficultyValues.Colors.Restricted;
+                Color changingColor = Reference.DifficultyValues.Colors.Beyond;
                 // 周期カウント
                 int periodCount = 0;
 
@@ -72,11 +72,11 @@ namespace FRONTIER.Title
                     // 剰余で色を決定する
                     changingColor = (periodCount % 4) switch
                             {
-                                0 => Reference.DifficultyValues.Colors.Restricted,
-                                1 => Reference.DifficultyValues.Colors.Ecstasy,
-                                2 => Reference.DifficultyValues.Colors.Hard,
+                                0 => Reference.DifficultyValues.Colors.Beyond,
+                                1 => Reference.DifficultyValues.Colors.Vivid,
+                                2 => Reference.DifficultyValues.Colors.Heavy,
                                 3 => Reference.DifficultyValues.Colors.Lite,
-                                _ => Reference.DifficultyValues.Colors.Restricted
+                                _ => Reference.DifficultyValues.Colors.Beyond
                             };
                     
                     // 色を変える

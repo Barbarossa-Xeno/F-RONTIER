@@ -55,9 +55,9 @@ namespace FRONTIER
             return difficulty switch
             {
                 DifficultyRank.Lite => (DifficultyValues.LITE, DifficultyValues.Colors.Lite),
-                DifficultyRank.Hard => (DifficultyValues.HARD, DifficultyValues.Colors.Hard),
-                DifficultyRank.Ecstasy => (DifficultyValues.ECSTASY, DifficultyValues.Colors.Ecstasy),
-                DifficultyRank.Restricted => (DifficultyValues.RESTRICTED, DifficultyValues.Colors.Restricted),
+                DifficultyRank.Heavy => (DifficultyValues.HEAVY, DifficultyValues.Colors.Heavy),
+                DifficultyRank.Vivid => (DifficultyValues.VIVID, DifficultyValues.Colors.Vivid),
+                DifficultyRank.Beyond => (DifficultyValues.BEYOND, DifficultyValues.Colors.Beyond),
                 _ => ("", Color.white)
             };
         }

@@ -94,14 +94,14 @@ namespace FancyScrollView.FRONTIER
                 case Reference.DifficultyRank.Lite:
                     level = levelCollection.lite;
                     break;
-                case Reference.DifficultyRank.Hard:
-                    level = levelCollection.hard;
+                case Reference.DifficultyRank.Heavy:
+                    level = levelCollection.heavy;
                     break;
-                case Reference.DifficultyRank.Ecstasy:
-                    level = levelCollection.ecstacy;
+                case Reference.DifficultyRank.Vivid:
+                    level = levelCollection.vivid;
                     break;
-                case Reference.DifficultyRank.Restricted:
-                    level = levelCollection.restricted;
+                case Reference.DifficultyRank.Beyond:
+                    level = levelCollection.beyond;
                     break;
             }
             return level;

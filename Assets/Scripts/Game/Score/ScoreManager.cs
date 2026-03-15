@@ -219,7 +219,7 @@ namespace FRONTIER.Game.Score
             }
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.B)
             {
-                scoreRankTexts.b.color = Reference.DifficultyValues.Colors.Hard;
+                scoreRankTexts.b.color = Reference.DifficultyValues.Colors.Heavy;
                 scoreRankTexts.b.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.B;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
@@ -229,7 +229,7 @@ namespace FRONTIER.Game.Score
             }
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.A)
             {
-                scoreRankTexts.a.color = Reference.DifficultyValues.Colors.Ecstasy;
+                scoreRankTexts.a.color = Reference.DifficultyValues.Colors.Vivid;
                 scoreRankTexts.a.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.A;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)
@@ -239,7 +239,7 @@ namespace FRONTIER.Game.Score
             }
             if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.S)
             {
-                scoreRankTexts.s.color = Reference.DifficultyValues.Colors.Restricted;
+                scoreRankTexts.s.color = Reference.DifficultyValues.Colors.Beyond;
                 scoreRankTexts.s.outlineColor = new(255, 255, 255, 255);
                 Manager.score.clearRank = Reference.ClearRank.S;
                 if (Manager.score.ScoreValue >= Reference.ClearRankThresholds.C_PLUS)

@@ -48,7 +48,7 @@ namespace FRONTIER.Menu.Window
         /// <summary>
         /// カバー画像とアチーブメントの表示部分。
         /// </summary>
-        [SerializeField] private CoverAndAchivement coverAndAchivement;
+        [SerializeField] private CoverAndAchievement coverAndAchievement;
 
         /// <summary>
         /// 設定ボタンやスタートボタン。
@@ -74,14 +74,14 @@ namespace FRONTIER.Menu.Window
         }
 
         [Serializable]
-        private class CoverAndAchivement
+        private class CoverAndAchievement
         {
             public Image cover;
             public Image clearRank;
             public TextMeshProUGUI highScore;
             public TextMeshProUGUI maxCombo;
-            public CanvasGroup fullComboAchivement;
-            public CanvasGroup allPerfectAchivement;
+            public CanvasGroup fullComboAchievement;
+            public CanvasGroup allPerfectAchievement;
             public Sprites sprites;
 
             [Serializable]
@@ -150,8 +150,13 @@ namespace FRONTIER.Menu.Window
             OnDifficultyChanged(MenuInfo.menuInfo.Difficulty);
 
             buttons.setting.onClick.AddListener(settingWindowManager.Open);
-            buttons.start.onClick.AddListener
-            (() => { if (MenuInfo.menuInfo.Level != "0") GameManager.Instance.scene.game.Invoke(); });
+            buttons.start.onClick.AddListener(() => 
+            {
+                if (MenuInfo.menuInfo.Level != "0")
+                {
+                    GameManager.Instance.scene.game.Invoke(); 
+                }
+            });
             buttons.mv.OnToggleChanged += isOn => MenuInfo.menuInfo.IsMV = isOn;
             buttons.auto.OnToggleChanged += isOn => MenuInfo.menuInfo.IsAutoPlay = isOn;
             buttons.mv.IsOn = MenuInfo.menuInfo.IsMV;
@@ -172,14 +177,14 @@ namespace FRONTIER.Menu.Window
             song.artist.Text = MenuInfo.menuInfo.Artist;
 
             // アチーブメントウィンドウの更新
-            coverAndAchivement.cover.sprite = MenuInfo.menuInfo.Cover;
+            coverAndAchievement.cover.sprite = MenuInfo.menuInfo.Cover;
             var data = SongSaveData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(MenuInfo.menuInfo.Difficulty);
-            coverAndAchivement.clearRank.sprite = coverAndAchivement.sprites.RankToSprite
+            coverAndAchievement.clearRank.sprite = coverAndAchievement.sprites.RankToSprite
                 (data.highRank != null ? Enum.Parse<Reference.ClearRank>(data.highRank) : Reference.ClearRank.NoData);
-            coverAndAchivement.highScore.text = $"{data.highScore}";
-            coverAndAchivement.maxCombo.text = $"{data.highCombo}";
-            coverAndAchivement.fullComboAchivement.alpha = data.fullCombo ? 1 : 0;
-            coverAndAchivement.allPerfectAchivement.alpha = data.allPerfect ? 1 : 0;
+            coverAndAchievement.highScore.text = $"{data.highScore}";
+            coverAndAchievement.maxCombo.text = $"{data.highCombo}";
+            coverAndAchievement.fullComboAchievement.alpha = data.fullCombo ? 1 : 0;
+            coverAndAchievement.allPerfectAchievement.alpha = data.allPerfect ? 1 : 0;
         }
 
         public void OnDifficultyChanged(int difficulty) => OnDifficultyChanged((Reference.DifficultyRank)difficulty);
@@ -197,12 +202,12 @@ namespace FRONTIER.Menu.Window
 
             // アチーブメントウィンドウの更新
             var data = SongSaveData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(difficulty);
-            coverAndAchivement.clearRank.sprite = coverAndAchivement.sprites.RankToSprite
+            coverAndAchievement.clearRank.sprite = coverAndAchievement.sprites.RankToSprite
                 (data.highRank != null ? Enum.Parse<Reference.ClearRank>(data.highRank) : Reference.ClearRank.NoData);
-            coverAndAchivement.highScore.text = $"{data.highScore}";
-            coverAndAchivement.maxCombo.text = $"{data.highCombo}";
-            coverAndAchivement.fullComboAchivement.alpha = data.fullCombo ? 1 : 0;
-            coverAndAchivement.allPerfectAchivement.alpha = data.allPerfect ? 1 : 0;
+            coverAndAchievement.highScore.text = $"{data.highScore}";
+            coverAndAchievement.maxCombo.text = $"{data.highCombo}";
+            coverAndAchievement.fullComboAchievement.alpha = data.fullCombo ? 1 : 0;
+            coverAndAchievement.allPerfectAchievement.alpha = data.allPerfect ? 1 : 0;
         }
 
         #endregion

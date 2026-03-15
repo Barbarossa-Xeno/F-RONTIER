@@ -19,7 +19,7 @@ namespace FRONTIER.Save
         /// </summary>
         protected static class DataMode
         {
-            public const string SONGDATA = "SongData";
+            public const string SONG_DATA = "SongData";
             public const string SETTING = "Setting";
             public const string NOTIFICATION = "Notification";
         }
@@ -35,7 +35,7 @@ namespace FRONTIER.Save
         public abstract void Save();
 
         /// <summary>
-        /// データをゲーム内のResoucesフォルダーから読みこむ。
+        /// データをゲーム内のResourcesフォルダーから読みこむ。
         /// </summary>
         /// <param name="dataMode">読み込むデータ</param>
         protected void Load(string dataMode) => Instance = JsonUtility.FromJson<T>(Resources.Load<TextAsset>(dataMode).ToString());
@@ -56,7 +56,7 @@ namespace FRONTIER.Save
                 Instance = JsonUtility.FromJson<T>(loadData);
 
             }
-            // 無かったらResoucesファイルにあったデフォルトのファイルを読み込む
+            // 無かったらResourcesファイルにあったデフォルトのファイルを読み込む
             else { Instance = JsonUtility.FromJson<T>(Resources.Load<TextAsset>(dataMode).ToString());}
         }
 
@@ -67,9 +67,9 @@ namespace FRONTIER.Save
         /// <param name="dataPath">保存したいファイルがあるパス</param>
         protected void Save(string dataMode, string dataPath)
         {
-            string serialedData = JsonUtility.ToJson(Instance, true);
+            string serializedData = JsonUtility.ToJson(Instance, true);
             StreamWriter streamWriter = new(dataPath + $"/{dataMode}.json");
-            streamWriter.Write(serialedData);
+            streamWriter.Write(serializedData);
             streamWriter.Flush();
             streamWriter.Close();
         }

@@ -33,13 +33,13 @@ namespace FRONTIER.Save
             public class Level
             {
                 public string lite;
-                public string hard;
-                public string ecstacy;
-                public string restricted;
+                public string heavy;
+                public string vivid;
+                public string beyond;
             }
         }
 
-        public override void Load() => base.Load(DataMode.SONGDATA);
+        public override void Load() => base.Load(DataMode.SONG_DATA);
 
         public override void Save() => throw new Exception("セーブ機能はありません");
     }

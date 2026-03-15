@@ -36,19 +36,19 @@ namespace FRONTIER.Save
             public Record lite;
 
             /// <summary>
-            /// 難易度「HARD」のセーブデータ
+            /// 難易度「HEAVY」のセーブデータ
             /// </summary>
-            public Record hard;
+            public Record heavy;
 
             /// <summary>
-            /// 難易度「ECSTASY」のセーブデータ
+            /// 難易度「VIVID」のセーブデータ
             /// </summary>
-            public Record ecstasy;
+            public Record vivid;
 
             /// <summary>
-            /// 難易度「RESTRICTED」のセーブデータ
+            /// 難易度「BEYOND」のセーブデータ
             /// </summary>
-            public Record restricted;
+            public Record beyond;
 
             /// <summary>
             /// 難易度ごとに記録を保持する。
@@ -91,9 +91,9 @@ namespace FRONTIER.Save
                 return difficulty switch
                 {
                     DifficultyRank.Lite => lite ?? ConstructNewData(DifficultyRank.Lite),
-                    DifficultyRank.Hard => hard ?? ConstructNewData(DifficultyRank.Hard),
-                    DifficultyRank.Ecstasy => ecstasy ?? ConstructNewData(DifficultyRank.Ecstasy),
-                    DifficultyRank.Restricted => restricted ?? ConstructNewData(DifficultyRank.Restricted),
+                    DifficultyRank.Heavy => heavy ?? ConstructNewData(DifficultyRank.Heavy),
+                    DifficultyRank.Vivid => vivid ?? ConstructNewData(DifficultyRank.Vivid),
+                    DifficultyRank.Beyond => beyond ?? ConstructNewData(DifficultyRank.Beyond),
                     _ => null
                 };
             }
@@ -110,15 +110,15 @@ namespace FRONTIER.Save
                     case DifficultyRank.Lite:
                         lite = new();
                         return lite;
-                    case DifficultyRank.Hard:
-                        hard = new();
-                        return hard;
-                    case DifficultyRank.Ecstasy:
-                        ecstasy = new();
-                        return ecstasy;
-                    case DifficultyRank.Restricted:
-                        restricted = new();
-                        return restricted;
+                    case DifficultyRank.Heavy:
+                        heavy = new();
+                        return heavy;
+                    case DifficultyRank.Vivid:
+                        vivid = new();
+                        return vivid;
+                    case DifficultyRank.Beyond:
+                        beyond = new();
+                        return beyond;
                     default: break;
                 }
                 return new();

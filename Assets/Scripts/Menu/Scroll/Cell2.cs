@@ -119,10 +119,6 @@ namespace FancyScrollView.FRONTIER
                     genre.parent.SetActive(true);
                     switch (itemData_tmp.genre)
                     {
-                        case "F":
-                            genre.background.color = new Color32(238, 39, 55, 255);
-                            genre.genreName.text = "F";
-                            break;
                         case "ANIME":
                             genre.background.color = new Color32(229, 179, 73, 255);
                             genre.genreName.text = "ANIME";
