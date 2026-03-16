@@ -10,7 +10,7 @@ namespace FRONTIER.Menu.Background
     /// 流れている音楽のスペクトルをもとに波形のメッシュを生成して動かすクラス。
     /// </summary>
     [RequireComponent(typeof(MeshFilter)), RequireComponent(typeof(FFT))]
-    public class SpectrumVisualMesh : GameUtilityBase
+    public class SpectrumVisualMesh : MonoBehaviour
     {
         #region フィールド
 
@@ -242,6 +242,12 @@ namespace FRONTIER.Menu.Background
             return indexes;
         }
 
+        // HACK: SpectrumVisualLine で処理した方がよい。
+        //       元々、このクラスで生成したメッシュの形状と動きに満足できず、LineRenderer で帯を作って
+        //       それをビジュアライザーにしたほうがいいという発想だった。
+        //       その際に、メッシュの頂点座標を流用して、曲線の座標を決められたら楽だと思いついたところから、
+        //       ベジェ曲線化の処理もこのクラスに入れてしまった。
+        //       次のリファクタリングでは、このクラスとSpectrumVisualLine の依存をなくすことを目指す。
         /// <summary>
         /// オーディオスペクトラムとする波形のメッシュ(<see cref = "waveMesh"/>)から波形状のベジェ曲線を生成する。
         /// </summary>
