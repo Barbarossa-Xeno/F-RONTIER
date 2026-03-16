@@ -5,39 +5,51 @@ using FRONTIER.Utility;
 namespace FRONTIER.Audio
 {
     /// <summary>
-    /// 楽曲の再生をするためのオーディオソースを管理する。
+    /// 楽曲などの AudioClip の再生を管理する。
     /// </summary>
     public class MusicManager : AudioManager
     {
-        #region フィールド
+        /// <summary>
+        /// 再生中の AudioClip が変わったときに発火するイベント。
+        /// </summary>
+        public event System.Action<AudioClip> ClipChanged;
 
         /// <summary>
-        /// 再生する楽曲。
+        /// 楽曲などの再生する AudioClip。
         /// </summary>
-        private AudioClip song;
+        public AudioClip Clip
+        {
+            get => Source.clip;
+            set
+            {
+                Source.clip = value;
 
-        #endregion
-
-        #region オーバーライドメソッド
+                // セッター伝手に発火
+                ClipChanged?.Invoke(value);
+            }
+        }
 
         public override sealed void Construct(Reference.Scene.GameScenes scenes)
         {
             Source.Stop();
             SetVolume(Save.SettingData.Instance.setting.musicVolume);
 
+            // シーンに応じてオーディオの設定を変える
+            // ゲーム中の楽曲のロードはここで行う
             switch (scenes)
             {
                 case Reference.Scene.GameScenes.Menu:
+                {
                     Source.loop = true;
-                    break;
+                    return;
+                }
                 case Reference.Scene.GameScenes.Game:
+                {
                     Source.loop = false;
-                    song = Resources.Load<AudioClip>($"Data/{GameManager.Instance.info.ID}/song");
-                    Source.clip = song;
-                    break;
+                    Clip = Resources.Load<AudioClip>($"Data/{GameManager.Instance.info.ID}/song");
+                    return;
+                }
             }
         }
-
-        #endregion
     }
 }

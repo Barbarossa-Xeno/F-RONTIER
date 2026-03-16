@@ -100,7 +100,7 @@ namespace FRONTIER.Menu
                 return;
             }
             id_tmp = id;
-            GameManager.Instance.audios.musicManager.Source.clip = songHighlights[id];
+            GameManager.Instance.audios.musicManager.Clip = songHighlights[id];
             GameManager.Instance.audios.musicManager.Source.Play();
         }
 

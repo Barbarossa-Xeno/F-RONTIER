@@ -3,12 +3,13 @@ using FRONTIER.Utility;
 using FRONTIER.Utility.Easing;
 
 namespace FRONTIER.Menu.Background
-{/// <summary>
- /// ラインレンダラーを使って波状のビジュアライザーをつくる。
- /// </summary>
+{
+    /// <summary>
+    /// ラインレンダラーを使って波状のビジュアライザーをつくる。
+    /// </summary>
     public class LineWave : GameUtilityBase
     {
-        [SerializeField] private Wave wave;
+        [SerializeField] private SpectrumVisualMesh wave;
 
         /// <summary>
         /// LineRendererで描画するオーディオスペクトラム。
@@ -74,7 +75,7 @@ namespace FRONTIER.Menu.Background
         {
             // コルーチンでラインレンダラーを使ったスペクトラムの更新を一定秒間隔にすることで、処理落ちを防ぎ、波の高さの急激な変化を控えさせる
             // 0.028s(28ms)がだいたい40fpsくらい
-            SetInterval(() => SetLineWave(line, wave.GenerateSpectrumBezierCurve(wave.activeWaveVertices, 100)), FPSLimit.FPSToSecond(targetFPS));
+            SetInterval(() => SetLineWave(line, wave.GenerateSpectrumBezierCurve(100)), FPSLimit.FPSToSecond(targetFPS));
         }
 
         /// <summary>

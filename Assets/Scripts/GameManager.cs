@@ -263,7 +263,7 @@ namespace FRONTIER
                     SceneNavigator.Instance.FadeOutFinished += SettingData.Instance.Load;
                     SceneNavigator.Instance.FadeOutFinished += SongSaveData.Instance.Load;
                     SceneNavigator.Instance.FadeOutFinished += () => Instance.info = new();
-                    SceneNavigator.Instance.FadeInFinished += () => Menu.Background.FFT.OnAudioClipChanged?.Invoke();
+                    // SceneNavigator.Instance.FadeInFinished += () => Menu.Background.FFT.UpdateAudioData();
                     break;
 
                 case Reference.Scene.GameScenes.Game:

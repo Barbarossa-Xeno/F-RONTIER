@@ -256,7 +256,7 @@ namespace FRONTIER.Game
             // 音楽の再生が最後まで終わったら
             if (Manager.start
                 && Manager.gamePlayState == GameManager.GamePlayState.Playing
-                && Time.time > Manager.audios.musicManager.Source.clip.length + Manager.startTime)
+                && Time.time > Manager.audios.musicManager.Clip.length + Manager.startTime)
             {
                 // リザルトシーンをロード。
                 Manager.audios.musicManager.Stop();

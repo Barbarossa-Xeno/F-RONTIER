@@ -5,29 +5,28 @@ using UnityEngine;
 namespace FRONTIER.Menu.Background
 {
     /// <summary>
-    /// フーリエ変換を行い、再生中の音声の周波数を解析する。
+    /// 高速フーリエ変換を行い、再生中の音声の周波数を解析する。
     /// </summary>
     public class FFT : MonoBehaviour
     {
-        #region フィールド
+        /// <summary>
+        /// FFTの解像度。
+        /// </summary>
+        [SerializeField] private FFTResolution resolution = FFTResolution._1024;
 
         /// <summary>
-        /// オーディオを取得するAudioSource。
+        /// FFTの窓関数。
+        /// </summary>
+        [SerializeField] private FFTWindow window = FFTWindow.Triangle;
+
+        /// <summary>
+        /// オーディオを取得する AudioSource。
         /// </summary>
         /// <remarks>
-        /// 規定は<see cref = "GameManager.musicSource"/>
+        /// デフォルトは<see cref = "GameManager.audios.musicManager.Source"/>
         /// </remarks>
-        public AudioSource audioSource = default;
-
-        /// <summary>
-        /// フーリエ変換の解像度。
-        /// </summary>
-        [SerializeField] public FFTResolution FFT_resolution = FFTResolution._1024;
-
-        /// <summary>
-        /// フーリエ変換の窓関数。
-        /// </summary>
-        [SerializeField] private FFTWindow FFT_window = FFTWindow.Triangle;
+        [Header("デフォルトではGameManagerから読み込むためデバッグ用途以外で設定の必要なし"), SerializeField]
+        private AudioSource audioSource;
 
         /// <summary>
         /// 取得する音声情報。
@@ -37,87 +36,76 @@ namespace FRONTIER.Menu.Background
         /// <summary>
         /// 取得する音声の周波数情報。
         /// </summary>
-        public float[] spectrumData;
+        [SerializeField] private float[] spectrumData;
 
         /// <summary>
-        /// オーディオクリップが変わった時に発火するイベント。
+        /// FFTの解像度。
         /// </summary>
-        /// <remarks>
-        /// シーンをまたいでもいいように<c>static</c>
-        /// </remarks>
-        public static Action OnAudioClipChanged;
-        
-        /// <summary>
-        /// 再生されたオーディオクリップを保存しておく。
-        /// </summary>
-        private static AudioClip _audioClip = null;
+        public int Resolution => (int)resolution;
 
-        #endregion
-
-        #region プロパティ
+        public float[] SpectrumData => spectrumData;
 
         /// <summary>
-        /// 再生されているオーディオが変わったかどうか。
-        /// </summary>
-        /// <value> 
-        /// 変わったならtrue、変わっていなければfalseを返す。
-        /// </value>
-        private bool IsAudioClipChange => _audioClip != audioSource.clip;
-        
-        #endregion
-
-        #region 列挙型
-
-        /// <summary>
-        /// フーリエ変換の解像度選択。
+        /// インスペクタからFFTの解像度を選択できるようにするための列挙型。
         /// </summary>
         public enum FFTResolution
         {
             _8192 = 8192, _4096 = 4096, _2048 = 2048, _1024 = 1024, _512 = 512, _256 = 256, _128 = 128
         }
 
-        #endregion
+        void OnValidate()
+        {
+            spectrumData = new float[Resolution];
+        }
 
-        #region MonoBehaviourメソッド
-
-        void Start()
+        void Awake()
         {
             // オーディオソースの取得
-            audioSource = GameManager.Instance.audios.musicManager.Source;
-            spectrumData = new float[(int)FFT_resolution];
-
-            // イベントの登録
-            OnAudioClipChanged = () =>
+            if (audioSource == null)
             {
-                _audioClip = audioSource.clip;
-                audioData = new float[_audioClip.channels * _audioClip.samples];
-                audioSource.clip.GetData(audioData, 0);
-            };
+                audioSource = GameManager.Instance.audios.musicManager.Source;
+
+                // AudioClip の変更検知は GameManager に依存するので
+                // デバッグ目的で AudioSource を設定したときは別方法で検知する必要がある
+                GameManager.Instance.audios.musicManager.ClipChanged += UpdateAudioData;
+            }
+            
+            spectrumData = new float[Resolution];
         }
 
         void FixedUpdate()
         {
-            if (audioSource == null)
-            {
-                return;
-            }
-            //オーディオクリップが変更された時に音声情報を一新する
-            if (IsAudioClipChange)
-            {
-                OnAudioClipChanged?.Invoke();
-            }
             // 音声情報が取得できなかったらやめる
-            if (audioData == null)
+            if (audioSource == null || audioData == null)
             {
                 return;
             }
-            if (audioSource.isPlaying && audioSource.timeSamples < audioData.Length)
+
+            // オーディオが流れているとき
+            if (audioSource.isPlaying)
             {
-                audioSource.GetSpectrumData(spectrumData, 0, FFT_window);
+                audioSource.GetSpectrumData(spectrumData, 0, window);
             }
-            else { spectrumData = Enumerable.Repeat<float>(0, (int)FFT_resolution).ToArray(); }
+            else
+            {
+                // 0埋め
+                Array.Clear(spectrumData, 0, spectrumData.Length);
+            }
         }
 
-        #endregion
+        void OnDestroy()
+        {
+            // イベントの購読解除
+            GameManager.Instance.audios.musicManager.ClipChanged -= UpdateAudioData;
+        }
+
+        /// <summary>
+        /// オーディオクリップが変わったときにスペクトルデータを更新する。
+        /// </summary>
+        public void UpdateAudioData(AudioClip clip)
+        {
+            audioData = new float[clip.channels * clip.samples];
+            clip.GetData(audioData, 0);
+        }
     }
 }
