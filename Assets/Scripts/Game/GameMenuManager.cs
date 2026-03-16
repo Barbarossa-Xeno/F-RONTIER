@@ -252,12 +252,14 @@ namespace FRONTIER.Game
 
         void Update()
         {
-            // FIXME: ここの条件が1回きりになってないせいで何回も呼ばれてしまってるのを修正したい
             // 音楽の再生が最後まで終わったら
             if (Manager.start
                 && Manager.gamePlayState == GameManager.GamePlayState.Playing
                 && Time.time > Manager.audios.musicManager.Clip.length + Manager.startTime)
             {
+                // 終了状態に移行
+                Manager.gamePlayState = GameManager.GamePlayState.Finishing;
+
                 // リザルトシーンをロード。
                 Manager.audios.musicManager.Stop();
                 Manager.scene.result.Invoke();

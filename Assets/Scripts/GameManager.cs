@@ -11,7 +11,7 @@ using FRONTIER.Utility.SceneTransition;
 namespace FRONTIER
 {
     /// <summary>
-    /// ゲームを総括するクラス。
+    /// ゲームを全体を管理するクラス。
     /// </summary>
     public class GameManager : SingletonMonoBehaviour<GameManager>
     {
@@ -224,9 +224,35 @@ namespace FRONTIER
             }
         }
 
+        /// <summary>
+        /// Game シーンでの詳細なプレイ状況を表す。
+        /// </summary>
         public enum GamePlayState
         {
-            Starting, Playing, Pausing, Finishing, None
+            /// <summary>
+            /// Game シーンではない
+            /// </summary>
+            None,
+
+            /// <summary>
+            /// Game シーンに入ってから、音楽の再生が開始するまでの状態
+            /// </summary>
+            Starting,
+
+            /// <summary>
+            /// 音楽が再生されて、プレイしている状態
+            /// </summary>
+            Playing,
+
+            /// <summary>
+            /// 一時停止している状態
+            /// </summary>
+            Pausing,
+            
+            /// <summary>
+            /// 終了処理に入り、Result シーンに遷移するまでの状態
+            /// </summary>
+            Finishing
         }
 
         #endregion
@@ -246,6 +272,8 @@ namespace FRONTIER
             DontDestroyOnLoad(gameObject);
         }
 
+        // このクラスは Singleton であるため、この初期化処理はアプリ起動時に一度だけ呼び出される。
+
         [Banzan.Lib.Utility.EnumAction(typeof(Reference.Scene.GameScenes))]
         public override void Construct(int scene)
         {
@@ -255,6 +283,7 @@ namespace FRONTIER
             switch (_scene)
             {
                 case Reference.Scene.GameScenes.Menu:
+                {
                     SceneNavigator.Instance.FadeOutFinished += () =>
                     {
                         Instance.info = new();
@@ -263,10 +292,10 @@ namespace FRONTIER
                     SceneNavigator.Instance.FadeOutFinished += SettingData.Instance.Load;
                     SceneNavigator.Instance.FadeOutFinished += SongSaveData.Instance.Load;
                     SceneNavigator.Instance.FadeOutFinished += () => Instance.info = new();
-                    // SceneNavigator.Instance.FadeInFinished += () => Menu.Background.FFT.UpdateAudioData();
                     break;
-
+                }
                 case Reference.Scene.GameScenes.Game:
+                {
                     SceneNavigator.Instance.FadeOutFinished += () =>
                     {
                         Instance.score = new();
@@ -275,15 +304,17 @@ namespace FRONTIER
                         Instance.startTime = 0;
                     };
                     break;
-
+                }
                 case Reference.Scene.GameScenes.Result:
+                {
                     SceneNavigator.Instance.FadeOutFinished += () =>
                     {
                         Instance.start = false;
-                        Instance.gamePlayState = GamePlayState.Finishing;
                     };
                     break;
+                }
             }
+
             SceneNavigator.Instance.FadeOutFinished += () => Instance.audios.musicManager.Construct(_scene);
             SceneNavigator.Instance.FadeOutFinished += () => Instance.audios.seManager.Construct(_scene);
 
