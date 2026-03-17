@@ -10,7 +10,7 @@ namespace FRONTIER.Game.Notes
     /// <summary>
     /// ロングノーツの情報を保持し、押下の判定を制御する。
     /// </summary>
-    public class LongNote : Note, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+    public class LongNote : Note, IPointerDownHandler, IPointerUpHandler
     {
         #region フィールド
 
@@ -296,9 +296,7 @@ namespace FRONTIER.Game.Notes
         }
 
         public void OnPointerDown(PointerEventData eventData) => OnPressed(true);
-        public void OnPointerEnter(PointerEventData eventData) => OnPressed(true);
         public void OnPointerUp(PointerEventData eventData) => OnPressed(false);
-        public void OnPointerExit(PointerEventData eventData) => OnPressed(false);
 
         #endregion
     }

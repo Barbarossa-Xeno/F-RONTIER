@@ -911,6 +911,7 @@ MonoBehaviour:
   index: 0
   tappedTime: 0
   isTapped: 0
+  key: 18
 --- !u!1 &138461503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1255,6 +1256,7 @@ MonoBehaviour:
   index: 3
   tappedTime: 0
   isTapped: 0
+  key: 22
 --- !u!1 &184248306
 GameObject:
   m_ObjectHideFlags: 0
@@ -2414,9 +2416,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.0004491806
     width: 1
-    height: 1
+    height: 0.99910164
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -2790,6 +2792,7 @@ MonoBehaviour:
   index: 2
   tappedTime: 0
   isTapped: 0
+  key: 21
 --- !u!65 &719621251
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2996,6 +2999,7 @@ MonoBehaviour:
   index: 1
   tappedTime: 0
   isTapped: 0
+  key: 20
 --- !u!1 &862620398
 GameObject:
   m_ObjectHideFlags: 0
@@ -8579,6 +8583,7 @@ MonoBehaviour:
   index: 4
   tappedTime: 0
   isTapped: 0
+  key: 24
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -8635,9 +8640,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.0004491806
     width: 1
-    height: 1
+    height: 0.99910164
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -12143,6 +12148,7 @@ MonoBehaviour:
   index: 5
   tappedTime: 0
   isTapped: 0
+  key: 25
 --- !u!65 &1797241842
 BoxCollider:
   m_ObjectHideFlags: 0
