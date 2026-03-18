@@ -194,7 +194,7 @@ namespace FRONTIER.Menu.Window
 
             #elif UNITY_ANDROID
 
-            meshRenderer.material.SetFloat("_Blur", 10f);
+            meshRenderer.material.SetFloat("_Blur", 25f);
 
             #endif
         }
