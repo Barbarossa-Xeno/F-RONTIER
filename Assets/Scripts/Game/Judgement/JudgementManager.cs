@@ -77,7 +77,7 @@ namespace FRONTIER.Game.Judgement
                 #region 通常プレイ時の初期化
 
                 // タップしたときのイベントを登録する
-                Array.ForEach(laneManager.Lanes, lane => lane.TappedEvent += (index, time) => 
+                Array.ForEach(laneManager.Lanes, lane => lane.Tapped += (index, time) => 
                 {
                     // ターゲットが見つかれば先に進む、なければ戻る
                     if (!JudgeNote(index, time))

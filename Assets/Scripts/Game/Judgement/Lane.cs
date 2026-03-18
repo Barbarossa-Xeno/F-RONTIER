@@ -41,7 +41,7 @@ namespace FRONTIER.Game.Judgement
         /// </summary>
         private float alfa;
 
-        public event Action<int, float> TappedEvent;
+        public event Action<int, float> Tapped;
 
         #endregion
 
@@ -122,7 +122,7 @@ namespace FRONTIER.Game.Judgement
             alfa = 0.2f;
 
             // イベントを発火させる
-            TappedEvent?.Invoke(index, tappedTime);
+            Tapped?.Invoke(index, tappedTime);
         }
 
         public void OnPointerDown(PointerEventData eventData)

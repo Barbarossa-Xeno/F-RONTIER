@@ -49,7 +49,7 @@ namespace FRONTIER.Game.Judgement
                 lane.LightSpeed = lightSpeed;
 
                 // レーンがタップされた時のSEを登録
-                lane.TappedEvent += (index, time) => Manager.audios.seManager.Play(Audio.SEManager.SE.TapedLane);
+                lane.Tapped += (index, time) => Manager.audios.seManager.Play(Audio.SEManager.SE.TapedLane);
             }
         }
 
