@@ -539,7 +539,7 @@ GameObject:
   - component: {fileID: 73931371}
   - component: {fileID: 73931373}
   m_Layer: 5
-  m_Name: PauseButton
+  m_Name: Pause
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -911,7 +911,6 @@ MonoBehaviour:
   index: 0
   tappedTime: 0
   isTapped: 0
-  key: 18
 --- !u!1 &138461503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1256,7 +1255,6 @@ MonoBehaviour:
   index: 3
   tappedTime: 0
   isTapped: 0
-  key: 22
 --- !u!1 &184248306
 GameObject:
   m_ObjectHideFlags: 0
@@ -2416,9 +2414,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.0004491806
+    y: 0
     width: 1
-    height: 0.99910164
+    height: 1
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -2480,7 +2478,7 @@ GameObject:
   - component: {fileID: 637100370}
   - component: {fileID: 637100369}
   m_Layer: 5
-  m_Name: NowScore
+  m_Name: Score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2792,7 +2790,6 @@ MonoBehaviour:
   index: 2
   tappedTime: 0
   isTapped: 0
-  key: 21
 --- !u!65 &719621251
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2999,7 +2996,6 @@ MonoBehaviour:
   index: 1
   tappedTime: 0
   isTapped: 0
-  key: 20
 --- !u!1 &862620398
 GameObject:
   m_ObjectHideFlags: 0
@@ -8583,7 +8579,6 @@ MonoBehaviour:
   index: 4
   tappedTime: 0
   isTapped: 0
-  key: 24
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -8640,9 +8635,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.0004491806
+    y: 0
     width: 1
-    height: 0.99910164
+    height: 1
   near clip plane: 2
   far clip plane: 50
   field of view: 107.26565
@@ -10145,7 +10140,7 @@ GameObject:
   - component: {fileID: 1236503553}
   - component: {fileID: 1236503552}
   m_Layer: 5
-  m_Name: PauseMenu
+  m_Name: PausePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10892,18 +10887,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798538356014fd447bec3eb8ac3fca63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  introductionScreen:
-    animator: {fileID: 1951127421}
+  introductionBundle:
+    controlAnimator: {fileID: 1951127421}
     background: {fileID: 2084705650}
-    blurScreenWithColor: {fileID: 2100000, guid: 62e59d8cb38f73a4d9fa79fb28d62d9a, type: 2}
     cover: {fileID: 1213380991}
     name: {fileID: 89312790}
     difficulty: {fileID: 38274166}
     level: {fileID: 1288592785}
-    coverBorder: {fileID: 1533279247}
-    levelBorder: {fileID: 184248308}
-  pauseMenu:
-    window: {fileID: 1236503550}
+    coverArea: {fileID: 1533279247}
+    levelArea: {fileID: 184248308}
+  pauseBundle:
+    panel: {fileID: 1236503550}
     pauseButton: {fileID: 73931373}
     retireButton: {fileID: 23708755}
     continueButton: {fileID: 1826923957}
@@ -12148,7 +12142,6 @@ MonoBehaviour:
   index: 5
   tappedTime: 0
   isTapped: 0
-  key: 25
 --- !u!65 &1797241842
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12528,7 +12521,7 @@ GameObject:
   - component: {fileID: 1951127420}
   - component: {fileID: 1951127421}
   m_Layer: 5
-  m_Name: IntroductionScreen
+  m_Name: IntroductionPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12867,7 +12860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 62e59d8cb38f73a4d9fa79fb28d62d9a, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 0.74509805}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}

@@ -10,22 +10,22 @@ using FRONTIER.Utility.SceneTransition;
 
 namespace FRONTIER.Game
 {
-    public class GameMenuManager : GameUtilityBase
+    public class GameStateManager : GameUtilityBase
     {
         #region フィールド
 
         /// <summary>
         /// プレイを開始する前に表示する画面。
         /// </summary>
-        [SerializeField] private IntroductionScreen introductionScreen;
+        [SerializeField] private IntroductionBundle introductionBundle;
 
         /// <summary>
         /// ポーズ画面。
         /// </summary>
-        [SerializeField] private PauseMenu pauseMenu;
+        [SerializeField] private PauseBundle pauseBundle;
 
         /// <summary>
-        /// <see cref="MVManager"/> 
+        /// MV管理 (<see cref="MVManager"/> )
         /// </summary>
         [SerializeField] private MVManager mvManager;
 
@@ -39,61 +39,53 @@ namespace FRONTIER.Game
         #region 構造体
 
         /// <summary>
-        /// プレイを開始する前に表示する画面の要素と挙動。
+        /// プレイを開始する直前に表示する画面の要素を集約したクラス。
+        /// 基本全てがCanvasに表示するUI要素。非アクティブ化をAnimatorで制御する。
         /// </summary>
         [Serializable]
-        private struct IntroductionScreen
+        private class IntroductionBundle
         {
-            #region フィールド
-
             /// <summary>
-            /// イントロアニメーションのアニメーター。
+            /// イントロアニメーションを制御するAnimator。
             /// </summary>
-            [SerializeField] private Animator animator;
+            [SerializeField] private Animator controlAnimator;
 
             /// <summary>
-            /// 背景を表示する。
+            /// 表示する背景のImage。
             /// </summary>
             [SerializeField] private Image background;
 
             /// <summary>
-            /// "BlurScreenWithColor" マテリアル。
-            /// </summary>
-            [Header("BlurScreenWithColorマテリアルをアタッチ"), SerializeField] private Material blurScreenWithColor;
-
-            /// <summary>
-            /// ジャケット画像表示。
+            /// ジャケット画像。
             /// </summary>
             [SerializeField] private Image cover;
 
             /// <summary>
-            /// 曲名表示。
+            /// 曲名表示テキスト。
             /// </summary>
             [SerializeField] private TextMeshProUGUI name;
 
             /// <summary>
-            /// 難易度表示。
+            /// 難易度表示テキスト。
             /// </summary>
             [SerializeField] private TextMeshProUGUI difficulty;
 
             /// <summary>
-            /// レベル表示。
+            /// レベル表示テキスト。
             /// </summary>
             [SerializeField] private TextMeshProUGUI level;
 
             /// <summary>
-            /// カバー画像の縁。
+            /// カバー画像の背景。難易度に応じて色を変える。
+            /// ヒエラルキー上ではカバー画像の親にあたるので、カバーサイズの基準となる。
             /// </summary>
-            [SerializeField] private Image coverBorder;
+            [SerializeField] private Image coverArea;
 
             /// <summary>
-            /// レベル表示部分の背景。
+            /// レベル表示部分の背景。難易度に応じて色を変える。
+            /// ヒエラルキー上ではレベルテキストの親にあたる。
             /// </summary>
-            [SerializeField] private Image levelBorder;
-
-            #endregion
-
-            #region メソッド
+            [SerializeField] private Image levelArea;
 
             /// <summary>
             /// イントロ画面を表示する。
@@ -103,19 +95,15 @@ namespace FRONTIER.Game
             /// <summary>
             /// イントロ画面を終了する。
             /// </summary>
-            public void Close() => animator.SetTrigger("Inactive");
+            public void Close() => controlAnimator.SetTrigger("Inactive");
 
             /// <summary>
             /// <see cref="background"/> のブラーマテリアルを設定する。
             /// </summary>
             public void SetBackground()
             {
-                background.gameObject.SetActive(true);
-
-                Material material = new(blurScreenWithColor.shader);
-                material.SetColor("_Color", new Color32(90, 90, 90, 255));
-                material.SetFloat("_Blur", 70f);
-                background.material = material;
+                background.material.SetColor("_Color", new Color32(90, 90, 90, 255));
+                background.material.SetFloat("_Blur", 70f);
             }
 
             /// <summary>
@@ -127,46 +115,79 @@ namespace FRONTIER.Game
                 name.text = Manager.info.Name;
                 difficulty.text = Manager.info.FromDifficulty(Manager.info.Difficulty).Item1;
                 level.text = Manager.info.Level;
-                coverBorder.color = Manager.info.FromDifficulty(Manager.info.Difficulty).Item2;
-                levelBorder.color = coverBorder.color;
+                coverArea.color = Manager.info.FromDifficulty(Manager.info.Difficulty).Item2;
+                levelArea.color = coverArea.color;
             }
-
-            #endregion
         }
 
         /// <summary>
-        /// ポーズ画面の要素と挙動。
+        /// ポーズ機能に関わる要素を集約したクラス。
+        /// Canvasに表示するUI要素。非アクティブ化をAnimatorで制御する。
         /// </summary>
         [Serializable]
-        private struct PauseMenu
+        private class PauseBundle
         {
-            #region フィールド
+            /// <summary>
+            /// ポーズ画面のパネル。有効化されると画面全体に表示される。
+            /// </summary>
+            [SerializeField] private GameObject panel;
 
-            [SerializeField] private GameObject window;
-            public Button pauseButton;
-            public Button retireButton;
-            public Button continueButton;
-            public Button retryButton;
+            /// <summary>
+            /// ポーズ画面を有効化するボタン。プレイ時に表示される。
+            /// </summary>
+            [SerializeField] private Button pauseButton;
+
+            /// <summary>
+            /// ポーズ画面を閉じるボタン。ポーズ画面に表示される。
+            /// </summary>
+            [SerializeField] private Button retireButton;
+
+            /// <summary>
+            /// ポーズ画面でゲームを続行するボタン。ポーズ画面に表示される。
+            /// </summary>
+            [SerializeField] private Button continueButton;
+
+            /// <summary>
+            /// ポーズ画面でゲームをリトライするボタン。ポーズ画面に表示される。
+            /// </summary>
+            [SerializeField] private Button retryButton;
+
+            /// <summary>
+            /// ゲームを続行する前のカウントダウンを表示するテキスト。ポーズ画面を抜けた直後、プレイ時に表示される。
+            /// </summary>
             [SerializeField] private TextMeshProUGUI countDownText;
+
+            /// <summary>
+            /// ポーズ画面に表示するプレイ情報。曲名、難易度、レベル、スコアなどを表示する。
+            /// </summary>
             [SerializeField] private PlayInfo playInfo;
-
-            #endregion
-
-            #region メソッド
 
             /// <summary>
             /// ポーズ画面を開く。
             /// </summary>
             public void Open()
             {
-                playInfo.UpdateInfo();
-                window.SetActive(true);
+                playInfo.cover.sprite = Manager.info.Cover;
+                playInfo.name.Text = Manager.info.Name;
+                playInfo.level.text = Manager.info.Level;
+                playInfo.score.text = $"{Manager.score.ScoreValue}";
+                playInfo.bpm.text = $"{Manager.info.Bpm}";
+
+                panel.SetActive(true);
             }
 
             /// <summary>
             /// ポーズ画面を閉じる。
             /// </summary>
-            public void Close() => window.SetActive(false);
+            public void Close() => panel.SetActive(false);
+
+            public void AddListenerToButtons(Action onPause, Action onContinue, Action onRetry, Action onRetire)
+            {
+                pauseButton.onClick.AddListener(onPause.Invoke);
+                continueButton.onClick.AddListener(onContinue.Invoke);
+                retryButton.onClick.AddListener(onRetry.Invoke);
+                retireButton.onClick.AddListener(onRetire.Invoke);
+            }
 
             /// <summary>
             /// ゲームをもう一度続行する前のカウントダウンをする。
@@ -190,33 +211,15 @@ namespace FRONTIER.Game
                 yield break;
             }
 
-            #endregion
-
-            #region 子構造体
-
             [Serializable]
-            public struct PlayInfo
+            private class PlayInfo
             {
                 public Image cover;
                 public Utility.Asset.OverflowTextScroll name;
                 public TextMeshProUGUI level;
                 public TextMeshProUGUI score;
                 public TextMeshProUGUI bpm;
-
-                /// <summary>
-                /// 表示するプレイ情報を更新する。
-                /// </summary>
-                public void UpdateInfo()
-                {
-                    cover.sprite = Manager.info.Cover;
-                    name.Text = Manager.info.Name;
-                    level.text = Manager.info.Level;
-                    score.text = $"{Manager.score.ScoreValue}";
-                    bpm.text = $"{Manager.info.Bpm}";
-                }
             }
-
-            #endregion
         }
 
         #endregion
@@ -225,31 +228,31 @@ namespace FRONTIER.Game
         void Start()
         {
             // ポーズ画面をセットアップ
-            pauseMenu.Close();
-            pauseMenu.pauseButton.onClick.AddListener(PauseGame);
-            pauseMenu.continueButton.onClick.AddListener(ContinueGame);
-            pauseMenu.retryButton.onClick.AddListener(RetryGame);
-            pauseMenu.retireButton.onClick.AddListener(RetireGame);
+            pauseBundle.Close();
+            pauseBundle.AddListenerToButtons(PauseGame, ContinueGame, RetryGame, RetireGame);
 
             // イントロ画面をセットアップ
-            introductionScreen.Open();
+            introductionBundle.Open();
             StartCoroutine(StartGame());
 
+            // MVがある場合はセットアップ
             if (Manager.info.IsMV)
             {
                 mvManager.Construct();
             }
+            // MVが無い場合は mvManager.Player は null になるので、
+            // その後のステート処理で null チェックが通らなければ自動的に再生しないことになる。
         }
 
         void Update()
         {
             // 音楽の再生が最後まで終わったら
             if (Manager.start
-                && Manager.gamePlayState == GameManager.GamePlayState.Playing
+                && Manager.gamePlayState == GameManager.GameState.Playing
                 && Time.time > Manager.audios.musicManager.Clip.length + Manager.startTime)
             {
                 // 終了状態に移行
-                Manager.gamePlayState = GameManager.GamePlayState.Finishing;
+                Manager.gamePlayState = GameManager.GameState.Finishing;
 
                 // リザルトシーンをロード。
                 Manager.audios.musicManager.Stop();
@@ -268,15 +271,15 @@ namespace FRONTIER.Game
         private IEnumerator StartGame()
         {
             // イントロの画面をセットアップ
-            introductionScreen.SetBackground();
-            introductionScreen.SetSongInfo();
+            introductionBundle.SetBackground();
+            introductionBundle.SetSongInfo();
 
             // 曲のBPMに合わせて拍のSEを４回鳴らす
             SetInterval(() => Manager.audios.seManager.Play(SEManager.SE.WoodBlockBeat), 60f / Manager.info.Bpm, 4);
 
             // 5秒待機して曲の情報画面を消す
             yield return new WaitForSeconds(5f);
-            introductionScreen.Close();
+            introductionBundle.Close();
 
             // 4秒待機してゲームを開始する
             yield return new WaitForSeconds(4f);
@@ -284,11 +287,9 @@ namespace FRONTIER.Game
             Manager.startTime = Time.time;
             Manager.audios.musicManager.Play();
 
-            if (Manager.info.IsMV)
-            {
-                mvManager.Player.Play();
-            }
-            Manager.gamePlayState = GameManager.GamePlayState.Playing;
+            // MVがある場合は再生する（null の場合は再生しない）
+            mvManager.Player?.Play();
+            Manager.gamePlayState = GameManager.GameState.Playing;
         }
 
         /// <summary>
@@ -302,13 +303,13 @@ namespace FRONTIER.Game
                 Time.timeScale = 0;
                 Manager.audios.musicManager.Pause();
                 mvManager.Player?.Pause();
-                pauseMenu.Open();
-                Manager.gamePlayState = GameManager.GamePlayState.Pausing;
+                pauseBundle.Open();
+                Manager.gamePlayState = GameManager.GameState.Pausing;
             }
         }
 
         /// <summary>
-        /// ゲームをリタイアする。
+        /// ゲームをやめる。
         /// </summary>
         private void RetireGame()
         {
@@ -321,18 +322,15 @@ namespace FRONTIER.Game
         /// </summary>
         private void ContinueGame()
         {
-            pauseMenu.Close();
-            StartCoroutine(pauseMenu.CountDown(
-                () => 
+            pauseBundle.Close();
+
+            StartCoroutine(pauseBundle.CountDown(() => 
                 {
                     isPaused = false;
                     Time.timeScale = 1;
                     Manager.audios.musicManager.Source.Play();
-                    if (Manager.info.IsMV)
-                    {
-                        mvManager.Player.Play();
-                    }
-                    Manager.gamePlayState = GameManager.GamePlayState.Playing;
+                    mvManager.Player?.Play();
+                    Manager.gamePlayState = GameManager.GameState.Playing;
                 }
             ));
         }

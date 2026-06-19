@@ -248,12 +248,12 @@ namespace FRONTIER.Game.Notes
         private void OnPressing()
         {
             // ゲーム中に押されていた時
-            if (isPressed && GameManager.Instance.gamePlayState == GameManager.GamePlayState.Playing)
+            if (isPressed && GameManager.Instance.gamePlayState == GameManager.GameState.Playing)
             {
                 Pressing?.Invoke(true);
             }
             // ゲーム中に押されていない時
-            else if (!isPressed && GameManager.Instance.gamePlayState == GameManager.GamePlayState.Playing)
+            else if (!isPressed && GameManager.Instance.gamePlayState == GameManager.GameState.Playing)
             {
                 Pressing?.Invoke(false);
             }

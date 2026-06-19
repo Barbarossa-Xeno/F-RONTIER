@@ -50,7 +50,7 @@ namespace FRONTIER
         /// <summary>
         /// 「ゲーム」のプレイ状況。
         /// </summary>
-        public GamePlayState gamePlayState = GamePlayState.None;
+        public GameState gamePlayState = GameState.None;
 
         #endregion
 
@@ -227,7 +227,7 @@ namespace FRONTIER
         /// <summary>
         /// Game シーンでの詳細なプレイ状況を表す。
         /// </summary>
-        public enum GamePlayState
+        public enum GameState
         {
             /// <summary>
             /// Game シーンではない
@@ -287,7 +287,7 @@ namespace FRONTIER
                     SceneNavigator.Instance.FadeOutFinished += () =>
                     {
                         Instance.info = new();
-                        Instance.gamePlayState = GamePlayState.None;
+                        Instance.gamePlayState = GameState.None;
                     };
                     SceneNavigator.Instance.FadeOutFinished += SettingData.Instance.Load;
                     SceneNavigator.Instance.FadeOutFinished += SongSaveData.Instance.Load;
@@ -299,7 +299,7 @@ namespace FRONTIER
                     SceneNavigator.Instance.FadeOutFinished += () =>
                     {
                         Instance.score = new();
-                        Instance.gamePlayState = GamePlayState.Starting;
+                        Instance.gamePlayState = GameState.Starting;
                         Instance.start = false;
                         Instance.startTime = 0;
                     };

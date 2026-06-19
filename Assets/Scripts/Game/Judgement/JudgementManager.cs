@@ -193,7 +193,7 @@ namespace FRONTIER.Game.Judgement
         private bool JudgeNote(int laneIndex, float tapTime)
         {
             // ゲームプレイ中でなければ判定しない
-            if (Manager.gamePlayState != GameManager.GamePlayState.Playing)
+            if (Manager.gamePlayState != GameManager.GameState.Playing)
             {
                 return false;
             }

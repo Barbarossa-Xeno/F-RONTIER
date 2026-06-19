@@ -126,7 +126,7 @@ namespace FRONTIER.Game.Notes
         protected virtual void Update()
         {
             // ゲームプレイ中に実行される
-            if (Manager.gamePlayState == GameManager.GamePlayState.Playing)
+            if (Manager.gamePlayState == GameManager.GameState.Playing)
             {
                 // Z座標を移動させる
                 transform.position -= new Vector3(0, 0, Manager.info.NoteSpeed) * Time.deltaTime;
