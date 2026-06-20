@@ -124,7 +124,7 @@ namespace FRONTIER.Result
 
             public override void Initialize()
             {
-                int highScore = SongSaveData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty).highScore;
+                int highScore = PlayData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty).highScore;
                 difference = Manager.score.ScoreValue - highScore;
                 IsGotNewRecord = difference > 0;
 
@@ -344,7 +344,7 @@ namespace FRONTIER.Result
                 bad.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Bad]}";
                 miss.text = $"{Manager.score.judgementStatus[Reference.JudgementRank.Miss]}";
 
-                int highCombo = SongSaveData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty).highCombo;
+                int highCombo = PlayData.Instance.Explore(Manager.info.ID).DifficultyTo(Manager.info.Difficulty).highCombo;
                 IsGotNewRecordOfCombo = Manager.score.maxCombo > highCombo;
 
                 // フルコンボしているか確認する
@@ -470,7 +470,7 @@ namespace FRONTIER.Result
         private void UpdateSaveData()
         {
             // プレイデータを参照してスコアの更新があった場合にデータを更新する
-            SongSaveData.Instance
+            PlayData.Instance
                 .Explore(Manager.info.ID)
                 .DifficultyTo(Manager.info.Difficulty)
                 .Overwrite
@@ -490,7 +490,7 @@ namespace FRONTIER.Result
         {
             if (!Manager.info.IsAutoPlay)
             {
-                SongSaveData.Instance.Save();
+                PlayData.Instance.Save();
             }
         }
 

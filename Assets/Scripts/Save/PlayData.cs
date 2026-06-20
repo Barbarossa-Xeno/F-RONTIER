@@ -9,14 +9,14 @@ namespace FRONTIER.Save
     /// <summary>
     /// 楽曲のプレイデータを保持する。
     /// </summary>
-    public class SongSaveData : SaveManager<SongSaveData>
+    public class PlayData : JSONResource<PlayData>
     {
         #region フィールド
 
         /// <summary>
         /// 楽曲ごとに保存するプレイデータ。
         /// </summary>
-        public SongSave[] saves;
+        public PlayRecord[] saves;
 
         #endregion
 
@@ -26,35 +26,35 @@ namespace FRONTIER.Save
         /// 楽曲のプレイデータ。
         /// </summary>
         [System.Serializable]
-        public class SongSave
+        public class PlayRecord
         {
             public int id;
 
             /// <summary>
             /// 難易度「LITE」のセーブデータ
             /// </summary>
-            public Record lite;
+            public ScoreRecord lite;
 
             /// <summary>
             /// 難易度「HEAVY」のセーブデータ
             /// </summary>
-            public Record heavy;
+            public ScoreRecord heavy;
 
             /// <summary>
             /// 難易度「VIVID」のセーブデータ
             /// </summary>
-            public Record vivid;
+            public ScoreRecord vivid;
 
             /// <summary>
             /// 難易度「BEYOND」のセーブデータ
             /// </summary>
-            public Record beyond;
+            public ScoreRecord beyond;
 
             /// <summary>
             /// 難易度ごとに記録を保持する。
             /// </summary>
             [System.Serializable]
-            public class Record
+            public class ScoreRecord
             {
                 public int highScore;
                 public int highCombo;
@@ -86,7 +86,7 @@ namespace FRONTIER.Save
             /// </summary>
             /// <param name="difficulty">難易度</param>
             /// <returns>難易度ごとのセーブデータ、存在しない場合は新規作成したデータ</returns>
-            public Record DifficultyTo(DifficultyRank difficulty)
+            public ScoreRecord DifficultyTo(DifficultyRank difficulty)
             {
                 return difficulty switch
                 {
@@ -103,7 +103,7 @@ namespace FRONTIER.Save
             /// </summary>
             /// <param name="difficulty">難易度</param>
             /// <returns>指定した難易度の新しいセーブデータ</returns>
-            private Record ConstructNewData(DifficultyRank difficulty)
+            private ScoreRecord ConstructNewData(DifficultyRank difficulty)
             {
                 switch (difficulty)
                 {
@@ -138,7 +138,7 @@ namespace FRONTIER.Save
             /// インスタンスがない場合、指定されたIDを登録したデータをつくる。
             /// </summary>
             /// <param name="id">ID</param>
-            public SongSave(int id)
+            public PlayRecord(int id)
             {
                 this.id = id;
             }
@@ -152,10 +152,10 @@ namespace FRONTIER.Save
         /// セーブデータの項目を増やす。
         /// </summary>
         /// <param name="addition">追加するセーブデータ</param>
-        private SongSave Add(SongSave addition)
+        private PlayRecord Add(PlayRecord addition)
         {
             // 現時点でのセーブデータをリストにコピーする
-            List<SongSave> data = saves.ToList();
+            List<PlayRecord> data = saves.ToList();
             
             // 追加データをリストに追加する
             data.Add(addition);
@@ -176,7 +176,7 @@ namespace FRONTIER.Save
         /// <returns>
         /// その楽曲のデータ、存在しなかった場合は新規作成したデータ
         /// </returns>
-        public SongSave Explore(int id)
+        public PlayRecord Explore(int id)
         {
             // 指定されたIDがセーブデータにあるか確認する
             // どのみちIDにつき１つしかデータがないので、初めに見つけたものを返す
@@ -192,7 +192,7 @@ namespace FRONTIER.Save
                 StreamReader streamReader = new($"{Application.persistentDataPath}/Save.json");
                 string data = streamReader.ReadToEnd();
                 streamReader.Close();
-                Instance = JsonUtility.FromJson<SongSaveData>(data);
+                Instance = JsonUtility.FromJson<PlayData>(data);
             }
             // ファイルがなかったとき、ファイルを作って読み込む（再帰）
             else

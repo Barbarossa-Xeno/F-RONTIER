@@ -4,15 +4,15 @@ namespace FRONTIER.Save
     /// 通知（お知らせやニュース）を読み込んで情報を保持する。
     /// </summary>
     [System.Serializable]
-    public class NotificationData : SaveManager<NotificationData>
+    public class NotificationData : JSONResource<NotificationData>
     {
         /// <summary>
         /// 通知内容。
         /// </summary>
-        public Notification[] notification;
+        public NotificationRecord[] notification;
 
         [System.Serializable]
-        public class Notification
+        public class NotificationRecord
         {
             /// <summary>
             /// 通知のタイトル。

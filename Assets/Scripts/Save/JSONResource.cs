@@ -4,18 +4,20 @@ using System.IO;
 namespace FRONTIER.Save
 {
     /// <summary>
-    /// JSONファイルで保存されたセーブデータを読み込んだり書き込んだりする。
+    /// JSONファイルで保存されたデータを扱うクラス。
+    /// セーブやロードが可能。
     /// </summary>
     /// <typeparam name="T">このクラスの継承先</typeparam>
-    public abstract class SaveManager<T> where T : SaveManager<T>, new()
+    public abstract class JSONResource<T> where T : JSONResource<T>, new()
     {
         /// <summary>
         /// このクラスの情報を保持する静的インスタンス。
+        /// セーブデータへのアクセスはこのインスタンスを通して行う。
         /// </summary>
-        public static T Instance { get; set; } = new();
+        public static T Instance { get; protected set; } = new();
 
         /// <summary>
-        /// 扱うデータの種類を定義したクラス。
+        /// 扱うデータの種類。
         /// </summary>
         protected static class DataMode
         {

@@ -6,15 +6,15 @@ namespace FRONTIER.Save
     /// 設定データを保持するクラス。
     /// </summary>
     [System.Serializable]
-    public class SettingData : SaveManager<SettingData>
+    public class SettingData : JSONResource<SettingData>
     {
         /// <summary>
         /// 保存された設定のデータ。
         /// </summary>
-        public Setting setting;
+        public SettingRecord setting;
         
         [System.Serializable]
-        public class Setting
+        public class SettingRecord
         {
             public float noteSpeed;
             public float timing;

@@ -290,7 +290,7 @@ namespace FRONTIER
                         Instance.gamePlayState = GameState.None;
                     };
                     SceneNavigator.Instance.FadeOutFinished += SettingData.Instance.Load;
-                    SceneNavigator.Instance.FadeOutFinished += SongSaveData.Instance.Load;
+                    SceneNavigator.Instance.FadeOutFinished += PlayData.Instance.Load;
                     SceneNavigator.Instance.FadeOutFinished += () => Instance.info = new();
                     break;
                 }

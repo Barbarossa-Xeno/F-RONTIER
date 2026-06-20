@@ -178,7 +178,7 @@ namespace FRONTIER.Menu.Window
 
             // アチーブメントウィンドウの更新
             coverAndAchievement.cover.sprite = MenuInfo.menuInfo.Cover;
-            var data = SongSaveData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(MenuInfo.menuInfo.Difficulty);
+            var data = PlayData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(MenuInfo.menuInfo.Difficulty);
             coverAndAchievement.clearRank.sprite = coverAndAchievement.sprites.RankToSprite
                 (data.highRank != null ? Enum.Parse<Reference.ClearRank>(data.highRank) : Reference.ClearRank.NoData);
             coverAndAchievement.highScore.text = $"{data.highScore}";
@@ -201,7 +201,7 @@ namespace FRONTIER.Menu.Window
             levelAndDifficulty.Difficulty.text = MenuInfo.menuInfo.FromDifficulty(difficulty).Item1;
 
             // アチーブメントウィンドウの更新
-            var data = SongSaveData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(difficulty);
+            var data = PlayData.Instance.Explore(MenuInfo.menuInfo.ID).DifficultyTo(difficulty);
             coverAndAchievement.clearRank.sprite = coverAndAchievement.sprites.RankToSprite
                 (data.highRank != null ? Enum.Parse<Reference.ClearRank>(data.highRank) : Reference.ClearRank.NoData);
             coverAndAchievement.highScore.text = $"{data.highScore}";

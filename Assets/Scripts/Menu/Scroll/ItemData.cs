@@ -58,7 +58,7 @@ namespace FancyScrollView.FRONTIER
         /// <summary>
         /// 難易度に対応したレベルたち
         /// </summary>
-        private SongData.Songs.Level levelCollection;
+        private SongData.SongRecord.LevelRecord levelCollection;
 
 
         /// <summary>
