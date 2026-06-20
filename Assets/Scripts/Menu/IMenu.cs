@@ -52,7 +52,7 @@ namespace FRONTIER.Menu
         /// <example>
         /// <code>
         /// public void OnDifficultyChanged(int difficulty) => OnDifficultyChanged((DifficultyRank)difficulty);
-        /// public void OnDifficulyChanged(DifficultyRank difficuty) { Write any routines here. };
+        /// public void OnDifficultyChanged(Reference.DifficultyRank difficulty) { Write any routines here. };
         /// </code>
         /// </example>
         /// <param name="difficulty">難易度を数値で指定</param>

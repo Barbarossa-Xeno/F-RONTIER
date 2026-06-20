@@ -41,11 +41,6 @@ namespace FRONTIER.Menu.Window.Setting
         /// </summary>
         public Action<Category> OnClickBar { get; private set; }
 
-        /// <summary>
-        /// 設定画面が有効（表示されている）かどうか。
-        /// </summary>
-        public bool Enable { private get => gameObject.activeSelf; set => gameObject.SetActive(value); }
-
         #endregion
 
         #region 構造体・クラス・列挙型
@@ -81,7 +76,10 @@ namespace FRONTIER.Menu.Window.Setting
         /// <summary>
         /// 設定項目のカテゴリー。
         /// </summary>
-        public enum Category { None, Game, Audio, System }
+        public enum Category
+        {
+            None, Game, Audio, System
+        }
 
         #endregion
 
@@ -111,20 +109,26 @@ namespace FRONTIER.Menu.Window.Setting
             switch (category)
             {
                 case Category.Game:
+                {
                     window.game.SetActive(true);
                     window.audio.SetActive(false);
                     window.system.SetActive(false);
                     break;
+                }
                 case Category.Audio:
+                {
                     window.game.SetActive(false);
                     window.audio.SetActive(true);
                     window.system.SetActive(false);
                     break;
+                }
                 case Category.System:
+                {
                     window.game.SetActive(false);
                     window.audio.SetActive(false);
                     window.system.SetActive(true);
                     break;
+                }
             }
         }
 

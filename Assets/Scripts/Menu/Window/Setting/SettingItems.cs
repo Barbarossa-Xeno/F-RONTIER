@@ -3,7 +3,7 @@ namespace FRONTIER.Menu.Window.Setting
     /// <summary>
     /// 設定項目の種類。
     /// </summary>
-    public enum ElementTypes
+    public enum SettingItems
     {
         NoteSpeed,
         JudgementTiming,

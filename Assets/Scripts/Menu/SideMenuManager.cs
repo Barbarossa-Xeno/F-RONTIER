@@ -100,17 +100,25 @@ namespace FRONTIER.Menu
                 switch (sortOption)
                 {
                     case IMenu.Sort.Option.ID:
+                    {
                         message = "ID";
                         break;
+                    }
                     case IMenu.Sort.Option.Name:
+                    {
                         message = "名前";
                         break;
+                    }
                     case IMenu.Sort.Option.Genre:
+                    {
                         message = "ジャンル";
                         break;
+                    }
                     case IMenu.Sort.Option.Level:
+                    {
                         message = "レベル";
                         break;
+                    }
                 }
 
                 return message;
@@ -123,11 +131,15 @@ namespace FRONTIER.Menu
                 switch (sortOrder)
                 {
                     case IMenu.Sort.Order.Ascending:
+                    {
                         message = "昇順";
                         break;
+                    }
                     case IMenu.Sort.Order.Descending:
+                    {
                         message = "降順";
                         break;
+                    }
                 }
 
                 return message;
@@ -160,21 +172,21 @@ namespace FRONTIER.Menu
         /// <param name="trigger">サイドメニューが開かれる状態か。</param>
         private void ActWindow(bool trigger)
         {
-            switch (trigger)
+            if (trigger)
             {
-                case true:
-                    Open();
-                    sideMenuButtonImage.sprite = sideMenuButton.enabled;
-                    sideMenuButtonImage.color = Color.white;
-                    // これはハンバーガーアイコンを非表示にするための
-                    sideMenuButtonImage.transform.GetChild(0).GetComponent<Image>().enabled = false;
-                    break;
-                case false:
-                    Close();
-                    sideMenuButtonImage.sprite = sideMenuButton.disabled;
-                    sideMenuButtonImage.color = Color.black;
-                    sideMenuButtonImage.transform.GetChild(0).GetComponent<Image>().enabled = true;
-                    break;
+                Open();
+                sideMenuButtonImage.sprite = sideMenuButton.enabled;
+                sideMenuButtonImage.color = Color.white;
+
+                // これはハンバーガーアイコンを非表示にするための
+                sideMenuButtonImage.transform.GetChild(0).GetComponent<Image>().enabled = false;
+            }
+            else
+            {
+                Close();
+                sideMenuButtonImage.sprite = sideMenuButton.disabled;
+                sideMenuButtonImage.color = Color.black;
+                sideMenuButtonImage.transform.GetChild(0).GetComponent<Image>().enabled = true;
             }
         }
 
@@ -194,7 +206,10 @@ namespace FRONTIER.Menu
             {
                 menuManager.events.OnSortOptionChanged?.Invoke(enumNum);
             }
-            else { menuManager.events.OnSortOptionChanged?.Invoke((int)IMenu.Sort.Option.ID); }
+            else
+            {
+                menuManager.events.OnSortOptionChanged?.Invoke((int)IMenu.Sort.Option.ID);
+            }
 
             Debug.Log(MenuInfo.menuInfo.SortOption);
             sortConditionView.UpdateSortCondition(MenuInfo.menuInfo.SortOption);
@@ -211,7 +226,10 @@ namespace FRONTIER.Menu
             {
                 menuManager.events.OnSortOrderChanged?.Invoke(enumNum);
             }
-            else { menuManager.events.OnSortOrderChanged?.Invoke((int)IMenu.Sort.Order.Ascending); }
+            else
+            {
+                menuManager.events.OnSortOrderChanged?.Invoke((int)IMenu.Sort.Order.Ascending);
+            }
 
             sortConditionView.UpdateSortCondition(MenuInfo.menuInfo.SortOrder);
         }

@@ -9,8 +9,11 @@ namespace FRONTIER.Menu.Window
     [RequireComponent(typeof(Button), typeof(Image))]
     public class CloseButton : MonoBehaviour, IWindow
     {
-        [Header("選択されていないとき表示するアイコン")] [SerializeField] private Sprite unselectedIcon;
-        [Header("選択されているとき表示するアイコン")] [SerializeField] private Sprite selectedIcon;
+        [Header("選択されていないとき表示するアイコン"), SerializeField]
+        private Sprite unselectedIcon;
+
+        [Header("選択されているとき表示するアイコン"), SerializeField]
+        private Sprite selectedIcon;
         private Image image;
 
         void Awake()
@@ -26,11 +29,15 @@ namespace FRONTIER.Menu.Window
             switch (state)
             {
                 case ButtonState.Selected:
+                {
                     image.sprite = selectedIcon;
                     break;
+                }
                 case ButtonState.Unselected:
+                {
                     image.sprite = unselectedIcon;
                     break;
+                }
             }
         }
     }

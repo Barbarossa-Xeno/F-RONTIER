@@ -54,12 +54,12 @@ namespace FancyScrollView.FRONTIER
 
         // GameObject が非アクティブになると Animator がリセットされてしまうため
         // 現在位置を保持しておいて OnEnable のタイミングで現在位置を再設定します
-        float currentPosition = 0;
+        private float currentPosition = 0;
 
         /// <summary>
-        /// <c>ItemData</c>のテンポラリー変数。セルに表示する情報は自身が保持する。
+        /// <c>ItemData</c>のテンポラリ。セルに表示する情報は自身が保持する。
         /// </summary>
-        public ItemData itemData_tmp = null;
+        private ItemData itemData_tmp = null;
 
         /// <summary>
         /// アニメーターのパラメーターのハッシュ値を保存
@@ -107,35 +107,49 @@ namespace FancyScrollView.FRONTIER
                 case IMenu.Sort.Option.ID:
                 case IMenu.Sort.Option.Genre:
                 case IMenu.Sort.Option.Level:
+                {
                     sortInfo.SetText(itemData_tmp.ChangeLevel(MenuInfo.menuInfo.Difficulty));
                     break;
+                }
                 case IMenu.Sort.Option.Name:
+                {
                     sortInfo.SetText(songName.Text.ToCharArray()[0].ToString());
                     break;
+                }
             }
             switch (sortOption)
             {
                 case IMenu.Sort.Option.Genre:
+                {
                     genre.parent.SetActive(true);
                     switch (itemData_tmp.genre)
                     {
                         case "ANIME":
+                        {
                             genre.background.color = new Color32(229, 179, 73, 255);
                             genre.genreName.text = "ANIME";
                             break;
+                        }
                         case "GAME":
+                        {
                             genre.background.color = new Color32(65, 105, 225, 255);
                             genre.genreName.text = "GAME";
                             break;
+                        }
                         case "POP":
+                        {
                             genre.background.color = new Color32(0, 199, 147, 255);
                             genre.genreName.text = "POP";
                             break;
+                        }
                     }
                     break;
+                }
                 default:
+                {
                     genre.parent.SetActive(false);
                     break;
+                }
             }
         }
 

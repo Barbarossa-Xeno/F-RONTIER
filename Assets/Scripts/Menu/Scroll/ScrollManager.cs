@@ -45,7 +45,7 @@ namespace FancyScrollView.FRONTIER
         /// <summary>
         /// セルが格納するすべてのデータ。
         /// </summary>
-        public ItemData[] ItemDatas { get; private set; }
+        public ItemData[] Contents { get; private set; }
         
         #endregion
 
@@ -69,20 +69,20 @@ namespace FancyScrollView.FRONTIER
                     MenuInfo.menuInfo.indexInMenu = index;
                     MenuInfo.menuInfo.Update
                     (
-                        id: ItemDatas[index].id,
-                        name: ItemDatas[index].name,
-                        artist: ItemDatas[index].artist,
-                        level: ItemDatas[index].ChangeLevel(MenuInfo.menuInfo.Difficulty)
+                        id: Contents[index].id,
+                        name: Contents[index].name,
+                        artist: Contents[index].artist,
+                        level: Contents[index].ChangeLevel(MenuInfo.menuInfo.Difficulty)
                     );
-                    OnSongSelected(ItemDatas[index].id);
+                    OnSongSelected(Contents[index].id);
                 }
             );
             
             // アイテムデータの全取得と反映
-            ItemDatas = GetItemData();
+            Contents = GetItemData();
 
             // アイテムの個数（楽曲数）に応じて、無限スクロールにするかを切り替える
-            if (ItemDatas.Length < 4)
+            if (Contents.Length < 4)
             {
                 scrollView.Loop = false;
                 scrollView.Scroller.MovementType = MovementType.Elastic;
@@ -92,7 +92,7 @@ namespace FancyScrollView.FRONTIER
                 scrollView.Loop = true;
                 scrollView.Scroller.MovementType = MovementType.Unrestricted;
             }
-            scrollView.UpdateData(ItemDatas);
+            scrollView.UpdateData(Contents);
             scrollView.SelectCell(MenuInfo.menuInfo.indexInMenu);
             UpdateCellsInfo(MenuInfo.menuInfo.SortOption);
         }
@@ -108,7 +108,7 @@ namespace FancyScrollView.FRONTIER
         private ItemData[] GetItemData() => Enumerable.Range(0, SongData.Instance.songs.Length).Select(i => new ItemData(SongData.Instance, i, MenuInfo.menuInfo.Difficulty)).ToArray();
 
         /// <summary>
-        /// セルに表示する<see cref="itemDatas"/>をソートする。
+        /// セルに表示する<see cref="Contents"/>をソートする。
         /// </summary>
         /// <param name="sortOption">現在選択されているソートの基準</param>
         /// <param name="sortOrder">現在選択されているソートの並び順</param>
@@ -117,29 +117,45 @@ namespace FancyScrollView.FRONTIER
             switch (sortOption)
             {
                 case IMenu.Sort.Option.ID:
-                    if (sortOrder == IMenu.Sort.Order.Ascending) { Array.Sort(ItemDatas, (a, b) => a.id - b.id); }
-                    else if (sortOrder == IMenu.Sort.Order.Descending) { Array.Sort(ItemDatas, (a, b) => b.id - a.id); }
-                    break;
+                {
+                    Array.Sort(Contents, sortOrder == IMenu.Sort.Order.Ascending
+                        ? (a, b) => a.id - b.id
+                        : (a, b) => b.id - a.id);
 
+                    break;
+                }
                 case IMenu.Sort.Option.Name:
-                    if (sortOrder == IMenu.Sort.Order.Ascending) { Array.Sort(ItemDatas, (a, b) => a.name.CompareTo(b.name)); }
-                    else if (sortOrder == IMenu.Sort.Order.Descending) { Array.Sort(ItemDatas, (a, b) => b.name.CompareTo(a.name)); }
-                    break;
+                {
+                    Array.Sort(Contents, sortOrder == IMenu.Sort.Order.Ascending
+                        ? (a, b) => a.name.CompareTo(b.name)
+                        : (a, b) => b.name.CompareTo(a.name));
 
+                    break;
+                }
                 case IMenu.Sort.Option.Genre:
-                    if (sortOrder == IMenu.Sort.Order.Ascending) { Array.Sort(ItemDatas, (a, b) => a.genre.CompareTo(b.genre)); }
-                    else if (sortOrder == IMenu.Sort.Order.Descending) { Array.Sort(ItemDatas, (a, b) => b.genre.CompareTo(a.genre)); }
-                    break;
+                {
+                    Array.Sort(Contents, sortOrder == IMenu.Sort.Order.Ascending
+                        ? (a, b) => a.genre.CompareTo(b.genre)
+                        : (a, b) => b.genre.CompareTo(a.genre));
 
-                case IMenu.Sort.Option.Level:
-                    if (sortOrder == IMenu.Sort.Order.Ascending) { Array.Sort(ItemDatas, (a, b) => a.ChangeLevel(MenuInfo.menuInfo.Difficulty).CompareTo(b.ChangeLevel(MenuInfo.menuInfo.Difficulty))); }
-                    else if (sortOrder == IMenu.Sort.Order.Descending) { Array.Sort(ItemDatas, (a, b) => b.level.CompareTo(a.level)); }
                     break;
+                }
+                case IMenu.Sort.Option.Level:
+                {
+                    Array.Sort(Contents, sortOrder == IMenu.Sort.Order.Ascending
+                        ? (a, b) => a.ChangeLevel(MenuInfo.menuInfo.Difficulty).CompareTo(b.ChangeLevel(MenuInfo.menuInfo.Difficulty))
+                        : (a, b) => b.ChangeLevel(MenuInfo.menuInfo.Difficulty).CompareTo(a.ChangeLevel(MenuInfo.menuInfo.Difficulty)));
+
+                    break;
+                }
             }
 
-            for (int i = 0; i < ItemDatas.Length; i++) { ItemDatas[i].cellIndex = i; }
+            for (int i = 0; i < Contents.Length; i++)
+            {
+                Contents[i].cellIndex = i;
+            }
 
-            scrollView.UpdateData(ItemDatas);
+            scrollView.UpdateData(Contents);
             scrollView.SelectCell(GetIndexInMenu(out MenuInfo.menuInfo.indexInMenu));
         }
 
@@ -163,11 +179,11 @@ namespace FancyScrollView.FRONTIER
         public int GetIndexInMenu(out int index)
         {
             int _index = 0;
-            for (int i = 0; i < ItemDatas.Length; i++)
+            for (int i = 0; i < Contents.Length; i++)
             {
-                if (ItemDatas[i].id == MenuInfo.menuInfo.ID)
+                if (Contents[i].id == MenuInfo.menuInfo.ID)
                 {
-                    _index = ItemDatas[i].cellIndex;
+                    _index = Contents[i].cellIndex;
                     break;
                 }
             }
@@ -189,8 +205,8 @@ namespace FancyScrollView.FRONTIER
 
         public void OnDifficultyChanged(Reference.DifficultyRank difficulty)
         {
-            ItemDatas.Select(itemData => itemData.ChangeLevel(difficulty));
-            MenuInfo.menuInfo.Update(ItemDatas[MenuInfo.menuInfo.indexInMenu].ChangeLevel(difficulty));
+            Contents.Select(itemData => itemData.ChangeLevel(difficulty));
+            MenuInfo.menuInfo.Update(Contents[MenuInfo.menuInfo.indexInMenu].ChangeLevel(difficulty));
             UpdateCellsInfo(difficulty);
             UpdateCellsInfo(MenuInfo.menuInfo.SortOption);
             SortItemData(MenuInfo.menuInfo.SortOption, MenuInfo.menuInfo.SortOrder);

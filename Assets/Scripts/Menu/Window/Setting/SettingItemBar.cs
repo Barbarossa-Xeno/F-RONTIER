@@ -9,10 +9,11 @@ namespace FRONTIER.Menu.Window.Setting
         /// <summary>
         /// そのボタンで展開する設定の項目（カテゴリ）を選ぶ。
         /// </summary>
-        [Header("このボタンが開く設定項目を選択")] public SettingWindowManager.Category category;
+        [Header("このボタンが開く設定項目を選択"), SerializeField]
+        private SettingWindowManager.Category category;
 
         /// <summary>
-        /// <see cref = "SettingWindowManager"/>
+        /// 設定画面管理 <see cref="SettingWindowManager"/>
         /// </summary>
         [SerializeField] private SettingWindowManager settingWindowManager;
 
@@ -24,12 +25,14 @@ namespace FRONTIER.Menu.Window.Setting
         /// <summary>
         /// ボタンが選択されていないとき表示するアイコン。
         /// </summary>
-        [Header("選択されていないとき表示するアイコン")][SerializeField] private Sprite outlineIcon;
+        [Header("選択されていないとき表示するアイコン"), SerializeField]
+        private Sprite outlineIcon;
 
         /// <summary>
         /// ボタンが選択されているとき表示するアイコン。
         /// </summary>
-        [Header("選択されているとき表示するアイコン")][SerializeField] private Sprite fillIcon;
+        [Header("選択されているとき表示するアイコン"), SerializeField]
+        private Sprite fillIcon;
 
 
         void Awake() => Init();
@@ -56,9 +59,9 @@ namespace FRONTIER.Menu.Window.Setting
         }
 
         /// <summary>
-        /// 選択された項目変数のテンポラリー
+        /// 選択された項目変数のテンポラリ
         /// </summary>
-        SettingWindowManager.Category category_tmp;
+        private SettingWindowManager.Category category_tmp;
         
         public void OnChangeButtonState(ButtonState state)
         {
@@ -66,13 +69,16 @@ namespace FRONTIER.Menu.Window.Setting
             {
                 // 項目が選択されているとき
                 case ButtonState.Selected:
+                {
                     icon.sprite = fillIcon;
                     GetComponent<Image>().enabled = true;
                     category_tmp = settingWindowManager.currentCategory;
                     break;
+                }
                 // 項目が選択されていないとき
                 case ButtonState.Unselected:
-                    // テンポラリーと現在の選択カテゴリが同じなら表示を変えない
+                {
+                    // テンポラリと現在の選択カテゴリが同じなら表示を変えない
                     if (category_tmp == settingWindowManager.currentCategory)
                     {
                         return;
@@ -80,6 +86,7 @@ namespace FRONTIER.Menu.Window.Setting
                     icon.sprite = outlineIcon;
                     GetComponent<Image>().enabled = false;
                     break;
+                }
             }
         }
     }

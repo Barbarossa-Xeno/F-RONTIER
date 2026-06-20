@@ -1187,7 +1187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   screen: {fileID: 1345862057}
-  versionInfomation: {fileID: 1124720055}
+  versionInformation: {fileID: 1124720055}
   animationElement:
     logo: {fileID: 1677808502}
     text: {fileID: 376563299}

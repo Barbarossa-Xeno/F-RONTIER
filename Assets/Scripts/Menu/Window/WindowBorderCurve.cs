@@ -46,7 +46,7 @@ namespace FRONTIER.Menu.Window
         private GradientOption gradientOption = null;
 
         /// <summary>
-        /// グラデーションにするカラー。
+        /// 境界線に指定するグラデーション。
         /// </summary>
         [SerializeField] private GradientColor gradientColor = default;
 
@@ -128,12 +128,18 @@ namespace FRONTIER.Menu.Window
         private void SetGradient(int key = 3)
         {
             gradientOption = new();
+
             // カラーキーの設定
             gradientOption.colorKey[0] = new(gradientColor.edgeColor, 0f);
             gradientOption.colorKey[1] = new(gradientColor.activeColor, 0.01f);
             gradientOption.colorKey[2] = new(gradientColor.edgeColor, 1f);
+
             // 透明度は適当に埋める
-            for (int i = 0; i < key; i++) { gradientOption.alphaKey[i] = new(1f, Mathf.Clamp01(i)); }
+            for (int i = 0; i < key; i++)
+            {
+                gradientOption.alphaKey[i] = new(1f, Mathf.Clamp01(i));
+            }
+
             // 適用
             gradient.mode = GradientMode.Blend;
             gradient.SetKeys(gradientOption.colorKey, gradientOption.alphaKey);
@@ -208,7 +214,7 @@ namespace FRONTIER.Menu.Window
 
             // ボーダー生成
             curveLocalPositions = GenerateCurve(curveDetailed);
-            SetCurve(curveLocalPositions);
+            curve.SetPositionsWithCount(curveLocalPositions);
         }
 
         public override void RescaleObject()
@@ -238,16 +244,6 @@ namespace FRONTIER.Menu.Window
                 v[i] = Vector3.Lerp(v1, v2, t);
             }
             return v;
-        }
-
-        /// <summary>
-        /// ラインレンダラーに点を設定する。
-        /// </summary>
-        /// <param name="positions">曲線の点の配列</param>
-        private void SetCurve(Vector3[] positions)
-        {
-            curve.positionCount = positions.Length;
-            curve.SetPositions(positions);
         }
     }
 }

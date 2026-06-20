@@ -17,15 +17,14 @@ namespace FRONTIER.Menu.Window.Setting
         /// <summary>
         /// このオブジェクトで設定する要素。
         /// </summary>
-        [Header("このオブジェクトで設定する要素"), SerializeField] private ElementTypes element = ElementTypes.None;
+        [Header("このオブジェクトで設定する要素"), SerializeField] private SettingItems element = SettingItems.None;
 
         /// <summary>
         /// 設定の仕方がどのタイプか。
         /// </summary>
         [SerializeField] private ValueType valueType = ValueType.Float;
 
-        // エディター拡張したいけどめんどいからやらない
-        // もしできるようになったらelementの値に応じて表示内容を変える
+        // TODO: エディター拡張で、elementの値に応じて表示内容を変える
         /// <summary>
         /// 直接値を指定する設定項目。
         /// </summary>
@@ -65,16 +64,16 @@ namespace FRONTIER.Menu.Window.Setting
         }
 
         /// <summary>
-        /// 数値（小数）によって直接値を設定する。
+        /// 数値（小数）によって直接値を設定する項目のUIセット。
         /// </summary>
         [Serializable]
         private class FloatTypeValue : AnyTypeValue
         {
-            [SerializeField] public TextMeshProUGUI value;
-            [Tooltip("値を-1.0するボタン"), SerializeField] public Button LargeMinusButton;
-            [Tooltip("値を-0.1するボタン"), SerializeField] public Button SmallMinusButton;
-            [Tooltip("値を+0.1するボタン"), SerializeField] public Button SmallPlusButton;
-            [Tooltip("値を+1.0するボタン"), SerializeField] public Button LargePlusButton;
+            [SerializeField] private TextMeshProUGUI value;
+            [Tooltip("値を-1.0するボタン"), SerializeField] private Button largeMinusButton;
+            [Tooltip("値を-0.1するボタン"), SerializeField] private Button smallMinusButton;
+            [Tooltip("値を+0.1するボタン"), SerializeField] private Button smallPlusButton;
+            [Tooltip("値を+1.0するボタン"), SerializeField] private Button largePlusButton;
 
             public static class IncrementValue
             {
@@ -84,38 +83,47 @@ namespace FRONTIER.Menu.Window.Setting
                 public const float LARGE_MINUS = -1.0f;
             }
 
-            public override void Init(ElementTypes element)
+            public override void Init(SettingItems element)
             {
                 ValueInit(element);
-                LargeMinusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.LARGE_MINUS));
-                SmallMinusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.SMALL_MINUS));
-                SmallPlusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.SMALL_PLUS));
-                LargePlusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.LARGE_PLUS));
+                largeMinusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.LARGE_MINUS));
+                smallMinusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.SMALL_MINUS));
+                smallPlusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.SMALL_PLUS));
+                largePlusButton.onClick.AddListener(() => SelectAction(element, IncrementValue.LARGE_PLUS));
             }
 
-            protected override void ValueInit(ElementTypes element)
+            protected override void ValueInit(SettingItems element)
             {
                 switch (element)
                 {
-                    case ElementTypes.NoteSpeed:
+                    case SettingItems.NoteSpeed:
+                    {
                         value.text = $"{SettingData.Instance.setting.noteSpeed}";
                         break;
-                    case ElementTypes.JudgementTiming:
+                    }
+                    case SettingItems.JudgementTiming:
+                    {
                         value.text = $"{SettingData.Instance.setting.timing}";
                         break;
-                    case ElementTypes.LaneWall:
-                        //value.text = $"{SettingData.Instance.setting.}";
+                    }
+                    case SettingItems.LaneWall:
+                    {
+                        // TODO: 未実装
+                        // value.text = $"{SettingData.Instance.setting.}";
                         break;
+                    }
                 }
             }
 
-            private void UpdateValue(ref float targetValue, float increment, ElementTypes element)
+            private void UpdateValue(ref float targetValue, float increment, SettingItems element)
             {
                 UpdateValue(ref targetValue, increment);
 
                 switch (element)
                 {
-                    case ElementTypes.NoteSpeed:
+                    case SettingItems.NoteSpeed:
+                    {
+                        // 上限と下限に来たら値を固定する
                         if (targetValue <= 1.0f)
                         {
                             targetValue = 1.0f;
@@ -127,7 +135,9 @@ namespace FRONTIER.Menu.Window.Setting
                             return;
                         }
                         break;
-                    case ElementTypes.JudgementTiming:
+                    }
+                    case SettingItems.JudgementTiming:
+                    {
                         if (targetValue <= -2.0f)
                         {
                             targetValue = -2.0f;
@@ -139,7 +149,9 @@ namespace FRONTIER.Menu.Window.Setting
                             return;
                         }
                         break;
-                    case ElementTypes.LaneWall:
+                    }
+                    case SettingItems.LaneWall:
+                    {
                         if (targetValue <= -5.0f)
                         {
                             targetValue = -5.0f;
@@ -151,6 +163,7 @@ namespace FRONTIER.Menu.Window.Setting
                             return;
                         }
                         break;
+                    }
                 }
 
                 ShowValue(targetValue);
@@ -164,19 +177,25 @@ namespace FRONTIER.Menu.Window.Setting
                 ShowValue(targetValue);
             }
 
-            protected override void SelectAction(ElementTypes element, float increment)
+            protected override void SelectAction(SettingItems element, float increment)
             {
                 switch (element)
                 {
-                    case ElementTypes.NoteSpeed:
+                    case SettingItems.NoteSpeed:
+                    {
                         UpdateValue(ref SettingData.Instance.setting.noteSpeed, increment, element);
                         break;
-                    case ElementTypes.JudgementTiming:
+                    }
+                    case SettingItems.JudgementTiming:
+                    {
                         UpdateValue(ref SettingData.Instance.setting.timing, increment, element);
                         break;
-                    case ElementTypes.LaneWall:
-                        // UpdateValue(ref SettingData.Instance.Data.noteSpeed, increment);
+                    }
+                    case SettingItems.LaneWall:
+                    {
+                        // UpdateValue(ref SettingData.Instance.setting.laneWall, increment, element);
                         break;
+                    }
                     default: break;
                 }
                 return;
@@ -184,32 +203,36 @@ namespace FRONTIER.Menu.Window.Setting
         }
 
         /// <summary>
-        /// スライダーに応じて値を設定する。
+        /// スライダーに応じて値を設定する項目のUIセット。
         /// </summary>
         [Serializable]
         private class SliderTypeValue : AnyTypeValue
         {
-            [SerializeField] public TextMeshProUGUI value;
-            [SerializeField] public Slider slider;
+            [SerializeField] private TextMeshProUGUI value;
+            [SerializeField] private Slider slider;
 
-            public override void Init(ElementTypes element)
+            public override void Init(SettingItems element)
             {
                 ValueInit(element);
                 slider.onValueChanged.AddListener((sliderValue) => SelectAction(element, sliderValue));
             }
 
-            protected override void ValueInit(ElementTypes element)
+            protected override void ValueInit(SettingItems element)
             {
                 switch (element)
                 {
-                    case ElementTypes.MusicVolume:
+                    case SettingItems.MusicVolume:
+                    {
                         value.text = $"{SettingData.Instance.setting.musicVolume}";
                         slider.value = SettingData.Instance.setting.musicVolume;
                         break;
-                    case ElementTypes.SEVolume:
+                    }
+                    case SettingItems.SEVolume:
+                    {
                         value.text = $"{SettingData.Instance.setting.seVolume}";
                         slider.value = SettingData.Instance.setting.seVolume;
                         break;
+                    }
                 }
             }
 
@@ -221,18 +244,22 @@ namespace FRONTIER.Menu.Window.Setting
                 ShowValue(targetValue);
             }
 
-            protected override void SelectAction(ElementTypes element, float increment)
+            protected override void SelectAction(SettingItems element, float increment)
             {
                 switch (element)
                 {
-                    case ElementTypes.MusicVolume:
+                    case SettingItems.MusicVolume:
+                    {
                         UpdateValue(ref SettingData.Instance.setting.musicVolume, increment);
                         GameManager.Instance.audios.musicManager.SetVolume(SettingData.Instance.setting.musicVolume);
                         break;
-                    case ElementTypes.SEVolume:
+                    }
+                    case SettingItems.SEVolume:
+                    {
                         UpdateValue(ref SettingData.Instance.setting.seVolume, increment);
                         GameManager.Instance.audios.musicManager.SetVolume(SettingData.Instance.setting.seVolume);
                         break;
+                    }
                     default : break;
                 }
                 return;
@@ -240,23 +267,23 @@ namespace FRONTIER.Menu.Window.Setting
         }
 
         /// <summary>
-        /// トグルスイッチなど真偽で値を設定する。
+        /// トグルスイッチで値を設定する項目のUIセット。
         /// </summary>
         [Serializable]
         private class BoolTypeValue : AnyTypeValue
         {
             [SerializeField] public ToggleSwitch toggle;
 
-            public override void Init(ElementTypes element)
+            public override void Init(SettingItems element)
             {
                 toggle.OnToggleChanged += (value) => SettingData.Instance.setting.mirror = value;
             }
 
-            protected override void ValueInit(ElementTypes element)
+            protected override void ValueInit(SettingItems element)
             {
                 switch (element)
                 {
-                    case ElementTypes.MirrorNotes:
+                    case SettingItems.MirrorNotes:
                         toggle.IsOn = SettingData.Instance.setting.mirror;
                         break;
                 }
@@ -266,11 +293,11 @@ namespace FRONTIER.Menu.Window.Setting
 
             protected override void UpdateValue(ref float targetValue, float increment) { }
 
-            protected override void SelectAction(ElementTypes element, float increment)
+            protected override void SelectAction(SettingItems element, float increment)
             {
                 switch (element)
                 {
-                    case ElementTypes.MirrorNotes:
+                    case SettingItems.MirrorNotes:
                         UpdateValue(ref SettingData.Instance.setting.mirror, increment);
                         break;
                     default : break;

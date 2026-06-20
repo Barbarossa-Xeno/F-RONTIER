@@ -53,6 +53,9 @@
     },
     "dotnet.defaultSolution": "MusicGame01.slnx",
     "cSpell.words": [
+        "Lerp",
+        "RONTIER",
+        "setchi",
         "UGUI"
     ]
 }

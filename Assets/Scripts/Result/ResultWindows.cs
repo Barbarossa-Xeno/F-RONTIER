@@ -303,7 +303,7 @@ namespace FRONTIER.Result
             /// <summary>
             /// 実績（フルコンボまたはオールパーフェクト）の表示。
             /// </summary>
-            [SerializeField] private Image achivement;
+            [SerializeField] private Image achievement;
 
             /// <summary>
             /// フルコンボ
@@ -350,11 +350,11 @@ namespace FRONTIER.Result
                 // フルコンボしているか確認する
                 if (Manager.score.combo == Manager.score.maxComboCount)
                 {
-                    achivement.sprite = fullCombo;
+                    achievement.sprite = fullCombo;
                     IsGotFullCombo = true;
-                    if (Manager.score.judgementStatus[Reference.JudgementRank.Perfect] == Manager.score.maxComboCount)
+                    if (Manager.score.maxComboCount == Manager.score.judgementStatus[Reference.JudgementRank.Perfect])
                     {
-                        achivement.sprite = allPerfect;
+                        achievement.sprite = allPerfect;
                         IsGotAllPerfect = true;
                     }
                 }
@@ -478,8 +478,8 @@ namespace FRONTIER.Result
                     score: score.IsGotNewRecord ? Manager.score.ScoreValue : -1,
                     combo : combo.IsGotNewRecordOfCombo ? Manager.score.maxCombo : -1,
                     rank: score.IsGotNewRecord ? Manager.score.clearRank.ToString() : null,
-                    isGotfullCombo: combo.IsGotFullCombo,
-                    isGotAllPerfect: combo.IsGotAllPerfect
+                    fullCombo: combo.IsGotFullCombo,
+                    allPerfect: combo.IsGotAllPerfect
                 );
         }
 

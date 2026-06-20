@@ -11,13 +11,13 @@ namespace FRONTIER.Menu.Window.Setting
         /// 項目を初期化する。
         /// </summary>
         /// <param name="element">そのオブジェクトで何の項目を設定するか。</param>
-        public abstract void Init(ElementTypes element);
+        public abstract void Init(SettingItems element);
 
         /// <summary>
         /// 設定の値を初期化する。
         /// </summary>
         /// <param name="element">そのオブジェクトで何の項目を設定するか。</param>
-        protected abstract void ValueInit(ElementTypes element);
+        protected abstract void ValueInit(SettingItems element);
 
         /// <summary>
         /// 値を表示する。
@@ -60,7 +60,7 @@ namespace FRONTIER.Menu.Window.Setting
         /// </summary>
         /// <param name="element">設定する項目</param>
         /// <param name="increment">設定値に反映させる変化量（増減分）またはそのものの値</param>
-        protected abstract void SelectAction(ElementTypes element, float increment);
+        protected abstract void SelectAction(SettingItems element, float increment);
     }
 
 }

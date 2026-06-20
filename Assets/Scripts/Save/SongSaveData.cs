@@ -67,17 +67,17 @@ namespace FRONTIER.Save
                 /// </summary>
                 /// <param name="score">到達したハイスコア</param>
                 /// <param name="rank">到達したハイランク</param>
-                /// <param name="isGotfullCombo">フルコンボしたか</param>
-                /// <param name="isGotAllPerfect">オールパーフェクトしたか</param>
-                public void Overwrite(int score = -1, int combo = -1, string rank = null, bool isGotfullCombo = false, bool isGotAllPerfect = false)
+                /// <param name="fullCombo">フルコンボしたか</param>
+                /// <param name="allPerfect">オールパーフェクトしたか</param>
+                public void Overwrite(int score = -1, int combo = -1, string rank = null, bool fullCombo = false, bool allPerfect = false)
                 {
                     // スコアが上がらなくてもフルコンボをするなどの場合があるため
                     // 初期値（ふつうでは取り得ない値）との比較で以てフィールドを上書きする
                     highScore = score != -1 ? score : highScore;
                     highCombo = combo != -1 ? combo : highCombo;
                     highRank = rank ?? highRank;
-                    fullCombo = isGotfullCombo;
-                    allPerfect = isGotAllPerfect;
+                    this.fullCombo = fullCombo;
+                    this.allPerfect = allPerfect;
                 }
             }
 
@@ -108,20 +108,30 @@ namespace FRONTIER.Save
                 switch (difficulty)
                 {
                     case DifficultyRank.Lite:
+                    {
                         lite = new();
                         return lite;
+                    }
                     case DifficultyRank.Heavy:
+                    {
                         heavy = new();
                         return heavy;
+                    }
                     case DifficultyRank.Vivid:
+                    {
                         vivid = new();
                         return vivid;
+                    }
                     case DifficultyRank.Beyond:
+                    {
                         beyond = new();
                         return beyond;
-                    default: break;
+                    }
+                    default:
+                    {
+                        return new();
+                    }
                 }
-                return new();
             }
 
             /// <summary>
@@ -145,18 +155,18 @@ namespace FRONTIER.Save
         private SongSave Add(SongSave addition)
         {
             // 現時点でのセーブデータをリストにコピーする
-            List<SongSave> datas = saves.ToList();
+            List<SongSave> data = saves.ToList();
             
             // 追加データをリストに追加する
-            datas.Add(addition);
+            data.Add(addition);
 
             // IDについて昇順にデータを並び替える
-            datas.Sort((a, b) => a.id - b.id);
+            data.Sort((a, b) => a.id - b.id);
 
             // セーブデータに反映する
-            saves = datas.ToArray();
+            saves = data.ToArray();
 
-            return datas[datas.IndexOf(addition)];
+            return data[data.IndexOf(addition)];
         }
 
         /// <summary>
@@ -169,13 +179,9 @@ namespace FRONTIER.Save
         public SongSave Explore(int id)
         {
             // 指定されたIDがセーブデータにあるか確認する
-            // Whereを使って探索するのでIEnumerableで返ってくるが
-            // どのみちIDにつき１つしかデータがないので、配列の先頭要素を返す
-            var datas = saves.Where(save => save.id == id);
-            var data = datas.Count() > 0 ? datas.ElementAt(0) : null;
-
+            // どのみちIDにつき１つしかデータがないので、初めに見つけたものを返す
             // データがなかったらとりあえず新しく作る
-            return data ?? Add(new(id));            
+            return saves.FirstOrDefault(save => save.id == id) ?? Add(new(id));            
         }
 
         public override void Load()
@@ -198,9 +204,9 @@ namespace FRONTIER.Save
 
         public override void Save()
         {
-            string serialedData = JsonUtility.ToJson(Instance, true);
+            string json = JsonUtility.ToJson(Instance, true);
             StreamWriter streamWriter = new($"{Application.persistentDataPath}/Save.json");
-            streamWriter.Write(serialedData);
+            streamWriter.Write(json);
             streamWriter.Flush();
             streamWriter.Close();
         }

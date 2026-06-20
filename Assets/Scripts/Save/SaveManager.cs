@@ -57,7 +57,10 @@ namespace FRONTIER.Save
 
             }
             // 無かったらResourcesファイルにあったデフォルトのファイルを読み込む
-            else { Instance = JsonUtility.FromJson<T>(Resources.Load<TextAsset>(dataMode).ToString());}
+            else
+            {
+                Instance = JsonUtility.FromJson<T>(Resources.Load<TextAsset>(dataMode).ToString());
+            }
         }
 
         /// <summary>

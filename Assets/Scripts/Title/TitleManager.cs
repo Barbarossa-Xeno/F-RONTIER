@@ -10,7 +10,7 @@ namespace FRONTIER.Title
     {
         [SerializeField] private Button screen;
 
-        [SerializeField] private TextMeshProUGUI versionInfomation;
+        [SerializeField] private TextMeshProUGUI versionInformation;
         
         [SerializeField] private AnimationElement animationElement;
 
@@ -113,7 +113,7 @@ namespace FRONTIER.Title
 
             StartCoroutine(WaitLoading(1f));
 
-            versionInfomation.text = $"ver. {Application.version}";
+            versionInformation.text = $"ver. {Application.version}";
         }
 
         /// <summary>
