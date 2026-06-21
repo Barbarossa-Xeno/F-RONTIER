@@ -10,15 +10,17 @@ namespace FRONTIER.Title
     {
         [SerializeField] private Button screen;
 
-        [SerializeField] private TextMeshProUGUI versionInformation;
+        [SerializeField] private TextMeshProUGUI versionText;
+
+        [SerializeField] private TextMeshProUGUI noticeText;
         
-        [SerializeField] private AnimationElement animationElement;
+        [SerializeField] private AnimationElements animationElements;
 
         [System.Serializable]
-        private class AnimationElement
+        private class AnimationElements
         {
             [SerializeField] private Shadow logo;
-            [SerializeField] private TextMeshProUGUI text;
+            [SerializeField] private TextMeshProUGUI touchToStartText;
 
             /// <summary>
             /// ロゴの影部分をアニメーションする。
@@ -92,7 +94,7 @@ namespace FRONTIER.Title
             {
                 float angle = 0;
                 float alpha = 0;
-                text.color = new(0, 0, 0, 0);
+                touchToStartText.color = new(0, 0, 0, 0);
                 yield return new WaitForSeconds(0.5f);
 
                 while (true)
@@ -100,7 +102,7 @@ namespace FRONTIER.Title
                     yield return new WaitForSeconds(0.05f);
 
                     alpha = Mathf.Sin(angle);
-                    text.color = new(text.color.r, text.color.g, text.color.b, alpha);
+                    touchToStartText.color = new(touchToStartText.color.r, touchToStartText.color.g, touchToStartText.color.b, alpha);
                     angle = angle < Mathf.PI ? angle + 0.1f : 0;
                 }
             }
@@ -108,12 +110,17 @@ namespace FRONTIER.Title
 
         void Start()
         {
-            StartCoroutine(animationElement.FadeInOutLogoShadow());
-            StartCoroutine(animationElement.FadeInOutText());
+            StartCoroutine(animationElements.FadeInOutLogoShadow());
+            StartCoroutine(animationElements.FadeInOutText());
 
             StartCoroutine(WaitLoading(1f));
 
-            versionInformation.text = $"ver. {Application.version}";
+            versionText.text = $"ver. {Application.version}";
+            
+            // Windows版でのみ、注意書き（キー操作に対応していない旨）を表示する
+            #if UNITY_STANDALONE_WIN
+            noticeText.gameObject.SetActive(true);
+            #endif
         }
 
         /// <summary>

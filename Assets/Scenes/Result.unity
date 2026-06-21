@@ -1735,7 +1735,7 @@ MonoBehaviour:
     good: {fileID: 1894424168}
     bad: {fileID: 721496035}
     miss: {fileID: 206790137}
-    achivement: {fileID: 2091263306}
+    achievement: {fileID: 2091263306}
     fullCombo: {fileID: 21300000, guid: 2c6f2310f0a5b1948a816abf16fc3221, type: 3}
     allPerfect: {fileID: 21300000, guid: cfc2ca5ae30cfc94a913be2b1008368b, type: 3}
   footer:
